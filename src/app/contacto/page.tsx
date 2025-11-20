@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAlert } from '@/components/context/AlertContext';
+import { enviarMensajeContacto } from '@/services/contacto/contactoService';
 
 const contactSchema = z.object({
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -34,14 +35,20 @@ export default function ContactoPage() {
   const onSubmit = async (data: ContactFormData) => {
     setIsLoading(true);
     try {
-      // TODO: Enviar mensaje a Firestore o Firebase Functions
-      // Por ahora, simulamos el envío
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await enviarMensajeContacto({
+        nombre: data.nombre,
+        email: data.email,
+        asunto: data.asunto,
+        mensaje: data.mensaje,
+      });
       
       showAlert('¡Mensaje enviado exitosamente! Te contactaremos pronto.', 'success');
       reset();
-    } catch (error) {
-      showAlert('Error al enviar el mensaje. Por favor, intenta de nuevo.', 'error');
+    } catch (error: any) {
+      showAlert(
+        error.message || 'Error al enviar el mensaje. Por favor, intenta de nuevo.',
+        'error'
+      );
     } finally {
       setIsLoading(false);
     }

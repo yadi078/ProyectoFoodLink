@@ -8,6 +8,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAlert } from '@/components/context/AlertContext';
+import {
+  getPlatillosPorVendedor,
+  crearPlatillo,
+  updatePlatillo,
+  eliminarPlatillo,
+  toggleDisponibilidad as toggleDisponibilidadService,
+} from '@/services/menus/menuService';
+import type { Platillo } from '@/lib/firebase/types';
 
 const platilloSchema = z.object({
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -29,44 +37,17 @@ interface Platillo {
   disponible: boolean;
 }
 
-const platillosEjemplo: Platillo[] = [
-  {
-    id: '1',
-    nombre: 'Paella Valenciana',
-    descripcion: 'Paella tradicional con mariscos y verduras',
-    precio: 8.5,
-    imagen: '🍲',
-    ingredientes: ['Arroz', 'Mariscos', 'Verduras'],
-    disponible: true,
-  },
-  {
-    id: '2',
-    nombre: 'Ensalada Mediterránea',
-    descripcion: 'Ensalada fresca con aceitunas y queso feta',
-    precio: 6.0,
-    imagen: '🥗',
-    ingredientes: ['Lechuga', 'Tomate', 'Aceitunas'],
-    disponible: true,
-  },
-  {
-    id: '3',
-    nombre: 'Tortilla Española',
-    descripcion: 'Tortilla tradicional con patatas',
-    precio: 5.5,
-    imagen: '🥔',
-    ingredientes: ['Huevos', 'Patatas'],
-    disponible: false,
-  },
-];
+// Los platillos se cargarán desde Firestore
 
 export default function MenuPage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, vendedor, loading: authLoading } = useAuth();
   const { showAlert } = useAlert();
 
-  const [platillos, setPlatillos] = useState<Platillo[]>(platillosEjemplo);
+  const [platillos, setPlatillos] = useState<Platillo[]>([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [editandoPlatillo, setEditandoPlatillo] = useState<Platillo | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const {
     register,
@@ -81,10 +62,33 @@ export default function MenuPage() {
   });
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.push('/login');
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    const cargarPlatillos = async () => {
+      if (!user || !vendedor) return;
+
+      setLoading(true);
+      try {
+        const platillosData = await getPlatillosPorVendedor(vendedor.uid);
+        setPlatillos(platillosData);
+      } catch (error: any) {
+        showAlert(
+          error.message || 'Error al cargar los platillos. Por favor, intenta de nuevo.',
+          'error'
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user && vendedor) {
+      cargarPlatillos();
+    }
+  }, [user, vendedor, showAlert]);
 
   useEffect(() => {
     if (editandoPlatillo) {
@@ -100,44 +104,45 @@ export default function MenuPage() {
   }, [editandoPlatillo, reset]);
 
   const onSubmit = async (data: PlatilloFormData) => {
+    if (!user || !vendedor) return;
+
     try {
       const ingredientes = data.ingredientes
         ? data.ingredientes.split(',').map((i) => i.trim()).filter(Boolean)
         : [];
 
       if (editandoPlatillo) {
-        // TODO: Actualizar en Firestore
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setPlatillos((prev) =>
-          prev.map((p) =>
-            p.id === editandoPlatillo.id
-              ? {
-                  ...p,
-                  ...data,
-                  ingredientes,
-                  imagen: p.imagen, // Mantener imagen original
-                }
-              : p
-          )
-        );
+        await updatePlatillo(editandoPlatillo.id, {
+          ...data,
+          ingredientes,
+          imagen: editandoPlatillo.imagen || '🍽️',
+        });
         showAlert('Platillo actualizado exitosamente', 'success');
+        
+        // Recargar platillos
+        const platillosData = await getPlatillosPorVendedor(vendedor.uid);
+        setPlatillos(platillosData);
       } else {
-        // TODO: Crear en Firestore
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const nuevoPlatillo: Platillo = {
-          id: Date.now().toString(),
+        const nuevoId = await crearPlatillo({
+          vendedorId: vendedor.uid,
           ...data,
           ingredientes,
           imagen: '🍽️',
-        };
-        setPlatillos((prev) => [...prev, nuevoPlatillo]);
+        });
         showAlert('Platillo creado exitosamente', 'success');
+        
+        // Recargar platillos
+        const platillosData = await getPlatillosPorVendedor(vendedor.uid);
+        setPlatillos(platillosData);
       }
       reset();
       setMostrarFormulario(false);
       setEditandoPlatillo(null);
-    } catch (error) {
-      showAlert('Error al guardar el platillo', 'error');
+    } catch (error: any) {
+      showAlert(
+        error.message || 'Error al guardar el platillo. Por favor, intenta de nuevo.',
+        'error'
+      );
     }
   };
 
@@ -145,29 +150,33 @@ export default function MenuPage() {
     if (!confirm('¿Estás seguro de eliminar este platillo?')) return;
 
     try {
-      // TODO: Eliminar de Firestore
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await eliminarPlatillo(id);
       setPlatillos((prev) => prev.filter((p) => p.id !== id));
       showAlert('Platillo eliminado exitosamente', 'success');
-    } catch (error) {
-      showAlert('Error al eliminar el platillo', 'error');
+    } catch (error: any) {
+      showAlert(
+        error.message || 'Error al eliminar el platillo. Por favor, intenta de nuevo.',
+        'error'
+      );
     }
   };
 
-  const toggleDisponibilidad = async (id: string) => {
+  const toggleDisponibilidad = async (id: string, disponibleActual: boolean) => {
     try {
-      // TODO: Actualizar disponibilidad en Firestore
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await toggleDisponibilidadService(id, !disponibleActual);
       setPlatillos((prev) =>
         prev.map((p) => (p.id === id ? { ...p, disponible: !p.disponible } : p))
       );
       showAlert('Disponibilidad actualizada', 'success');
-    } catch (error) {
-      showAlert('Error al actualizar disponibilidad', 'error');
+    } catch (error: any) {
+      showAlert(
+        error.message || 'Error al actualizar disponibilidad. Por favor, intenta de nuevo.',
+        'error'
+      );
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -350,7 +359,7 @@ export default function MenuPage() {
                     Editar
                   </button>
                   <button
-                    onClick={() => toggleDisponibilidad(platillo.id)}
+                    onClick={() => toggleDisponibilidad(platillo.id, platillo.disponible)}
                     className={`btn-yellow flex-1 text-sm ${
                       !platillo.disponible ? 'bg-green-500 hover:bg-green-600' : ''
                     }`}

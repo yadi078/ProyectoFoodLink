@@ -14,16 +14,19 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
-import type { Vendedor } from '@/lib/firebase/types';
+import type { Vendedor, Estudiante } from '@/lib/firebase/types';
+import { saveEstudiante } from '../estudiantes/estudianteService';
+import { saveVendedor } from '../vendedores/vendedorService';
 
 /**
- * Registro de nuevo vendedor
- * Crea una cuenta en Firebase Auth y un documento en Firestore
+ * Registro de nuevo usuario (Vendedor o Estudiante)
+ * Crea una cuenta en Firebase Auth y un documento en Firestore según el rol
  */
-export const registerVendedor = async (
+export const registerUsuario = async (
   email: string,
   password: string,
   nombre: string,
+  rol: 'estudiante' | 'vendedor',
   telefono?: string
 ): Promise<UserCredential> => {
   try {
@@ -41,16 +44,23 @@ export const registerVendedor = async (
       displayName: nombre,
     });
 
-    // 3. Crear documento del vendedor en Firestore
-    const vendedorData: Omit<Vendedor, 'uid'> = {
-      email,
-      nombre,
-      telefono,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    await setDoc(doc(db, 'vendedores', user.uid), vendedorData);
+    // 3. Crear documento según el rol
+    if (rol === 'vendedor') {
+      await saveVendedor({
+        uid: user.uid,
+        email,
+        nombre,
+        telefono,
+        estado: 'pendiente', // Necesita aprobación de admin
+      });
+    } else {
+      await saveEstudiante({
+        uid: user.uid,
+        email,
+        nombre,
+        telefono,
+      });
+    }
 
     // 4. Firebase maneja automáticamente el token JWT
     // El token se obtiene mediante user.getIdToken()
@@ -63,10 +73,23 @@ export const registerVendedor = async (
 };
 
 /**
- * Inicio de sesión de vendedor
+ * Registro de nuevo vendedor (mantiene compatibilidad)
+ * @deprecated Usar registerUsuario en su lugar
+ */
+export const registerVendedor = async (
+  email: string,
+  password: string,
+  nombre: string,
+  telefono?: string
+): Promise<UserCredential> => {
+  return registerUsuario(email, password, nombre, 'vendedor', telefono);
+};
+
+/**
+ * Inicio de sesión de usuario (Estudiante o Vendedor)
  * Autentica con Firebase y obtiene el token JWT
  */
-export const loginVendedor = async (
+export const loginUsuario = async (
   email: string,
   password: string
 ): Promise<UserCredential> => {
@@ -77,15 +100,16 @@ export const loginVendedor = async (
       password
     );
 
-    // Verificar que el usuario existe en la colección de vendedores
-    const vendedorDoc = await getDoc(
-      doc(db, 'vendedores', userCredential.user.uid)
-    );
+    // Verificar que el usuario existe en alguna de las colecciones
+    const [vendedorDoc, estudianteDoc] = await Promise.all([
+      getDoc(doc(db, 'vendedores', userCredential.user.uid)),
+      getDoc(doc(db, 'estudiantes', userCredential.user.uid)),
+    ]);
 
-    if (!vendedorDoc.exists()) {
+    if (!vendedorDoc.exists() && !estudianteDoc.exists()) {
       await signOut(auth);
       throw new Error(
-        'Esta cuenta no está registrada como vendedor. Por favor, regístrate primero.'
+        'Esta cuenta no está registrada. Por favor, regístrate primero.'
       );
     }
 
@@ -94,6 +118,17 @@ export const loginVendedor = async (
   } catch (error: any) {
     throw mapFirebaseError(error);
   }
+};
+
+/**
+ * Inicio de sesión de vendedor (mantiene compatibilidad)
+ * @deprecated Usar loginUsuario en su lugar
+ */
+export const loginVendedor = async (
+  email: string,
+  password: string
+): Promise<UserCredential> => {
+  return loginUsuario(email, password);
 };
 
 /**
@@ -144,6 +179,29 @@ export const getCurrentVendedor = async (): Promise<Vendedor | null> => {
     } as Vendedor;
   } catch (error) {
     console.error('Error obteniendo vendedor:', error);
+    return null;
+  }
+};
+
+/**
+ * Obtener información del estudiante actual
+ */
+export const getCurrentEstudiante = async (): Promise<Estudiante | null> => {
+  const user = auth.currentUser;
+  if (!user) return null;
+
+  try {
+    const estudianteDoc = await getDoc(doc(db, 'estudiantes', user.uid));
+    if (!estudianteDoc.exists()) return null;
+
+    return {
+      uid: user.uid,
+      ...estudianteDoc.data(),
+      createdAt: estudianteDoc.data().createdAt?.toDate() || new Date(),
+      updatedAt: estudianteDoc.data().updatedAt?.toDate() || new Date(),
+    } as Estudiante;
+  } catch (error) {
+    console.error('Error obteniendo estudiante:', error);
     return null;
   }
 };

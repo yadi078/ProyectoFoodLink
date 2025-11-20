@@ -2,10 +2,6 @@
  * Configuración de Firebase
  * Utiliza variables de entorno para mantener las credenciales seguras
  * 
- * ⚠️ IMPORTANTE: Firebase maneja automáticamente HTTPS en todas las comunicaciones
- * Todas las peticiones a Firebase Authentication y Firestore usan HTTPS seguro,
- * incluso cuando la aplicación se ejecuta en localhost:3000 (desarrollo).
- * 
  * Firebase SDK se conecta a:
  * - https://identitytoolkit.googleapis.com (Authentication)
  * - https://firestore.googleapis.com (Firestore)

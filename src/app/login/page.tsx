@@ -6,9 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormData } from '@/utils/validators/authValidators';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase/config';
 import { useAlert } from '@/components/context/AlertContext';
+import { loginUsuario } from '@/services/auth/authService';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -27,10 +26,11 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password);
+      await loginUsuario(data.email, data.password);
       showAlert('¡Bienvenido de nuevo!', 'success');
       
       // Redirigir según el rol seleccionado
+      // Nota: En producción, se verificará el rol real del usuario
       if (role === 'vendedor') {
         router.push('/vendedor/dashboard');
       } else {
@@ -38,12 +38,7 @@ export default function LoginPage() {
       }
       router.refresh();
     } catch (err: any) {
-      const errorMessage =
-        err.code === 'auth/user-not-found'
-          ? 'No existe una cuenta con este correo electrónico.'
-          : err.code === 'auth/wrong-password'
-          ? 'La contraseña es incorrecta.'
-          : 'Error al iniciar sesión. Por favor, intenta de nuevo.';
+      const errorMessage = err.message || 'Error al iniciar sesión. Por favor, intenta de nuevo.';
       showAlert(errorMessage, 'error');
     } finally {
       setIsLoading(false);

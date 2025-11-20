@@ -31,7 +31,7 @@ npm install
    - **Email/Password** (Habilitar y guardar)
 
 #### 2.3 Configurar Firestore Database
-
+   
 1. En el panel izquierdo, ve a **Build** > **Firestore Database**
 2. Haz clic en **Create database**
 3. Selecciona **Start in test mode** (para desarrollo)

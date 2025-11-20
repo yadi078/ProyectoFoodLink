@@ -5,74 +5,90 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 import { useAlert } from '@/components/context/AlertContext';
+import { getPlatillosDisponibles } from '@/services/menus/menuService';
+import { getVendedor } from '@/services/vendedores/vendedorService';
+import type { Platillo } from '@/lib/firebase/types';
+import type { Vendedor } from '@/lib/firebase/types';
 
-// Datos de ejemplo - En producción vendrán de Firestore
-const menusEjemplo = [
-  {
-    id: '1',
-    nombre: 'Paella Valenciana',
-    descripcion: 'Paella tradicional con mariscos y verduras',
-    precio: 8.50,
-    imagen: '🍲',
-    vendedor: {
-      nombre: 'Doña María',
-      calificacion: 4.8,
-    },
-    disponible: true,
-  },
-  {
-    id: '2',
-    nombre: 'Ensalada Mediterránea',
-    descripcion: 'Ensalada fresca con aceitunas y queso feta',
-    precio: 6.00,
-    imagen: '🥗',
-    vendedor: {
-      nombre: 'Cocina Casera Ana',
-      calificacion: 4.5,
-    },
-    disponible: true,
-  },
-  {
-    id: '3',
-    nombre: 'Pasta Carbonara',
-    descripcion: 'Pasta cremosa con bacon y queso parmesano',
-    precio: 7.50,
-    imagen: '🍝',
-    vendedor: {
-      nombre: 'Ristorante Italiano',
-      calificacion: 4.9,
-    },
-    disponible: false,
-  },
-];
+interface PlatilloConVendedor extends Platillo {
+  vendedorNombre?: string;
+  vendedorCalificacion?: number;
+}
 
 export default function MenuPage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { showAlert } = useAlert();
   const [filtro, setFiltro] = useState('');
   const [tipoComida, setTipoComida] = useState('todos');
+  const [platillos, setPlatillos] = useState<PlatilloConVendedor[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.push('/login');
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
 
-  const menusFiltrados = menusEjemplo.filter((menu) => {
+  useEffect(() => {
+    const cargarPlatillos = async () => {
+      if (!user) return;
+
+      setLoading(true);
+      try {
+        const platillosData = await getPlatillosDisponibles();
+        
+        // Obtener información de vendedores para cada platillo
+        const platillosConVendedor = await Promise.all(
+          platillosData.map(async (platillo) => {
+            try {
+              const vendedor = await getVendedor(platillo.vendedorId);
+              return {
+                ...platillo,
+                vendedorNombre: vendedor?.nombre || 'Vendedor',
+                vendedorCalificacion: vendedor?.calificacion || 0,
+              };
+            } catch (error) {
+              return {
+                ...platillo,
+                vendedorNombre: 'Vendedor',
+                vendedorCalificacion: 0,
+              };
+            }
+          })
+        );
+
+        setPlatillos(platillosConVendedor);
+      } catch (error: any) {
+        showAlert(
+          error.message || 'Error al cargar los menús. Por favor, intenta de nuevo.',
+          'error'
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      cargarPlatillos();
+    }
+  }, [user, showAlert]);
+
+  const menusFiltrados = platillos.filter((menu) => {
     const coincideNombre = menu.nombre.toLowerCase().includes(filtro.toLowerCase());
-    const coincideDisponible = tipoComida === 'todos' || 
+    const coincideDisponible =
+      tipoComida === 'todos' ||
       (tipoComida === 'disponible' && menu.disponible) ||
       (tipoComida === 'agotado' && !menu.disponible);
     return coincideNombre && coincideDisponible;
   });
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando...</p>
+          <p className="mt-4 text-gray-600">Cargando menús...</p>
         </div>
       </div>
     );
@@ -134,32 +150,38 @@ export default function MenuPage() {
                 className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden border-2 border-transparent hover:border-primary-200"
               >
                 <div className="p-6">
-                  <div className="text-6xl text-center mb-4">{menu.imagen}</div>
+                  <div className="text-6xl text-center mb-4">
+                    {menu.imagen || '🍽️'}
+                  </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
                     {menu.nombre}
                   </h3>
                   <p className="text-gray-600 text-sm mb-4">{menu.descripcion}</p>
-                  
+
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <p className="text-2xl font-bold text-primary-600">
                         €{menu.precio.toFixed(2)}
                       </p>
-                      <p className="text-sm text-gray-500">{menu.vendedor.nombre}</p>
+                      <p className="text-sm text-gray-500">
+                        {menu.vendedorNombre || 'Vendedor'}
+                      </p>
                     </div>
                     <div className="text-right">
-                      <div className="flex items-center text-yellow-500">
-                        <span>⭐</span>
-                        <span className="ml-1 font-semibold">
-                          {menu.vendedor.calificacion}
-                        </span>
-                      </div>
+                      {menu.vendedorCalificacion && menu.vendedorCalificacion > 0 && (
+                        <div className="flex items-center text-yellow-500">
+                          <span>⭐</span>
+                          <span className="ml-1 font-semibold">
+                            {menu.vendedorCalificacion.toFixed(1)}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   <div className="flex gap-2">
                     <Link
-                      href={`/estudiante/vendedor/${menu.id}`}
+                      href={`/estudiante/vendedor/${menu.vendedorId}`}
                       className="btn-outline flex-1 text-center text-sm"
                     >
                       Ver Detalles
@@ -169,7 +191,10 @@ export default function MenuPage() {
                         if (menu.disponible) {
                           router.push(`/estudiante/pedido/${menu.id}`);
                         } else {
-                          showAlert('Este menú no está disponible en este momento', 'warning');
+                          showAlert(
+                            'Este menú no está disponible en este momento',
+                            'warning'
+                          );
                         }
                       }}
                       disabled={!menu.disponible}
@@ -186,13 +211,23 @@ export default function MenuPage() {
           </div>
         ) : (
           <div className="text-center py-12 bg-white rounded-lg shadow">
-            <p className="text-gray-600 text-lg">
-              No se encontraron menús con los filtros seleccionados.
-            </p>
+            {platillos.length === 0 ? (
+              <>
+                <p className="text-gray-600 text-lg mb-4">
+                  No hay menús disponibles en este momento
+                </p>
+                <p className="text-gray-500">
+                  Los vendedores están preparando nuevos platillos. ¡Vuelve pronto!
+                </p>
+              </>
+            ) : (
+              <p className="text-gray-600 text-lg">
+                No se encontraron menús con los filtros seleccionados.
+              </p>
+            )}
           </div>
         )}
       </div>
     </div>
   );
 }
-

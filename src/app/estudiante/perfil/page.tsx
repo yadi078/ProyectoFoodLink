@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAlert } from '@/components/context/AlertContext';
 import { logoutVendedor } from '@/services/auth/authService';
+import { updateEstudiante } from '@/services/estudiantes/estudianteService';
 
 const perfilSchema = z.object({
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -51,13 +52,16 @@ export default function PerfilEstudiantePage() {
   }, [user, loading, router, reset]);
 
   const onSubmit = async (data: PerfilFormData) => {
+    if (!user) return;
     setIsLoading(true);
     try {
-      // TODO: Actualizar perfil en Firestore
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await updateEstudiante(user.uid, data);
       showAlert('Perfil actualizado exitosamente', 'success');
-    } catch (error) {
-      showAlert('Error al actualizar el perfil', 'error');
+    } catch (error: any) {
+      showAlert(
+        error.message || 'Error al actualizar el perfil. Por favor, intenta de nuevo.',
+        'error'
+      );
     } finally {
       setIsLoading(false);
     }

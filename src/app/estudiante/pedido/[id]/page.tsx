@@ -5,57 +5,86 @@ import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 import { useAlert } from '@/components/context/AlertContext';
+import { getPlatillo } from '@/services/menus/menuService';
+import { crearPedido } from '@/services/pedidos/pedidoService';
+import { getVendedor } from '@/services/vendedores/vendedorService';
+import type { Platillo } from '@/lib/firebase/types';
 
-// Datos de ejemplo - En producción vendrán de Firestore
-const pedidoEjemplo = {
-  id: '1',
-  platillo: {
-    id: '1',
-    nombre: 'Paella Valenciana',
-    descripcion: 'Paella tradicional con mariscos y verduras',
-    precio: 8.50,
-    imagen: '🍲',
-  },
-  vendedor: {
-    id: '1',
-    nombre: 'Doña María',
-    direccion: 'Calle Principal 123, Madrid',
-  },
-  cantidad: 1,
-  metodoEntrega: 'recoleccion', // 'recoleccion' | 'domicilio'
-  direccionEntrega: '',
-  notas: '',
-  estado: 'pendiente', // 'pendiente' | 'preparando' | 'listo' | 'entregado'
-  total: 8.50,
-};
+// Los datos vendrán de Firestore
 
 export default function PedidoPage() {
   const router = useRouter();
   const params = useParams();
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { showAlert } = useAlert();
 
-  const [metodoEntrega, setMetodoEntrega] = useState<'recoleccion' | 'domicilio'>(
-    pedidoEjemplo.metodoEntrega
-  );
+  const [platillo, setPlatillo] = useState<Platillo | null>(null);
+  const [vendedorNombre, setVendedorNombre] = useState<string>('');
+  const [vendedorDireccion, setVendedorDireccion] = useState<string>('');
+  const [metodoEntrega, setMetodoEntrega] = useState<'recoleccion' | 'domicilio'>('recoleccion');
   const [direccionEntrega, setDireccionEntrega] = useState('');
   const [cantidad, setCantidad] = useState(1);
   const [notas, setNotas] = useState('');
   const [isProcesando, setIsProcesando] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.push('/login');
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    const cargarDatos = async () => {
+      if (!params.id || typeof params.id !== 'string') return;
+
+      setLoading(true);
+      try {
+        const platilloData = await getPlatillo(params.id);
+        if (!platilloData) {
+          showAlert('Platillo no encontrado', 'error');
+          router.push('/estudiante/menu');
+          return;
+        }
+
+        setPlatillo(platilloData);
+
+        // Cargar información del vendedor
+        try {
+          const vendedor = await getVendedor(platilloData.vendedorId);
+          if (vendedor) {
+            setVendedorNombre(vendedor.nombre);
+            setVendedorDireccion(vendedor.direccion || '');
+          }
+        } catch (error) {
+          console.error('Error cargando vendedor:', error);
+        }
+      } catch (error: any) {
+        showAlert(
+          error.message || 'Error al cargar el platillo. Por favor, intenta de nuevo.',
+          'error'
+        );
+        router.push('/estudiante/menu');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (params.id) {
+      cargarDatos();
+    }
+  }, [params.id, router, showAlert]);
 
   const calcularTotal = () => {
-    const subtotal = pedidoEjemplo.platillo.precio * cantidad;
+    if (!platillo) return 0;
+    const subtotal = platillo.precio * cantidad;
     const costoEntrega = metodoEntrega === 'domicilio' ? 2.0 : 0;
     return subtotal + costoEntrega;
   };
 
   const handleConfirmarPedido = async () => {
+    if (!user || !platillo) return;
+
     if (metodoEntrega === 'domicilio' && !direccionEntrega.trim()) {
       showAlert('Por favor, ingresa una dirección de entrega', 'warning');
       return;
@@ -63,18 +92,33 @@ export default function PedidoPage() {
 
     setIsProcesando(true);
     try {
-      // TODO: Crear pedido en Firestore
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await crearPedido({
+        estudianteId: user.uid,
+        vendedorId: platillo.vendedorId,
+        platilloId: platillo.id,
+        platilloNombre: platillo.nombre,
+        cantidad,
+        precioUnitario: platillo.precio,
+        metodoEntrega,
+        direccionEntrega: metodoEntrega === 'domicilio' ? direccionEntrega : undefined,
+        notas: notas || undefined,
+        costoEntrega: metodoEntrega === 'domicilio' ? 2.0 : 0,
+        total: calcularTotal(),
+      });
+
       showAlert('¡Pedido realizado exitosamente!', 'success');
-      router.push(`/estudiante/pedido/${params.id}/confirmacion`);
-    } catch (error) {
-      showAlert('Error al realizar el pedido. Intenta de nuevo.', 'error');
+      router.push('/estudiante/pedidos');
+    } catch (error: any) {
+      showAlert(
+        error.message || 'Error al realizar el pedido. Intenta de nuevo.',
+        'error'
+      );
     } finally {
       setIsProcesando(false);
     }
   };
 
-  if (loading) {
+  if (authLoading || loading || !platillo) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -107,17 +151,17 @@ export default function PedidoPage() {
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4">Detalle del Platillo</h2>
               <div className="flex gap-4">
-                <div className="text-6xl">{pedidoEjemplo.platillo.imagen}</div>
+                <div className="text-6xl">{platillo.imagen || '🍽️'}</div>
                 <div className="flex-grow">
                   <h3 className="text-2xl font-bold text-gray-900 mb-1">
-                    {pedidoEjemplo.platillo.nombre}
+                    {platillo.nombre}
                   </h3>
-                  <p className="text-gray-600 mb-3">{pedidoEjemplo.platillo.descripcion}</p>
+                  <p className="text-gray-600 mb-3">{platillo.descripcion}</p>
                   <p className="text-2xl font-bold text-primary-600">
-                    €{pedidoEjemplo.platillo.precio.toFixed(2)}
+                    €{platillo.precio.toFixed(2)}
                   </p>
                   <p className="text-sm text-gray-500 mt-2">
-                    Vendedor: {pedidoEjemplo.vendedor.nombre}
+                    Vendedor: {vendedorNombre || 'Cargando...'}
                   </p>
                 </div>
               </div>
@@ -164,7 +208,7 @@ export default function PedidoPage() {
                       <div>
                         <p className="font-semibold text-gray-900">📍 Recolección</p>
                         <p className="text-sm text-gray-600">
-                          Recoge en: {pedidoEjemplo.vendedor.direccion}
+                          Recoge en: {vendedorDireccion || 'Dirección del vendedor'}
                         </p>
                       </div>
                       <span className="text-green-600 font-bold">Gratis</span>
@@ -219,14 +263,16 @@ export default function PedidoPage() {
               <h2 className="text-xl font-bold text-gray-900 mb-4">Resumen del Pedido</h2>
 
               <div className="space-y-3 mb-6">
-                <div className="flex justify-between text-gray-700">
-                  <span>
-                    {pedidoEjemplo.platillo.nombre} x{cantidad}
-                  </span>
-                  <span className="font-semibold">
-                    €{(pedidoEjemplo.platillo.precio * cantidad).toFixed(2)}
-                  </span>
-                </div>
+                {platillo && (
+                  <div className="flex justify-between text-gray-700">
+                    <span>
+                      {platillo.nombre} x{cantidad}
+                    </span>
+                    <span className="font-semibold">
+                      €{(platillo.precio * cantidad).toFixed(2)}
+                    </span>
+                  </div>
+                )}
                 {metodoEntrega === 'domicilio' && (
                   <div className="flex justify-between text-gray-700">
                     <span>Costo de entrega</span>

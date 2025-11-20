@@ -6,10 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema, type RegisterFormData } from '@/utils/validators/authValidators';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase/config';
 import { useAlert } from '@/components/context/AlertContext';
+import { registerUsuario } from '@/services/auth/authService';
 
 export default function RegistroPage() {
   const router = useRouter();
@@ -31,35 +29,14 @@ export default function RegistroPage() {
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
-      // Crear usuario en Firebase
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
+      // Usar el servicio de autenticación actualizado
+      await registerUsuario(
         data.email,
-        data.password
+        data.password,
+        data.nombre,
+        role,
+        data.telefono || undefined
       );
-
-      const user = userCredential.user;
-
-      // Actualizar perfil
-      await updateProfile(user, {
-        displayName: data.nombre,
-      });
-
-      // Crear documento en Firestore según el rol
-      const userData = {
-        email: data.email,
-        nombre: data.nombre,
-        telefono: data.telefono || '',
-        rol: role,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      if (role === 'vendedor') {
-        await setDoc(doc(db, 'vendedores', user.uid), userData);
-      } else {
-        await setDoc(doc(db, 'estudiantes', user.uid), userData);
-      }
 
       showAlert(`¡Bienvenido a FoodLink, ${data.nombre}!`, 'success');
 
@@ -72,9 +49,7 @@ export default function RegistroPage() {
       router.refresh();
     } catch (err: any) {
       const errorMessage =
-        err.code === 'auth/email-already-in-use'
-          ? 'Este correo electrónico ya está registrado.'
-          : 'Error al registrarse. Por favor, intenta de nuevo.';
+        err.message || 'Error al registrarse. Por favor, intenta de nuevo.';
       showAlert(errorMessage, 'error');
     } finally {
       setIsLoading(false);
