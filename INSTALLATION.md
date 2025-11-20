@@ -123,4 +123,3 @@ Una vez instalado correctamente:
 ---
 
 **¿Problemas?** Revisa la documentación o crea un issue en el repositorio.
-
