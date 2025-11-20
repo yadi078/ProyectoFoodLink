@@ -1,6 +1,6 @@
 {
   "name": "foodlink",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "FoodLink - Conecta estudiantes con vendedores de comida casera",
   "private": true,
   "scripts": {

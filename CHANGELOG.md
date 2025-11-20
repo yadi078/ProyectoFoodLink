@@ -69,6 +69,78 @@ src/
 - Ramas: main, develop, feature/auth-vendedor
 - Tag v1.0.0 creado
 
+## [2.0.0] - 2024
+
+### 🚀 Versión 2.0.0 - Diseño Completo e Interfaz de Usuario
+
+#### ✨ Características Agregadas
+- **Zona Pública Completa**
+  - Home rediseñada con presentación completa, beneficios y CTAs
+  - Página "Sobre Nosotros" con misión, visión e historia
+  - Página "Contacto" con formulario validado
+  - Login y Registro unificados con selector de rol (Estudiante/Vendedor)
+  - Header y Footer responsivos en todas las páginas
+
+- **Panel de Estudiante**
+  - Catálogo de menús (`/estudiante/menu`) con filtros y búsqueda
+  - Tarjetas de menús con información completa
+  - Sistema de navegación entre vendedores
+
+- **Panel de Vendedor Mejorado**
+  - Dashboard renovado con estadísticas visuales
+  - Tarjetas de métricas (Pedidos, Ganancias, Ventas, Calificación)
+  - Accesos rápidos a gestión de pedidos, menús y perfil
+  - Lista de pedidos recientes con estados
+
+- **Sistema de Alertas**
+  - Componente de alertas con duración de 5 segundos
+  - Contexto global para manejo de alertas
+  - Alertas con animaciones (slideIn/slideOut)
+  - Tipos: success, error, warning, info
+
+- **Componentes de Layout**
+  - Header responsivo con navegación y autenticación
+  - Footer con información y enlaces
+  - Integración completa en layout principal
+
+#### 🎨 Diseño y UI/UX
+- **Nueva Paleta de Colores**
+  - Verde (success, positivo)
+  - Naranja (primary, acciones)
+  - Amarillo (warning, destacados)
+  - Blanco (fondos, limpio)
+
+- **Diseño Responsivo Mejorado**
+  - Adaptación completa a móvil, tablet y escritorio
+  - Navegación móvil optimizada
+  - Componentes adaptativos
+
+- **Estilos Personalizados**
+  - Botones con variantes (primary, secondary, outline, yellow)
+  - Animaciones suaves en transiciones
+  - Sombras y efectos hover mejorados
+  - Gradientes en fondos y secciones
+
+#### 🔧 Mejoras Técnicas
+- Sistema de alertas global con contexto React
+- Componentes reutilizables (Header, Footer, Alert)
+- Validación de formularios mejorada
+- Manejo de estados de carga
+- Protección de rutas mejorada
+
+#### 📁 Nuevas Páginas Creadas
+- `/` - Home completa
+- `/sobre-nosotros` - Información del proyecto
+- `/contacto` - Formulario de contacto
+- `/login` - Login unificado con selector de rol
+- `/registro` - Registro unificado con selector de rol
+- `/estudiante/menu` - Catálogo de menús
+
+#### 🔄 Git y Versionamiento
+- Tag v2.0.0 creado
+- Múltiples commits descriptivos
+- Estructura de proyecto documentada
+
 ---
 
 **Para ver cambios futuros, revisa los commits en [GitHub](https://github.com/yadi078/ProyectoFoodLink/commits/main)**
