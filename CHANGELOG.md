@@ -141,6 +141,71 @@ src/
 - Múltiples commits descriptivos
 - Estructura de proyecto documentada
 
+## [2.5.0] - 2024
+
+### 🎉 Versión 2.5.0 - Estructura Completa del Proyecto
+
+#### ✨ Características Agregadas
+
+- **Panel de Estudiante Completo**
+  - Catálogo de menús (`/estudiante/menu`) con filtros y búsqueda avanzada
+  - Vista detallada de vendedor (`/estudiante/vendedor/[id]`) con información completa, horarios y menú
+  - Gestión de pedidos (`/estudiante/pedido/[id]`) con selección de método de entrega y cantidad
+  - Perfil de estudiante (`/estudiante/perfil`) con gestión de datos personales y dirección
+  - Sistema de calificaciones (`/estudiante/calificaciones`) para dejar reseñas y ver historial
+
+- **Panel de Vendedor Completo**
+  - Gestión de pedidos (`/vendedor/pedidos`) con tabla completa, filtros por estado y cambio de estados
+  - CRUD de menús (`/vendedor/menu`) para crear, editar, eliminar y gestionar disponibilidad de platillos
+  - Perfil del vendedor (`/vendedor/perfil`) con información del negocio, horarios y configuración de notificaciones
+  - Dashboard mejorado con estadísticas visuales y accesos rápidos
+
+- **Panel de Administración Completo**
+  - Dashboard administrativo (`/admin/dashboard`) con métricas generales del sistema
+  - Gestión de usuarios (`/admin/usuarios`) con filtros por rol y estado, bloqueo/desbloqueo
+  - Aprobación de vendedores (`/admin/vendedores-pendientes`) con revisión de documentos
+  - Gestión de reportes (`/admin/reportes`) con filtros por tipo y estado, moderación de contenido
+  - Configuración global (`/admin/config`) con tasa de comisión, información de contacto, textos legales y categorías
+
+#### 🎨 Mejoras de Diseño
+- Componentes de tarjetas mejorados con hover effects
+- Tablas responsivas con estados visuales claros
+- Formularios mejorados con mejor UX
+- Iconos y emojis consistentes en toda la aplicación
+- Mejor organización visual de información
+
+#### 🔧 Mejoras Técnicas
+- Rutas dinámicas implementadas correctamente ([id])
+- Gestión de estados de formularios mejorada
+- Validación de datos más robusta
+- Manejo de estados de carga optimizado
+- Integración preparada para Firestore en todas las páginas
+
+#### 📁 Nuevas Páginas Creadas
+**Panel de Estudiante:**
+- `/estudiante/vendedor/[id]` - Perfil detallado de vendedor
+- `/estudiante/pedido/[id]` - Gestión de pedido
+- `/estudiante/perfil` - Perfil del estudiante
+- `/estudiante/calificaciones` - Sistema de calificaciones
+
+**Panel de Vendedor:**
+- `/vendedor/pedidos` - Gestión completa de pedidos
+- `/vendedor/menu` - CRUD de menús y platillos
+- `/vendedor/perfil` - Perfil del vendedor
+
+**Panel de Admin:**
+- `/admin/dashboard` - Dashboard administrativo
+- `/admin/usuarios` - Gestión de usuarios
+- `/admin/vendedores-pendientes` - Aprobación de vendedores
+- `/admin/reportes` - Gestión de reportes
+- `/admin/config` - Configuración global
+
+#### 📊 Estadísticas
+- **Total de páginas creadas**: 21 páginas
+- **Componentes reutilizables**: Header, Footer, Alert
+- **Sistema completo**: 3 paneles (Estudiante, Vendedor, Admin) + Zona Pública
+- **Sin errores de linter**: Código limpio y validado
+
 ---
 
 **Para ver cambios futuros, revisa los commits en [GitHub](https://github.com/yadi078/ProyectoFoodLink/commits/main)**
