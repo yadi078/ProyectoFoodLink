@@ -68,11 +68,34 @@ npm run dev
 
 Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-### Modo Producción
+**⚠️ IMPORTANTE - Firebase y HTTPS:**
+- `localhost:3000` es solo el servidor de desarrollo local de Next.js (tu frontend)
+- **Firebase está completamente configurado** y todas las comunicaciones usan **HTTPS automáticamente**
+- Cuando tu app se comunica con Firebase Authentication o Firestore, lo hace a través de **HTTPS seguro** hacia los servidores de Firebase
+- Las credenciales de Firebase apuntan a `https://firebase.googleapis.com` y `https://*.firebaseapp.com` (siempre HTTPS)
+- En producción, puedes desplegar en [Firebase Hosting](https://firebase.google.com/products/hosting?hl=es-419) para tener tu app completa con HTTPS
+
+### Modo Producción (Despliegue en Firebase Hosting)
+
+Para producción, puedes desplegar en Firebase Hosting que proporciona HTTPS automático:
+
 ```bash
+# 1. Build de producción
 npm run build
-npm start
+
+# 2. Instalar Firebase CLI (si no lo tienes)
+npm install -g firebase-tools
+
+# 3. Inicializar Firebase Hosting
+firebase init hosting
+
+# 4. Desplegar
+firebase deploy --only hosting
 ```
+
+Tu app estará disponible en `https://tu-proyecto.web.app` (con HTTPS automático)
+
+**Alternativa:** También puedes desplegar en Vercel, Netlify u otro servicio que soporte Next.js.
 
 ### Linter
 ```bash

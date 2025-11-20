@@ -3,11 +3,11 @@
  * Maneja el estado de autenticación del vendedor
  */
 
-import { useState, useEffect } from 'react';
-import { User, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/lib/firebase/config';
-import { getCurrentVendedor } from '@/services/auth/authService';
-import type { Vendedor } from '@/lib/firebase/types';
+import { useState, useEffect } from "react";
+import { User, onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase/config";
+import { getCurrentVendedor } from "@/services/auth/authService";
+import type { Vendedor } from "@/lib/firebase/types";
 
 interface UseAuthReturn {
   user: User | null;
@@ -42,4 +42,3 @@ export const useAuth = (): UseAuthReturn => {
 
   return { user, vendedor, loading };
 };
-

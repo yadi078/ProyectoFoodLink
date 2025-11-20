@@ -15,7 +15,10 @@
 ### 2. Conexión Segura (HTTPS)
 - ✅ Firebase maneja automáticamente **HTTPS** en todas las comunicaciones
 - ✅ Todas las peticiones a Firebase Authentication y Firestore son seguras
-- ✅ No se permite comunicación HTTP no segura
+- ✅ **Incluso desde localhost (localhost:3000)**, las comunicaciones con Firebase usan HTTPS
+- ✅ Firebase SDK se conecta a `https://*.firebaseapp.com` y `https://firebase.googleapis.com` (siempre HTTPS)
+- ✅ En producción, se recomienda usar [Firebase Hosting](https://firebase.google.com/products/hosting?hl=es-419) que proporciona HTTPS automático
+- ✅ No se permite comunicación HTTP no segura con Firebase
 
 ### 3. Tokens de Sesión Segura (JWT)
 - ✅ Firebase Authentication proporciona automáticamente **tokens JWT** seguros

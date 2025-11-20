@@ -76,6 +76,8 @@ npm run dev
 
 El proyecto estará disponible en [http://localhost:3000](http://localhost:3000)
 
+> **📝 Nota importante:** `localhost:3000` es el servidor de desarrollo local de Next.js. Firebase está completamente configurado y todas las comunicaciones con Firebase (Authentication, Firestore) usan **HTTPS automáticamente**, incluso desde localhost. Ver [FIREBASE_EXPLICACION.md](./FIREBASE_EXPLICACION.md) para más detalles.
+
 ## Verificar la Instalación
 
 1. Abre [http://localhost:3000](http://localhost:3000)
