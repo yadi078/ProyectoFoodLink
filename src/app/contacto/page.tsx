@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAlert } from '@/components/context/AlertContext';
-import { enviarMensajeContacto } from '@/services/contacto/contactoService';
+import { enviarMensajeContacto, getComentariosUsuarios, type MensajeContacto } from '@/services/contacto/contactoService';
 
 const contactSchema = z.object({
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -22,6 +22,8 @@ type ContactFormData = z.infer<typeof contactSchema>;
 export default function ContactoPage() {
   const { showAlert } = useAlert();
   const [isLoading, setIsLoading] = useState(false);
+  const [comentarios, setComentarios] = useState<MensajeContacto[]>([]);
+  const [loadingComentarios, setLoadingComentarios] = useState(true);
 
   const {
     register,
@@ -31,6 +33,22 @@ export default function ContactoPage() {
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
   });
+
+  useEffect(() => {
+    const cargarComentarios = async () => {
+      setLoadingComentarios(true);
+      try {
+        const comentariosData = await getComentariosUsuarios();
+        setComentarios(comentariosData);
+      } catch (error: any) {
+        console.error('Error cargando comentarios:', error);
+      } finally {
+        setLoadingComentarios(false);
+      }
+    };
+
+    cargarComentarios();
+  }, []);
 
   const onSubmit = async (data: ContactFormData) => {
     setIsLoading(true);
@@ -44,6 +62,10 @@ export default function ContactoPage() {
       
       showAlert('¡Mensaje enviado exitosamente! Te contactaremos pronto.', 'success');
       reset();
+      
+      // Recargar comentarios
+      const comentariosData = await getComentariosUsuarios();
+      setComentarios(comentariosData);
     } catch (error: any) {
       showAlert(
         error.message || 'Error al enviar el mensaje. Por favor, intenta de nuevo.',
@@ -54,76 +76,70 @@ export default function ContactoPage() {
     }
   };
 
+  const formatFecha = (fecha: Date) => {
+    const d = new Date(fecha);
+    const dia = String(d.getDate()).padStart(2, '0');
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    const año = d.getFullYear();
+    const horas = String(d.getHours()).padStart(2, '0');
+    const minutos = String(d.getMinutes()).padStart(2, '0');
+    const segundos = String(d.getSeconds()).padStart(2, '0');
+    return `${dia}/${mes}/${año}, ${horas}:${minutos}:${segundos}`;
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-green-50 py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            📧 Contacta con Nosotros
+            Envíanos tus Comentarios
           </h1>
-          <p className="text-lg text-gray-600">
-            ¿Tienes preguntas o sugerencias? Estamos aquí para ayudarte
-          </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Información de Contacto */}
-          <div className="bg-white rounded-xl p-8 shadow-lg">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Información de Contacto
-            </h2>
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <span className="text-2xl mr-4">📧</span>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Email</h3>
-                  <a
-                    href="mailto:contacto@foodlink.com"
-                    className="text-primary-600 hover:underline"
-                  >
-                    contacto@foodlink.com
-                  </a>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <span className="text-2xl mr-4">📱</span>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Teléfono</h3>
-                  <a
-                    href="tel:+34123456789"
-                    className="text-primary-600 hover:underline"
-                  >
-                    +34 123 456 789
-                  </a>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <span className="text-2xl mr-4">📍</span>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Ubicación</h3>
-                  <p className="text-gray-600">Disponible en toda España</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <span className="text-2xl mr-4">⏰</span>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Horario de Atención</h3>
-                  <p className="text-gray-600">Lunes a Viernes: 9:00 - 18:00</p>
-                </div>
-              </div>
+        {/* Contact Info Cards */}
+        <div className="grid md:grid-cols-4 gap-6 mb-12">
+          {[
+            {
+              icon: '📍',
+              title: 'Dirección',
+              content: 'Ciudad, País'
+            },
+            {
+              icon: '📞',
+              title: 'Llámanos',
+              content: '+123 456 7890'
+            },
+            {
+              icon: '✉️',
+              title: 'Envíanos Email',
+              content: 'info@foodlink.com'
+            },
+            {
+              icon: '🔗',
+              title: 'Síguenos',
+              content: 'Redes sociales'
+            }
+          ].map((item, index) => (
+            <div key={index} className="bg-white rounded-lg shadow-md p-6 text-center border-2 border-gray-200">
+              <div className="text-4xl text-primary-600 mb-3">{item.icon}</div>
+              <h3 className="text-lg font-semibold text-green-600 mb-2">{item.title}</h3>
+              <p className="text-gray-600 text-sm">{item.content}</p>
             </div>
-          </div>
+          ))}
+        </div>
 
-          {/* Formulario de Contacto */}
-          <div className="bg-white rounded-xl p-8 shadow-lg">
+        {/* Main Content Grid */}
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Left Side - Formulario de Contacto */}
+          <div className="bg-white rounded-xl p-8 shadow-lg border-2 border-gray-200">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Envíanos un Mensaje
+              Formulario de Contacto
             </h2>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <label htmlFor="nombre" className="form-label">
-                  Nombre Completo *
+                  Tu Nombre *
                 </label>
                 <input
                   id="nombre"
@@ -139,7 +155,7 @@ export default function ContactoPage() {
 
               <div>
                 <label htmlFor="email" className="form-label">
-                  Correo Electrónico *
+                  Tu Email *
                 </label>
                 <input
                   id="email"
@@ -193,6 +209,41 @@ export default function ContactoPage() {
                 {isLoading ? 'Enviando...' : 'Enviar Mensaje'}
               </button>
             </form>
+          </div>
+
+          {/* Right Side - Comentarios de Usuarios */}
+          <div className="bg-white rounded-xl p-8 shadow-lg border-2 border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Comentarios de Usuarios
+            </h2>
+            {loadingComentarios ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+                <p className="mt-4 text-gray-600">Cargando comentarios...</p>
+              </div>
+            ) : comentarios.length > 0 ? (
+              <div className="space-y-4 max-h-[600px] overflow-y-auto">
+                {comentarios.map((comentario) => (
+                  <div key={comentario.id} className="border-b border-gray-200 pb-4 last:border-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-gray-900">{comentario.nombre}</h3>
+                      <span className="text-sm text-gray-500">
+                        {formatFecha(comentario.fecha)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-1">
+                      <strong>Asunto:</strong> {comentario.asunto}
+                    </p>
+                    <p className="text-gray-700 text-sm">{comentario.mensaje}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-600">No hay comentarios aún.</p>
+                <p className="text-gray-500 text-sm mt-2">¡Sé el primero en dejar un comentario!</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

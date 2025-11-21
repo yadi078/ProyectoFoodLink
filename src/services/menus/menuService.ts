@@ -14,6 +14,7 @@ import {
   query,
   where,
   orderBy,
+  limit,
   Timestamp,
   addDoc,
 } from 'firebase/firestore';

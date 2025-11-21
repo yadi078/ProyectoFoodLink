@@ -21,8 +21,10 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-3xl">🍲</span>
-            <span className="text-2xl font-bold text-primary-600">FoodLink</span>
+            <span className="text-2xl font-bold">
+              <span className="text-primary-600">Food</span>
+              <span className="text-green-600">Link</span>
+            </span>
           </Link>
 
           {/* Navegación Desktop */}
@@ -31,31 +33,41 @@ export default function Header() {
               href="/"
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 isActive('/')
-                  ? 'text-primary-600 bg-primary-50'
-                  : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                  ? 'text-primary-600'
+                  : 'text-primary-500 hover:text-primary-600'
               }`}
             >
               Inicio
             </Link>
             <Link
-              href="/sobre-nosotros"
+              href="/menu"
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive('/sobre-nosotros')
-                  ? 'text-primary-600 bg-primary-50'
-                  : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                isActive('/menu')
+                  ? 'text-primary-600'
+                  : 'text-primary-500 hover:text-primary-600'
               }`}
             >
-              Sobre Nosotros
+              Menú
             </Link>
             <Link
               href="/contacto"
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 isActive('/contacto')
-                  ? 'text-primary-600 bg-primary-50'
-                  : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                  ? 'text-primary-600'
+                  : 'text-primary-500 hover:text-primary-600'
               }`}
             >
               Contacto
+            </Link>
+            <Link
+              href="/preguntas"
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                isActive('/preguntas')
+                  ? 'text-primary-600'
+                  : 'text-primary-500 hover:text-primary-600'
+              }`}
+            >
+              Preguntas
             </Link>
           </div>
 
@@ -65,13 +77,13 @@ export default function Header() {
               <>
                 <Link
                   href="/login"
-                  className="px-4 py-2 text-primary-600 font-medium hover:text-primary-700 transition-colors"
+                  className="px-4 py-2 text-primary-500 font-medium hover:text-primary-600 transition-colors"
                 >
                   Iniciar Sesión
                 </Link>
                 <Link
                   href="/registro"
-                  className="btn-primary px-6 py-2 text-sm"
+                  className="bg-green-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-green-600 transition-colors text-sm"
                 >
                   Registrarse
                 </Link>
@@ -102,14 +114,14 @@ export default function Header() {
             Inicio
           </Link>
           <Link
-            href="/sobre-nosotros"
+            href="/menu"
             className={`block px-3 py-2 rounded-md text-base font-medium ${
-              isActive('/sobre-nosotros')
+              isActive('/menu')
                 ? 'text-primary-600 bg-primary-50'
                 : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
             }`}
           >
-            Sobre Nosotros
+            Menú
           </Link>
           <Link
             href="/contacto"
@@ -120,6 +132,16 @@ export default function Header() {
             }`}
           >
             Contacto
+          </Link>
+          <Link
+            href="/preguntas"
+            className={`block px-3 py-2 rounded-md text-base font-medium ${
+              isActive('/preguntas')
+                ? 'text-primary-600 bg-primary-50'
+                : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+            }`}
+          >
+            Preguntas
           </Link>
         </div>
       </div>
