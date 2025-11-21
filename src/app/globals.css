@@ -2,28 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&family=Nunito:wght@600;700&display=swap');
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 255, 255, 255;
   --background-end-rgb: 255, 255, 255;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+body {
+  color: #757575;
+  background: #ffffff;
+  font-family: 'Open Sans', sans-serif;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Nunito', sans-serif;
+  color: #454545;
+}
+
+a {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  color: #fbaf32;
+  transition: 0.3s;
+}
+
+a:hover,
+a:active,
+a:focus {
+  color: #719a0a;
+  outline: none;
+  text-decoration: none;
 }
 
 @layer utilities {
@@ -49,27 +59,192 @@ body {
   @apply text-sm text-red-600 mt-1;
 }
 
+/* Botón personalizado estilo plantilla */
 .btn-primary {
-<<<<<<< Updated upstream
-  @apply w-full bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply font-display font-semibold text-base px-6 py-3 text-white;
+  background: #fbaf32;
+  border: 2px solid #fbaf32;
+  border-radius: 5px;
+  transition: 0.5s;
+}
+
+.btn-primary:hover {
+  color: #fbaf32;
+  background: transparent;
+  border-color: #fbaf32;
 }
 
 .btn-secondary {
-  @apply w-full bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200;
-=======
-  @apply bg-primary-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg;
+  @apply font-display font-semibold text-base px-6 py-3 text-white;
+  background: #719a0a;
+  border: 2px solid #719a0a;
+  border-radius: 5px;
+  transition: 0.5s;
 }
 
-.btn-secondary {
-  @apply bg-green-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 shadow-md hover:shadow-lg;
+.btn-secondary:hover {
+  color: #719a0a;
+  background: transparent;
+  border-color: #719a0a;
 }
 
 .btn-outline {
-  @apply bg-white border-2 border-primary-500 text-primary-500 font-semibold py-3 px-6 rounded-lg hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 transition-all duration-200;
+  @apply font-display font-semibold text-base px-6 py-3;
+  color: #fbaf32;
+  background: transparent;
+  border: 2px solid #fbaf32;
+  border-radius: 5px;
+  transition: 0.5s;
+}
+
+.btn-outline:hover {
+  color: #ffffff;
+  background: #fbaf32;
 }
 
 .btn-yellow {
-  @apply bg-yellow-400 text-gray-800 font-semibold py-3 px-6 rounded-lg hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all duration-200 shadow-md hover:shadow-lg;
+  @apply font-display font-semibold text-base px-6 py-3 text-gray-800;
+  background: #fbaf32;
+  border: 2px solid #fbaf32;
+  border-radius: 5px;
+  transition: 0.5s;
+}
+
+/* Section Header estilo plantilla */
+.section-header p {
+  color: #719a0a;
+  margin-bottom: 5px;
+  font-size: 20px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 45px;
+  font-weight: 700;
+  color: #454545;
+}
+
+@media (max-width: 991.98px) {
+  .section-header h2 {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .section-header h2 {
+    font-size: 35px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .section-header h2 {
+    font-size: 30px;
+  }
+}
+
+/* Estilos responsivos para Hero/Carousel */
+@media (max-width: 991.98px) {
+  .carousel, .carousel-item, .carousel-text {
+    height: calc(100vh - 105px);
+  }
+  
+  .carousel-text h1 {
+    font-size: 35px;
+  }
+  
+  .carousel-text p {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .carousel, .carousel-item, .carousel-text {
+    height: calc(100vh - 70px);
+  }
+  
+  .carousel-text h1 {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .carousel-text h1 {
+    font-size: 25px;
+  }
+}
+
+/* Estilos para sección Booking */
+.booking {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.booking-form {
+  background: #fbaf32;
+  padding: 60px 30px;
+}
+
+.booking-form input,
+.booking-form select {
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+}
+
+.booking-form input::placeholder,
+.booking-form select::placeholder {
+  color: white;
+  opacity: 1;
+}
+
+/* Estilos para sección Food */
+.food {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.food-item {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+}
+
+.food-item:hover {
+  box-shadow: none;
+}
+
+/* Estilos para menu items */
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+  margin-bottom: 24px;
+}
+
+.menu-item:hover {
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.12);
+}
+
+.menu-item img {
+  border-radius: 15px;
+  object-fit: cover;
+}
+
+/* Container max-width estilo plantilla */
+.container {
+  max-width: 1366px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+@media (min-width: 992px) {
+  .container {
+    padding: 0 60px;
+  }
 }
 
 /* Animación para alertas */
@@ -101,6 +276,5 @@ body {
 
 .alert-exit {
   animation: slideOut 0.3s ease-in;
->>>>>>> Stashed changes
 }
 
