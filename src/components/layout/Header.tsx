@@ -101,7 +101,7 @@ export default function Header() {
             {!loading && !user && (
               <>
                 <Link
-                  href="/login"
+                  href="/vendedor/login"
                   className={`px-4 py-2 font-display font-semibold transition-colors ${
                     showTransparent ? 'text-white' : 'text-[#666666]'
                   } hover:text-[#fbaf32]`}
@@ -109,7 +109,7 @@ export default function Header() {
                   Iniciar Sesión
                 </Link>
                 <Link
-                  href="/registro"
+                  href="/vendedor/signup"
                   className="btn-secondary px-6 py-2 text-sm"
                 >
                   Registrarse
@@ -182,14 +182,14 @@ export default function Header() {
           {!loading && !user && (
             <>
               <Link
-                href="/login"
+                href="/vendedor/login"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="block px-3 py-2 rounded-md text-base font-medium text-[#666666] hover:text-[#fbaf32]"
               >
                 Iniciar Sesión
               </Link>
               <Link
-                href="/registro"
+                href="/vendedor/signup"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="btn-secondary block text-center mt-2"
               >

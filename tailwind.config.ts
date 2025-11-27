@@ -9,10 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-<<<<<<< Updated upstream
-=======
         // Naranja (Primary - Acciones principales) - Colores más claros
->>>>>>> Stashed changes
         primary: {
           50: '#fffbf5',
           100: '#fff4e6',
@@ -25,8 +22,6 @@ const config: Config = {
           800: '#e67a00',
           900: '#cc6b00',
         },
-<<<<<<< Updated upstream
-=======
         // Verde (Success, positivo, comida saludable) - Colores más claros
         green: {
           50: '#f0fff4',
@@ -53,7 +48,15 @@ const config: Config = {
           800: '#92400e',
           900: '#78350f',
         },
->>>>>>> Stashed changes
+        // Colores personalizados del diseño
+        secondary: {
+          DEFAULT: '#719a0a',  // Verde oliva
+          600: '#719a0a',
+        },
+      },
+      fontFamily: {
+        sans: ['var(--font-sans)', 'Open Sans', 'sans-serif'],
+        display: ['var(--font-display)', 'Nunito', 'sans-serif'],
       },
     },
   },

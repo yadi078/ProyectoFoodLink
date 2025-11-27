@@ -119,13 +119,13 @@ export default function Footer() {
               <p className="text-[#757575] mb-4">
                 Suscríbete a nuestro newsletter para recibir las últimas ofertas y novedades de comida casera cerca de tu universidad.
               </p>
-              <form className="flex gap-2">
+              <form className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="email"
                   placeholder="Tu email aquí"
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-[5px] focus:outline-none focus:ring-2 focus:ring-[#fbaf32] focus:border-transparent"
+                  className="flex-1 px-4 py-3 text-sm sm:text-base border border-gray-300 rounded-[5px] focus:outline-none focus:ring-2 focus:ring-[#fbaf32] focus:border-transparent"
                 />
-                <button type="submit" className="btn-primary px-6 py-3 whitespace-nowrap">
+                <button type="submit" className="btn-primary px-4 sm:px-6 py-3 whitespace-nowrap text-sm sm:text-base">
                   Enviar
                 </button>
               </form>

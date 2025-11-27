@@ -35,7 +35,7 @@ const getFirebaseConfig = (): FirebaseConfig => {
   if (missingVars.length > 0) {
     throw new Error(
       `Faltan variables de entorno de Firebase: ${missingVars.join(', ')}\n` +
-      'Por favor, crea un archivo .env.local con las credenciales de Firebase.'
+      'Por favor, crea un archivo .env con las credenciales de Firebase.'
     );
   }
 

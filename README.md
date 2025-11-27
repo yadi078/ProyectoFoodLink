@@ -33,12 +33,12 @@ npm install
 
 3. **Configurar variables de entorno**:
    
-   Copia el archivo `.env.example` y crea un archivo `.env.local` con tus credenciales de Firebase:
+   Copia el archivo `.env.example` y crea un archivo `.env` con tus credenciales de Firebase:
 ```bash
 # Windows (PowerShell)
-Copy-Item .env.example .env.local
+Copy-Item .env.example .env
 
-# O crea manualmente .env.local con el siguiente contenido:
+# O crea manualmente .env con el siguiente contenido:
 ```
 
 ```env
@@ -57,7 +57,7 @@ NEXT_PUBLIC_ENV=development
    - Crea un proyecto en Firebase Console
    - Habilita Authentication (Email/Password)
    - Crea una base de datos Firestore
-   - Copia las credenciales de configuración al archivo `.env.local`
+   - Copia las credenciales de configuración al archivo `.env`
 
 ## 🏃 Ejecutar el Proyecto
 
@@ -140,7 +140,7 @@ Proyecto FoodLink/
 
 4. **Variables de Entorno**:
    - Todas las credenciales de Firebase están en variables de entorno
-   - Archivo `.env.local` está en `.gitignore`
+   - Archivo `.env` está en `.gitignore`
    - Validación de variables de entorno en tiempo de ejecución
 
 ## 🗂️ Estructura Modular

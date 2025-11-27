@@ -2,27 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&family=Nunito:wght@600;700&display=swap');
-
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 255, 255, 255;
-  --background-end-rgb: 255, 255, 255;
-}
-
 body {
   color: #757575;
   background: #ffffff;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Mejoras para móviles */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Nunito', sans-serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Nunito", sans-serif;
   color: #454545;
 }
 
 a {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-weight: 600;
   color: #fbaf32;
   transition: 0.3s;
@@ -45,6 +47,9 @@ a:focus {
 /* Estilos para componentes de formulario */
 .form-input {
   @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 outline-none;
+  font-size: 16px; /* Previene zoom en iOS al enfocar inputs */
+  min-height: 44px; /* Tamaño mínimo táctil */
+  touch-action: manipulation;
 }
 
 .form-input-error {
@@ -61,11 +66,14 @@ a:focus {
 
 /* Botón personalizado estilo plantilla */
 .btn-primary {
-  @apply font-display font-semibold text-base px-6 py-3 text-white;
+  @apply font-display font-semibold text-sm sm:text-base px-4 sm:px-6 py-2.5 sm:py-3 text-white;
   background: #fbaf32;
   border: 2px solid #fbaf32;
   border-radius: 5px;
   transition: 0.5s;
+  min-height: 44px; /* Tamaño mínimo táctil para móviles */
+  touch-action: manipulation; /* Mejora la respuesta táctil */
+  -webkit-tap-highlight-color: transparent; /* Elimina el highlight azul en móviles */
 }
 
 .btn-primary:hover {
@@ -74,12 +82,19 @@ a:focus {
   border-color: #fbaf32;
 }
 
+.btn-primary:active {
+  transform: scale(0.98); /* Feedback táctil */
+}
+
 .btn-secondary {
-  @apply font-display font-semibold text-base px-6 py-3 text-white;
+  @apply font-display font-semibold text-sm sm:text-base px-4 sm:px-6 py-2.5 sm:py-3 text-white;
   background: #719a0a;
   border: 2px solid #719a0a;
   border-radius: 5px;
   transition: 0.5s;
+  min-height: 44px; /* Tamaño mínimo táctil para móviles */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-secondary:hover {
@@ -88,18 +103,29 @@ a:focus {
   border-color: #719a0a;
 }
 
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
 .btn-outline {
-  @apply font-display font-semibold text-base px-6 py-3;
+  @apply font-display font-semibold text-sm sm:text-base px-4 sm:px-6 py-2.5 sm:py-3;
   color: #fbaf32;
   background: transparent;
   border: 2px solid #fbaf32;
   border-radius: 5px;
   transition: 0.5s;
+  min-height: 44px; /* Tamaño mínimo táctil para móviles */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-outline:hover {
   color: #ffffff;
   background: #fbaf32;
+}
+
+.btn-outline:active {
+  transform: scale(0.98);
 }
 
 .btn-yellow {
@@ -144,24 +170,28 @@ a:focus {
 
 /* Estilos responsivos para Hero/Carousel */
 @media (max-width: 991.98px) {
-  .carousel, .carousel-item, .carousel-text {
+  .carousel,
+  .carousel-item,
+  .carousel-text {
     height: calc(100vh - 105px);
   }
-  
+
   .carousel-text h1 {
     font-size: 35px;
   }
-  
+
   .carousel-text p {
     font-size: 16px;
   }
 }
 
 @media (max-width: 767.98px) {
-  .carousel, .carousel-item, .carousel-text {
+  .carousel,
+  .carousel-item,
+  .carousel-text {
     height: calc(100vh - 70px);
   }
-  
+
   .carousel-text h1 {
     font-size: 30px;
   }
@@ -277,4 +307,3 @@ a:focus {
 .alert-exit {
   animation: slideOut 0.3s ease-in;
 }
-

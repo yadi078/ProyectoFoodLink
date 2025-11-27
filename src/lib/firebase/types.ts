@@ -23,3 +23,40 @@ export interface AuthError {
   message: string;
 }
 
+export interface Platillo {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  disponible: boolean;
+  vendedorId: string;
+  imagen?: string;
+  tipo?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface Pedido {
+  id: string;
+  estudianteId: string;
+  vendedorId: string;
+  platilloId: string;
+  cantidad: number;
+  precioTotal: number;
+  estado: 'pendiente' | 'confirmado' | 'en_preparacion' | 'listo' | 'entregado' | 'cancelado';
+  direccionEntrega?: string;
+  notas?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Calificacion {
+  id: string;
+  estudianteId: string;
+  vendedorId: string;
+  pedidoId: string;
+  calificacion: number; // 1-5
+  comentario?: string;
+  createdAt: Date;
+}
+
