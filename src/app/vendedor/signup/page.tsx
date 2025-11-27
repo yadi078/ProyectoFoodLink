@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function SignupPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center p-4 py-8">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+      <div className="max-w-4xl w-full bg-white rounded-2xl shadow-xl p-6 sm:p-8 md:p-12">
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-4">
@@ -18,8 +18,8 @@ export default function SignupPage() {
               🍲 FoodLink
             </h1>
           </Link>
-          <h2 className="text-2xl font-semibold text-gray-800">
-            Registro de Vendedor
+          <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800">
+            Registro de Usuario
           </h2>
           <p className="text-gray-600 mt-2">
             Únete a nuestra plataforma y conecta con estudiantes

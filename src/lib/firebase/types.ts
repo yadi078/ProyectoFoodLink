@@ -2,12 +2,34 @@
  * Tipos y interfaces para Firebase y la aplicación
  */
 
+export type Zona = 'Zona Norte' | 'Zona Centro' | 'Zona Sur';
+
 export interface Vendedor {
   uid: string;
   email: string;
   nombre: string;
   telefono?: string;
   direccion?: string;
+  zona: Zona; // Zona de Rincón de Romos
+  tipoComida?: string[]; // ['Comida rápida', 'Comida casera', 'Bebidas', 'Postres']
+  horario?: HorarioServicio;
+  diasDescanso?: string[]; // ['Lunes', 'Martes', etc.]
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface HorarioServicio {
+  inicio: string; // Formato HH:mm
+  fin: string; // Formato HH:mm
+}
+
+export interface Estudiante {
+  uid: string;
+  email: string;
+  nombre: string;
+  telefono?: string;
+  zona: Zona; // Zona de Rincón de Romos
+  institucionEducativa?: string; // Nombre de la escuela/universidad
   createdAt: Date;
   updatedAt: Date;
 }

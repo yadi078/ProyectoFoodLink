@@ -53,8 +53,9 @@ export default function ContactoPage() {
         <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="mb-6">
-              <h1 className="text-[#719a0a] text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-3 font-bold font-display">
-                Contáctanos
+              <h1 className="text-[#719a0a] text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-3 font-bold font-display flex items-center justify-center gap-3">
+                <span>📧</span>
+                <span>Contáctanos</span>
               </h1>
               <p className="text-[#fbaf32] text-xl sm:text-2xl md:text-3xl font-semibold font-display">
                 Estamos Aquí para Ayudarte

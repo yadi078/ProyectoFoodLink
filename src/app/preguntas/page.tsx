@@ -114,13 +114,14 @@ export default function PreguntasPage() {
       <section className="relative w-full py-16 sm:py-20 md:py-24 bg-gradient-to-b from-[#fbaf32] to-[#ff9933]">
         <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
           <div className="text-center text-white">
-            <div className="section-header mb-6">
-              <p className="text-white text-xl sm:text-2xl mb-2">
+            <div className="mb-6">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-display mb-2 flex items-center justify-center gap-3">
+                <span>❓</span>
+                <span>¿Tienes Preguntas?</span>
+              </h1>
+              <p className="text-white text-xl sm:text-2xl">
                 Preguntas Frecuentes
               </p>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-display">
-                ¿Tienes Preguntas?
-              </h1>
             </div>
             <p className="text-lg sm:text-xl max-w-2xl mx-auto opacity-90">
               Encuentra respuestas a las preguntas más comunes sobre FoodLink

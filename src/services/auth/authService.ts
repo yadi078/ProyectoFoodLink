@@ -11,20 +11,31 @@ import {
   UserCredential,
   User,
   updateProfile,
-} from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase/config';
-import type { Vendedor } from '@/lib/firebase/types';
+} from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase/config";
+import type {
+  Vendedor,
+  Estudiante,
+  HorarioServicio,
+  Zona,
+} from "@/lib/firebase/types";
 
 /**
- * Registro de nuevo vendedor
+ * Registro de nuevo usuario (vendedor o estudiante)
  * Crea una cuenta en Firebase Auth y un documento en Firestore
  */
-export const registerVendedor = async (
+export const registerUser = async (
+  tipoUsuario: "alumno" | "vendedor",
   email: string,
   password: string,
   nombre: string,
-  telefono?: string
+  zona: Zona,
+  telefono?: string,
+  institucionEducativa?: string,
+  tipoComida?: string[],
+  horario?: HorarioServicio,
+  diasDescanso?: string[]
 ): Promise<UserCredential> => {
   try {
     // 1. Crear usuario en Firebase Authentication
@@ -41,16 +52,32 @@ export const registerVendedor = async (
       displayName: nombre,
     });
 
-    // 3. Crear documento del vendedor en Firestore
-    const vendedorData: Omit<Vendedor, 'uid'> = {
-      email,
-      nombre,
-      telefono,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    await setDoc(doc(db, 'vendedores', user.uid), vendedorData);
+    // 3. Crear documento según el tipo de usuario
+    if (tipoUsuario === "vendedor") {
+      const vendedorData: Omit<Vendedor, "uid"> = {
+        email,
+        nombre,
+        telefono,
+        zona,
+        tipoComida,
+        horario,
+        diasDescanso,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      await setDoc(doc(db, "vendedores", user.uid), vendedorData);
+    } else {
+      const estudianteData: Omit<Estudiante, "uid"> = {
+        email,
+        nombre,
+        telefono,
+        zona,
+        institucionEducativa,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      await setDoc(doc(db, "estudiantes", user.uid), estudianteData);
+    }
 
     // 4. Firebase maneja automáticamente el token JWT
     // El token se obtiene mediante user.getIdToken()
@@ -63,10 +90,33 @@ export const registerVendedor = async (
 };
 
 /**
- * Inicio de sesión de vendedor
- * Autentica con Firebase y obtiene el token JWT
+ * Registro de nuevo vendedor (función de compatibilidad)
+ * @deprecated Usar registerUser en su lugar
  */
-export const loginVendedor = async (
+export const registerVendedor = async (
+  email: string,
+  password: string,
+  nombre: string,
+  telefono?: string
+): Promise<UserCredential> => {
+  // Nota: Esta función de compatibilidad usa 'Zona Centro' por defecto
+  // Se recomienda usar registerUser directamente
+  return registerUser(
+    "vendedor",
+    email,
+    password,
+    nombre,
+    "Zona Centro",
+    telefono
+  );
+};
+
+/**
+ * Inicio de sesión de usuario (alumno o vendedor)
+ * Autentica con Firebase y verifica que el usuario existe en la colección correspondiente
+ */
+export const loginUser = async (
+  tipoUsuario: "alumno" | "vendedor",
   email: string,
   password: string
 ): Promise<UserCredential> => {
@@ -77,15 +127,18 @@ export const loginVendedor = async (
       password
     );
 
-    // Verificar que el usuario existe en la colección de vendedores
-    const vendedorDoc = await getDoc(
-      doc(db, 'vendedores', userCredential.user.uid)
-    );
+    const userId = userCredential.user.uid;
+    const coleccion = tipoUsuario === "vendedor" ? "vendedores" : "estudiantes";
 
-    if (!vendedorDoc.exists()) {
+    // Verificar que el usuario existe en la colección correspondiente
+    const userDoc = await getDoc(doc(db, coleccion, userId));
+
+    if (!userDoc.exists()) {
       await signOut(auth);
+      const tipoTexto =
+        tipoUsuario === "vendedor" ? "vendedor" : "alumno/maestro";
       throw new Error(
-        'Esta cuenta no está registrada como vendedor. Por favor, regístrate primero.'
+        `Esta cuenta no está registrada como ${tipoTexto}. Por favor, regístrate primero.`
       );
     }
 
@@ -94,6 +147,17 @@ export const loginVendedor = async (
   } catch (error: any) {
     throw mapFirebaseError(error);
   }
+};
+
+/**
+ * Inicio de sesión de vendedor (función de compatibilidad)
+ * @deprecated Usar loginUser en su lugar
+ */
+export const loginVendedor = async (
+  email: string,
+  password: string
+): Promise<UserCredential> => {
+  return loginUser("vendedor", email, password);
 };
 
 /**
@@ -120,7 +184,7 @@ export const getSessionToken = async (): Promise<string | null> => {
     // Estos tokens son seguros y se renuevan automáticamente
     return await user.getIdToken();
   } catch (error) {
-    console.error('Error obteniendo token:', error);
+    console.error("Error obteniendo token:", error);
     return null;
   }
 };
@@ -133,7 +197,7 @@ export const getCurrentVendedor = async (): Promise<Vendedor | null> => {
   if (!user) return null;
 
   try {
-    const vendedorDoc = await getDoc(doc(db, 'vendedores', user.uid));
+    const vendedorDoc = await getDoc(doc(db, "vendedores", user.uid));
     if (!vendedorDoc.exists()) return null;
 
     return {
@@ -143,7 +207,7 @@ export const getCurrentVendedor = async (): Promise<Vendedor | null> => {
       updatedAt: vendedorDoc.data().updatedAt?.toDate() || new Date(),
     } as Vendedor;
   } catch (error) {
-    console.error('Error obteniendo vendedor:', error);
+    console.error("Error obteniendo vendedor:", error);
     return null;
   }
 };
@@ -152,35 +216,32 @@ export const getCurrentVendedor = async (): Promise<Vendedor | null> => {
  * Mapear errores de Firebase a mensajes más amigables
  */
 const mapFirebaseError = (error: any): Error => {
-  const errorCode = error.code || '';
-  const errorMessage = error.message || 'Ocurrió un error inesperado';
+  const errorCode = error.code || "";
+  const errorMessage = error.message || "Ocurrió un error inesperado";
 
   // Códigos de error comunes de Firebase Auth
   const errorMap: Record<string, string> = {
-    'auth/email-already-in-use':
-      'Este correo electrónico ya está registrado. Por favor, inicia sesión.',
-    'auth/invalid-email':
-      'El correo electrónico no es válido. Por favor, verifica el formato.',
-    'auth/operation-not-allowed':
-      'Esta operación no está permitida. Contacta al administrador.',
-    'auth/weak-password':
-      'La contraseña es muy débil. Debe tener al menos 6 caracteres.',
-    'auth/user-disabled': 'Esta cuenta ha sido deshabilitada.',
-    'auth/user-not-found':
-      'No existe una cuenta con este correo electrónico.',
-    'auth/wrong-password': 'La contraseña es incorrecta.',
-    'auth/invalid-credential':
-      'Las credenciales proporcionadas son incorrectas.',
-    'auth/too-many-requests':
-      'Demasiados intentos fallidos. Por favor, intenta más tarde.',
-    'auth/network-request-failed':
-      'Error de conexión. Por favor, verifica tu conexión a internet.',
+    "auth/email-already-in-use":
+      "Este correo electrónico ya está registrado. Por favor, inicia sesión.",
+    "auth/invalid-email":
+      "El correo electrónico no es válido. Por favor, verifica el formato.",
+    "auth/operation-not-allowed":
+      "Esta operación no está permitida. Contacta al administrador.",
+    "auth/weak-password":
+      "La contraseña es muy débil. Debe tener al menos 6 caracteres.",
+    "auth/user-disabled": "Esta cuenta ha sido deshabilitada.",
+    "auth/user-not-found": "No existe una cuenta con este correo electrónico.",
+    "auth/wrong-password": "La contraseña es incorrecta.",
+    "auth/invalid-credential":
+      "Las credenciales proporcionadas son incorrectas.",
+    "auth/too-many-requests":
+      "Demasiados intentos fallidos. Por favor, intenta más tarde.",
+    "auth/network-request-failed":
+      "Error de conexión. Por favor, verifica tu conexión a internet.",
   };
 
   const friendlyMessage =
-    errorMap[errorCode] ||
-    `Error de autenticación: ${errorMessage}`;
+    errorMap[errorCode] || `Error de autenticación: ${errorMessage}`;
 
   return new Error(friendlyMessage);
 };
-

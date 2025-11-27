@@ -14,8 +14,9 @@ export default function SobreNosotrosPage() {
       <section className="relative w-full pt-8 sm:pt-12 md:pt-16 pb-4 sm:pb-6 md:pb-8 bg-white">
         <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-[#fbaf32] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-display mb-2">
-              Sobre Nosotros
+            <h1 className="text-[#fbaf32] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-display mb-2 flex items-center justify-center gap-3">
+              <span>👥</span>
+              <span>Sobre Nosotros</span>
             </h1>
             <p className="text-[#719a0a] text-xl sm:text-2xl md:text-3xl font-semibold font-display">
               Conectando Comunidades Desde 2020

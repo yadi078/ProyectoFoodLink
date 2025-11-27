@@ -140,8 +140,9 @@ export default function MenuPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#fbaf32] mb-2 font-display">
-            🍽️ Menú Disponible
+          <h1 className="text-3xl md:text-4xl font-bold text-[#fbaf32] mb-2 font-display flex items-center gap-3">
+            <span>🍽️</span>
+            <span>Menú Disponible</span>
           </h1>
           <p className="text-[#757575]">
             Explora los platillos disponibles de nuestros cocineros locales
