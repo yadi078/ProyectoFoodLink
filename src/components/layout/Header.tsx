@@ -3,46 +3,22 @@
  * Header responsivo estilo plantilla: transparente en hero, sticky con fondo blanco
  */
 
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-import { useState, useEffect } from 'react';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { useState } from "react";
 
 export default function Header() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
-  const [isSticky, setIsSticky] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const isHomePage = pathname === '/';
 
   const isActive = (path: string) => pathname === path;
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setIsSticky(true);
-      } else {
-        setIsSticky(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // En móvil, siempre mostrar fondo blanco
-  const showTransparent = isHomePage && !isSticky && typeof window !== 'undefined' && window.innerWidth >= 992;
-
   return (
-    <header
-      className={`fixed w-full transition-all duration-500 z-[999] ${
-        showTransparent
-          ? 'bg-transparent'
-          : 'bg-white shadow-[0_2px_5px_rgba(0,0,0,0.3)]'
-      } ${isHomePage && !isSticky ? 'lg:py-[30px] lg:px-[60px]' : 'py-2.5 lg:px-[60px]'}`}
-    >
+    <header className="fixed top-0 left-0 right-0 w-full bg-white shadow-[0_2px_5px_rgba(0,0,0,0.3)] z-[999] py-2.5 lg:px-[60px]">
       <nav className="max-w-[1366px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 lg:h-auto">
           {/* Logo */}
@@ -55,12 +31,21 @@ export default function Header() {
 
           {/* Botón mobile menu */}
           <button
-            className="lg:hidden text-white focus:outline-none"
+            className="lg:hidden text-[#666666] focus:outline-none hover:text-[#fbaf32] transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            style={{ color: showTransparent ? '#ffffff' : '#666666' }}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
 
@@ -69,32 +54,34 @@ export default function Header() {
             <Link
               href="/"
               className={`px-2.5 py-2.5 font-display text-lg font-semibold transition-colors ${
-                showTransparent ? 'text-white' : 'text-[#666666]'
-              } ${isActive('/') ? 'text-[#fbaf32]' : ''} hover:text-[#fbaf32]`}
+                isActive("/") ? "text-[#fbaf32]" : "text-[#666666]"
+              } hover:text-[#fbaf32]`}
             >
               Inicio
             </Link>
             <Link
               href="/menu"
               className={`px-2.5 py-2.5 font-display text-lg font-semibold transition-colors ${
-                showTransparent ? 'text-white' : 'text-[#666666]'
-              } ${isActive('/menu') ? 'text-[#fbaf32]' : ''} hover:text-[#fbaf32]`}
+                isActive("/menu") ? "text-[#fbaf32]" : "text-[#666666]"
+              } hover:text-[#fbaf32]`}
             >
               Menú
             </Link>
             <Link
               href="/sobre-nosotros"
               className={`px-2.5 py-2.5 font-display text-lg font-semibold transition-colors ${
-                showTransparent ? 'text-white' : 'text-[#666666]'
-              } ${isActive('/sobre-nosotros') ? 'text-[#fbaf32]' : ''} hover:text-[#fbaf32]`}
+                isActive("/sobre-nosotros")
+                  ? "text-[#fbaf32]"
+                  : "text-[#666666]"
+              } hover:text-[#fbaf32]`}
             >
               Nosotros
             </Link>
             <Link
               href="/contacto"
               className={`px-2.5 py-2.5 font-display text-lg font-semibold transition-colors ${
-                showTransparent ? 'text-white' : 'text-[#666666]'
-              } ${isActive('/contacto') ? 'text-[#fbaf32]' : ''} hover:text-[#fbaf32]`}
+                isActive("/contacto") ? "text-[#fbaf32]" : "text-[#666666]"
+              } hover:text-[#fbaf32]`}
             >
               Contacto
             </Link>
@@ -102,9 +89,7 @@ export default function Header() {
               <>
                 <Link
                   href="/vendedor/login"
-                  className={`px-4 py-2 font-display font-semibold transition-colors ${
-                    showTransparent ? 'text-white' : 'text-[#666666]'
-                  } hover:text-[#fbaf32]`}
+                  className="px-4 py-2 font-display font-semibold transition-colors text-[#666666] hover:text-[#fbaf32]"
                 >
                   Iniciar Sesión
                 </Link>
@@ -118,7 +103,9 @@ export default function Header() {
             )}
             {user && (
               <Link
-                href={user.displayName ? '/vendedor/dashboard' : '/estudiante/menu'}
+                href={
+                  user.displayName ? "/vendedor/dashboard" : "/estudiante/menu"
+                }
                 className="btn-primary px-6 py-2 text-sm"
               >
                 Ir al Panel
@@ -131,7 +118,9 @@ export default function Header() {
       {/* Navegación Mobile */}
       <div
         className={`lg:hidden transition-all duration-300 ${
-          isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+          isMobileMenuOpen
+            ? "max-h-96 opacity-100"
+            : "max-h-0 opacity-0 overflow-hidden"
         } bg-white`}
       >
         <div className="px-4 pt-2 pb-3 space-y-1 border-t border-gray-200">
@@ -139,9 +128,9 @@ export default function Header() {
             href="/"
             onClick={() => setIsMobileMenuOpen(false)}
             className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-              isActive('/')
-                ? 'text-[#fbaf32] bg-primary-50'
-                : 'text-[#666666] hover:text-[#fbaf32] hover:bg-gray-50'
+              isActive("/")
+                ? "text-[#fbaf32] bg-primary-50"
+                : "text-[#666666] hover:text-[#fbaf32] hover:bg-gray-50"
             }`}
           >
             Inicio
@@ -150,9 +139,9 @@ export default function Header() {
             href="/menu"
             onClick={() => setIsMobileMenuOpen(false)}
             className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-              isActive('/menu')
-                ? 'text-[#fbaf32] bg-primary-50'
-                : 'text-[#666666] hover:text-[#fbaf32] hover:bg-gray-50'
+              isActive("/menu")
+                ? "text-[#fbaf32] bg-primary-50"
+                : "text-[#666666] hover:text-[#fbaf32] hover:bg-gray-50"
             }`}
           >
             Menú
@@ -161,9 +150,9 @@ export default function Header() {
             href="/sobre-nosotros"
             onClick={() => setIsMobileMenuOpen(false)}
             className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-              isActive('/sobre-nosotros')
-                ? 'text-[#fbaf32] bg-primary-50'
-                : 'text-[#666666] hover:text-[#fbaf32] hover:bg-gray-50'
+              isActive("/sobre-nosotros")
+                ? "text-[#fbaf32] bg-primary-50"
+                : "text-[#666666] hover:text-[#fbaf32] hover:bg-gray-50"
             }`}
           >
             Nosotros
@@ -172,9 +161,9 @@ export default function Header() {
             href="/contacto"
             onClick={() => setIsMobileMenuOpen(false)}
             className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-              isActive('/contacto')
-                ? 'text-[#fbaf32] bg-primary-50'
-                : 'text-[#666666] hover:text-[#fbaf32] hover:bg-gray-50'
+              isActive("/contacto")
+                ? "text-[#fbaf32] bg-primary-50"
+                : "text-[#666666] hover:text-[#fbaf32] hover:bg-gray-50"
             }`}
           >
             Contacto
@@ -199,7 +188,9 @@ export default function Header() {
           )}
           {user && (
             <Link
-              href={user.displayName ? '/vendedor/dashboard' : '/estudiante/menu'}
+              href={
+                user.displayName ? "/vendedor/dashboard" : "/estudiante/menu"
+              }
               onClick={() => setIsMobileMenuOpen(false)}
               className="btn-primary block text-center mt-2"
             >
