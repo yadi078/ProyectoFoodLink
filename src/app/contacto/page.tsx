@@ -15,7 +15,9 @@ export default function ContactoPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     setFormData({
       ...formData,
@@ -45,41 +47,49 @@ export default function ContactoPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative w-full py-16 sm:py-20 md:py-24 bg-gradient-to-b from-[#719a0a] to-[#5a7a08]">
+      <section className="relative w-full py-16 sm:py-20 md:py-24 bg-white">
         <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
-          <div className="text-center text-white">
-            <div className="section-header mb-6">
-              <p className="text-white text-xl sm:text-2xl mb-2">Contáctanos</p>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-display">
-                Estamos Aquí para Ayudarte
+          <div className="text-center">
+            <div className="mb-6">
+              <h1 className="text-[#719a0a] text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-3 font-bold font-display">
+                Contáctanos
               </h1>
+              <p className="text-[#fbaf32] text-xl sm:text-2xl md:text-3xl font-semibold font-display">
+                Estamos Aquí para Ayudarte
+              </p>
             </div>
-            <p className="text-lg sm:text-xl max-w-2xl mx-auto opacity-90">
-              ¿Tienes alguna pregunta? ¿Necesitas ayuda? No dudes en contactarnos.
-              Estamos aquí para ayudarte.
+            <p className="text-[#757575] text-base sm:text-lg max-w-2xl mx-auto">
+              ¿Tienes alguna pregunta? ¿Necesitas ayuda? No dudes en
+              contactarnos. Estamos aquí para ayudarte.
             </p>
           </div>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section className="relative w-full py-12 sm:py-16 md:py-[60px]">
+      <section className="relative w-full py-12 sm:py-16 md:py-[60px] bg-[rgba(0,0,0,0.04)]">
         <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-12">
             {/* Left Side - Contact Info */}
             <div>
-              <div className="section-header mb-8">
-                <p>Información de Contacto</p>
-                <h2>Ponte en Contacto</h2>
+              <div className="mb-8">
+                <p className="text-[#719a0a] text-xl mb-2 font-semibold">
+                  Información de Contacto
+                </p>
+                <h2 className="text-[#fbaf32] text-3xl sm:text-4xl font-bold font-display">
+                  Ponte en Contacto
+                </h2>
               </div>
 
               <div className="space-y-6">
                 <div className="flex items-start">
                   <div className="text-3xl mr-4">📍</div>
                   <div>
-                    <h3 className="font-bold font-display mb-2">Dirección</h3>
+                    <h3 className="font-bold font-display mb-2 text-[#fbaf32]">
+                      Dirección
+                    </h3>
                     <p className="text-[#757575]">
                       Disponible en toda España
                       <br />
@@ -91,11 +101,13 @@ export default function ContactoPage() {
                 <div className="flex items-start">
                   <div className="text-3xl mr-4">📞</div>
                   <div>
-                    <h3 className="font-bold font-display mb-2">Teléfono</h3>
+                    <h3 className="font-bold font-display mb-2 text-[#fbaf32]">
+                      Teléfono
+                    </h3>
                     <p className="text-[#757575]">
                       <a
                         href="tel:+34123456789"
-                        className="hover:text-[#fbaf32] transition-colors"
+                        className="text-[#719a0a] hover:text-[#fbaf32] transition-colors font-semibold"
                       >
                         +34 123 456 789
                       </a>
@@ -108,11 +120,13 @@ export default function ContactoPage() {
                 <div className="flex items-start">
                   <div className="text-3xl mr-4">📧</div>
                   <div>
-                    <h3 className="font-bold font-display mb-2">Email</h3>
+                    <h3 className="font-bold font-display mb-2 text-[#fbaf32]">
+                      Email
+                    </h3>
                     <p className="text-[#757575]">
                       <a
                         href="mailto:contacto@foodlink.com"
-                        className="hover:text-[#fbaf32] transition-colors"
+                        className="text-[#719a0a] hover:text-[#fbaf32] transition-colors font-semibold"
                       >
                         contacto@foodlink.com
                       </a>
@@ -125,7 +139,9 @@ export default function ContactoPage() {
                 <div className="flex items-start">
                   <div className="text-3xl mr-4">💬</div>
                   <div>
-                    <h3 className="font-bold font-display mb-2">Redes Sociales</h3>
+                    <h3 className="font-bold font-display mb-2 text-[#fbaf32]">
+                      Redes Sociales
+                    </h3>
                     <div className="flex gap-3 mt-2">
                       <a
                         href="#"
@@ -161,9 +177,13 @@ export default function ContactoPage() {
 
             {/* Right Side - Contact Form */}
             <div className="bg-white p-6 sm:p-8 rounded-[15px] shadow-[0_0_30px_rgba(0,0,0,0.08)]">
-              <div className="section-header mb-6">
-                <p>Envíanos un Mensaje</p>
-                <h2>Formulario de Contacto</h2>
+              <div className="mb-6">
+                <p className="text-[#719a0a] text-xl mb-2 font-semibold">
+                  Envíanos un Mensaje
+                </p>
+                <h2 className="text-[#fbaf32] text-3xl sm:text-4xl font-bold font-display">
+                  Formulario de Contacto
+                </h2>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -266,4 +286,3 @@ export default function ContactoPage() {
     </div>
   );
 }
-

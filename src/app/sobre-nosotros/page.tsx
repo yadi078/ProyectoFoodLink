@@ -11,17 +11,15 @@ export default function SobreNosotrosPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative w-full py-16 sm:py-20 md:py-24 bg-gradient-to-b from-[#fbaf32] to-[#ff9933]">
+      <section className="relative w-full pt-8 sm:pt-12 md:pt-16 pb-4 sm:pb-6 md:pb-8 bg-white">
         <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="mb-6">
-              <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-display mb-4">
-                Sobre Nosotros
-              </h1>
-              <p className="text-white text-xl sm:text-2xl md:text-3xl font-semibold font-display">
-                Conectando Comunidades Desde 2020
-              </p>
-            </div>
+            <h1 className="text-[#fbaf32] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-display mb-2">
+              Sobre Nosotros
+            </h1>
+            <p className="text-[#719a0a] text-xl sm:text-2xl md:text-3xl font-semibold font-display">
+              Conectando Comunidades Desde 2020
+            </p>
           </div>
         </div>
       </section>
@@ -44,9 +42,13 @@ export default function SobreNosotrosPage() {
 
             {/* Right Side - Content */}
             <div>
-              <div className="section-header mb-6 sm:mb-8">
-                <p>Nuestra Historia</p>
-                <h2>¿Quiénes Somos?</h2>
+              <div className="mb-6 sm:mb-8">
+                <p className="text-[#719a0a] text-xl mb-2 font-semibold">
+                  Nuestra Historia
+                </p>
+                <h2 className="text-[#fbaf32] text-3xl sm:text-4xl font-bold font-display">
+                  ¿Quiénes Somos?
+                </h2>
               </div>
               <div className="space-y-4 mb-6">
                 <p className="text-base text-[#757575]">
@@ -111,9 +113,13 @@ export default function SobreNosotrosPage() {
       {/* Values Section */}
       <section className="relative w-full py-12 sm:py-16 md:py-[60px]">
         <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
-          <div className="section-header text-center mb-12">
-            <p>Nuestros Valores</p>
-            <h2>Lo Que Nos Define</h2>
+          <div className="text-center mb-12">
+            <p className="text-[#719a0a] text-xl mb-2 font-semibold">
+              Nuestros Valores
+            </p>
+            <h2 className="text-[#fbaf32] text-3xl sm:text-4xl font-bold font-display">
+              Lo Que Nos Define
+            </h2>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
@@ -162,7 +168,7 @@ export default function SobreNosotrosPage() {
       <section className="relative w-full py-12 sm:py-16 md:py-[60px] bg-[rgba(0,0,0,0.04)]">
         <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold font-display mb-4">
+            <h2 className="text-[#fbaf32] text-3xl sm:text-4xl font-bold font-display mb-4">
               ¿Quieres Unirte a Nosotros?
             </h2>
             <p className="text-lg text-[#757575] mb-8 max-w-2xl mx-auto">

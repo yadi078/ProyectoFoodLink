@@ -136,30 +136,30 @@ export default function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-white py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#fbaf32] mb-2 font-display">
             🍽️ Menú Disponible
           </h1>
-          <p className="text-gray-600">
+          <p className="text-[#757575]">
             Explora los platillos disponibles de nuestros cocineros locales
           </p>
           {!user && (
-            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-yellow-800 text-sm">
+            <div className="mt-4 p-4 bg-[rgba(0,0,0,0.04)] border border-[#fbaf32] rounded-lg">
+              <p className="text-[#454545] text-sm">
                 💡 <strong>Nota:</strong> Necesitas{" "}
                 <Link
                   href="/vendedor/login"
-                  className="underline font-semibold"
+                  className="text-[#719a0a] hover:text-[#fbaf32] underline font-semibold transition-colors"
                 >
                   iniciar sesión
                 </Link>{" "}
                 o{" "}
                 <Link
                   href="/vendedor/signup"
-                  className="underline font-semibold"
+                  className="text-[#719a0a] hover:text-[#fbaf32] underline font-semibold transition-colors"
                 >
                   registrarte
                 </Link>{" "}
@@ -213,19 +213,19 @@ export default function MenuPage() {
                   <div className="text-5xl sm:text-6xl text-center mb-3 sm:mb-4">
                     {menu.imagen || "🍽️"}
                   </div>
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-lg sm:text-xl font-bold text-[#454545] mb-2 font-display">
                     {menu.nombre}
                   </h3>
-                  <p className="text-gray-600 text-xs sm:text-sm mb-4 line-clamp-2">
+                  <p className="text-[#757575] text-xs sm:text-sm mb-4 line-clamp-2">
                     {menu.descripcion}
                   </p>
 
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <p className="text-xl sm:text-2xl font-bold text-primary-500">
+                      <p className="text-xl sm:text-2xl font-bold text-[#fbaf32]">
                         €{menu.precio.toFixed(2)}
                       </p>
-                      <p className="text-xs sm:text-sm text-gray-600">
+                      <p className="text-xs sm:text-sm text-[#757575]">
                         {menu.vendedorNombre || "Vendedor"}
                       </p>
                     </div>
@@ -264,18 +264,18 @@ export default function MenuPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 bg-white rounded-lg shadow">
+          <div className="text-center py-12 bg-[rgba(0,0,0,0.04)] rounded-lg">
             {platillos.length === 0 ? (
               <>
                 <div className="text-6xl mb-4">🍽️</div>
-                <p className="text-gray-600 text-lg mb-4">
+                <p className="text-[#454545] text-lg mb-4 font-display">
                   No hay menús disponibles en este momento
                 </p>
-                <p className="text-gray-500 mb-4">
+                <p className="text-[#757575] mb-4">
                   Los cocineros están preparando nuevos platillos. ¡Vuelve
                   pronto!
                 </p>
-                <p className="text-sm text-gray-400 mt-4">
+                <p className="text-sm text-[#757575] mt-4">
                   💡 Tip: Si eres vendedor, inicia sesión para agregar tus
                   platillos al menú.
                 </p>
@@ -283,7 +283,7 @@ export default function MenuPage() {
             ) : (
               <>
                 <div className="text-4xl mb-4">🔍</div>
-                <p className="text-gray-600 text-lg mb-2">
+                <p className="text-[#454545] text-lg mb-2 font-display">
                   No se encontraron menús con los filtros seleccionados.
                 </p>
                 <button
