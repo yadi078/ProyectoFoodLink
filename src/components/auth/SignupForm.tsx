@@ -69,7 +69,7 @@ export default function SignupForm() {
       return isValid;
     }
     if (step === 3 && tipoUsuario === 'vendedor') {
-      const isValid = await trigger(['tipoComida', 'horarioInicio', 'horarioFin']);
+      const isValid = await trigger(['nombreNegocio', 'tipoComida', 'horarioInicio', 'horarioFin']);
       return isValid;
     }
     return true;
@@ -117,6 +117,7 @@ export default function SignupForm() {
         data.zona,
         data.telefono || undefined,
         data.institucionEducativa || undefined,
+        data.nombreNegocio || undefined,
         data.tipoComida,
         horario,
         data.diasDescanso
@@ -504,6 +505,26 @@ export default function SignupForm() {
             </h3>
             <p className="text-gray-600 mb-6">
               Completa los datos adicionales de tu negocio
+            </p>
+          </div>
+
+          {/* Nombre del Negocio */}
+          <div>
+            <label htmlFor="nombreNegocio" className="form-label">
+              Nombre del Negocio *
+            </label>
+            <input
+              id="nombreNegocio"
+              type="text"
+              className={`form-input ${errors.nombreNegocio ? 'form-input-error' : ''}`}
+              placeholder="Ej: Tacos El Güero"
+              {...register('nombreNegocio')}
+            />
+            {errors.nombreNegocio && (
+              <p className="form-error">{errors.nombreNegocio.message}</p>
+            )}
+            <p className="text-xs text-gray-500 mt-1">
+              El nombre que aparecerá en tu panel y para los clientes
             </p>
           </div>
 

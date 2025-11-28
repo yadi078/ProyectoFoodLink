@@ -11,7 +11,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero/Carousel Section - Estilo plantilla */}
-      <section className="relative w-full h-screen min-h-[400px] bg-white">
+      <section className="relative w-full h-screen min-h-[400px]">
         <div className="absolute inset-0">
           {/* Carousel Item 1 */}
           <div className="absolute inset-0 flex items-center justify-center flex-col">
@@ -26,7 +26,7 @@ export default function HomePage() {
               <div className="absolute inset-0 bg-[rgba(0,0,0,0.6)] z-[1]"></div>
             </div>
 
-            <div className="relative z-[2] max-w-[700px] h-[calc(100vh-35px)] flex items-center justify-center flex-col px-4 sm:px-6 pt-20 sm:pt-24 lg:pt-28">
+            <div className="relative z-[2] max-w-[700px] h-screen flex items-center justify-center flex-col px-4 sm:px-6 pt-20 sm:pt-24 lg:pt-28">
               <h1 className="text-center text-white text-3xl sm:text-4xl md:text-5xl lg:text-[60px] font-bold font-display mb-4 sm:mb-6 md:mb-[30px] leading-tight px-2">
                 Mejor <span className="text-[#fbaf32]">Calidad</span> de
                 Ingredientes

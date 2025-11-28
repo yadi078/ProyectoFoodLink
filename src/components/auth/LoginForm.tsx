@@ -94,7 +94,7 @@ export default function LoginForm() {
       if (data.tipoUsuario === "vendedor") {
         router.push("/vendedor/dashboard");
       } else {
-        router.push("/"); // O la ruta que corresponda para estudiantes
+        router.push("/menu"); // Redirigir a la página del menú para alumnos/maestros
       }
       router.refresh();
     } catch (err: any) {

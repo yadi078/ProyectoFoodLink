@@ -121,7 +121,9 @@ export const getPlatillosDisponibles = async (): Promise<Platillo[]> => {
           disponible: data.disponible ?? true,
           vendedorId: data.vendedorId || "",
           imagen: data.imagen,
-          tipo: data.tipo,
+          categoria: data.categoria || data.tipo || "Comida casera", // Compatibilidad con datos antiguos
+          cantidadDisponible: data.cantidadDisponible,
+          notasAdicionales: data.notasAdicionales,
           createdAt: data.createdAt?.toDate(),
           updatedAt: data.updatedAt?.toDate(),
         });

@@ -97,6 +97,7 @@ const alumnoSchema = z.object(baseRegisterSchema);
 export const registerSchema = z
   .object({
     ...baseRegisterSchema,
+    nombreNegocio: z.string().optional(),
     tipoComida: z.array(z.string()).optional(),
     horarioInicio: z.string().optional(),
     horarioFin: z.string().optional(),
@@ -123,6 +124,13 @@ export const registerSchema = z
 
     // Si es vendedor, validar campos adicionales
     if (data.tipoUsuario === "vendedor") {
+      if (!data.nombreNegocio || data.nombreNegocio.trim().length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "El nombre del negocio es requerido",
+          path: ["nombreNegocio"],
+        });
+      }
       if (!data.tipoComida || data.tipoComida.length === 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,

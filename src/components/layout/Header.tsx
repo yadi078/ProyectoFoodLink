@@ -8,30 +8,79 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Header() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const isActive = (path: string) => pathname === path;
+  const isHomePage = pathname === "/";
+
+  // Detectar scroll para cambiar el estilo del header en la homepage
+  useEffect(() => {
+    if (!isHomePage) {
+      setIsScrolled(true); // En otras páginas siempre mostrar fondo blanco
+      return;
+    }
+
+    const handleScroll = () => {
+      // Cambiar estilo cuando se hace scroll más allá de la altura del viewport
+      const scrollPosition = window.scrollY;
+      const viewportHeight = window.innerHeight;
+      // Cambiar cuando se haya scrolleado más del 80% de la altura del viewport
+      setIsScrolled(scrollPosition > viewportHeight * 0.8);
+    };
+
+    // Verificar posición inicial
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isHomePage]);
+
+  // Determinar si el header debe ser transparente
+  const shouldBeTransparent = isHomePage && !isScrolled;
 
   return (
-    <header className="fixed top-0 left-0 right-0 w-full bg-white shadow-[0_2px_5px_rgba(0,0,0,0.3)] z-[999] py-2.5 lg:px-[60px]">
+    <header
+      className={`fixed top-0 left-0 right-0 w-full z-[999] py-2.5 lg:px-[60px] transition-all duration-300 ${
+        shouldBeTransparent
+          ? "bg-transparent shadow-none"
+          : "bg-white shadow-[0_2px_5px_rgba(0,0,0,0.3)]"
+      }`}
+    >
       <nav className="max-w-[1366px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 lg:h-auto">
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <span className="text-3xl lg:text-[45px] font-bold font-display leading-none">
-              <span className="text-[#fbaf32]">Food</span>
-              <span className="text-[#719a0a]">Link</span>
+              <span
+                className={
+                  shouldBeTransparent ? "text-white" : "text-[#fbaf32]"
+                }
+              >
+                Food
+              </span>
+              <span
+                className={
+                  shouldBeTransparent ? "text-white" : "text-[#719a0a]"
+                }
+              >
+                Link
+              </span>
             </span>
           </Link>
 
           {/* Botón mobile menu */}
           <button
-            className="lg:hidden text-[#666666] focus:outline-none hover:text-[#fbaf32] transition-colors"
+            className={`lg:hidden focus:outline-none transition-colors ${
+              shouldBeTransparent
+                ? "text-white hover:text-white/80"
+                : "text-[#666666] hover:text-[#fbaf32]"
+            }`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             <svg
@@ -54,16 +103,26 @@ export default function Header() {
             <Link
               href="/"
               className={`px-2.5 py-2.5 font-display text-lg font-semibold transition-colors ${
-                isActive("/") ? "text-[#fbaf32]" : "text-[#666666]"
-              } hover:text-[#fbaf32]`}
+                isActive("/")
+                  ? shouldBeTransparent
+                    ? "text-white"
+                    : "text-[#fbaf32]"
+                  : shouldBeTransparent
+                  ? "text-white/80 hover:text-white"
+                  : "text-[#666666] hover:text-[#fbaf32]"
+              }`}
             >
               Inicio
             </Link>
             <Link
               href="/menu"
               className={`px-2.5 py-2.5 font-display text-lg font-semibold transition-colors ${
-                isActive("/menu") ? "text-[#fbaf32]" : "text-[#666666]"
-              } hover:text-[#fbaf32]`}
+                isActive("/menu")
+                  ? "text-[#fbaf32]"
+                  : shouldBeTransparent
+                  ? "text-white/80 hover:text-white"
+                  : "text-[#666666] hover:text-[#fbaf32]"
+              }`}
             >
               Menú
             </Link>
@@ -72,16 +131,22 @@ export default function Header() {
               className={`px-2.5 py-2.5 font-display text-lg font-semibold transition-colors ${
                 isActive("/sobre-nosotros")
                   ? "text-[#fbaf32]"
-                  : "text-[#666666]"
-              } hover:text-[#fbaf32]`}
+                  : shouldBeTransparent
+                  ? "text-white/80 hover:text-white"
+                  : "text-[#666666] hover:text-[#fbaf32]"
+              }`}
             >
               Nosotros
             </Link>
             <Link
               href="/contacto"
               className={`px-2.5 py-2.5 font-display text-lg font-semibold transition-colors ${
-                isActive("/contacto") ? "text-[#fbaf32]" : "text-[#666666]"
-              } hover:text-[#fbaf32]`}
+                isActive("/contacto")
+                  ? "text-[#fbaf32]"
+                  : shouldBeTransparent
+                  ? "text-white/80 hover:text-white"
+                  : "text-[#666666] hover:text-[#fbaf32]"
+              }`}
             >
               Contacto
             </Link>
@@ -89,13 +154,21 @@ export default function Header() {
               <>
                 <Link
                   href="/vendedor/login"
-                  className="px-4 py-2 font-display font-semibold transition-colors text-[#666666] hover:text-[#fbaf32]"
+                  className={`px-4 py-2 font-display font-semibold transition-colors ${
+                    shouldBeTransparent
+                      ? "text-white/80 hover:text-white"
+                      : "text-[#666666] hover:text-[#fbaf32]"
+                  }`}
                 >
                   Iniciar Sesión
                 </Link>
                 <Link
                   href="/vendedor/signup"
-                  className="btn-secondary px-6 py-2 text-sm"
+                  className={`px-6 py-2 text-sm font-display font-semibold transition-colors ${
+                    shouldBeTransparent
+                      ? "bg-white/20 hover:bg-white/30 text-white border-2 border-white/30 hover:border-white/50"
+                      : "btn-secondary"
+                  }`}
                 >
                   Registrarse
                 </Link>

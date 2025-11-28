@@ -33,6 +33,7 @@ export const registerUser = async (
   zona: Zona,
   telefono?: string,
   institucionEducativa?: string,
+  nombreNegocio?: string,
   tipoComida?: string[],
   horario?: HorarioServicio,
   diasDescanso?: string[]
@@ -59,6 +60,7 @@ export const registerUser = async (
         nombre,
         telefono,
         zona,
+        nombreNegocio,
         tipoComida,
         horario,
         diasDescanso,

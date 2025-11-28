@@ -8,6 +8,7 @@ export interface Vendedor {
   uid: string;
   email: string;
   nombre: string;
+  nombreNegocio?: string; // Nombre del negocio del vendedor
   telefono?: string;
   direccion?: string;
   zona: Zona; // Zona de Rincón de Romos
@@ -45,6 +46,12 @@ export interface AuthError {
   message: string;
 }
 
+export type CategoriaPlatillo =
+  | "Comida rápida"
+  | "Comida casera"
+  | "Bebidas"
+  | "Postres";
+
 export interface Platillo {
   id: string;
   nombre: string;
@@ -53,7 +60,9 @@ export interface Platillo {
   disponible: boolean;
   vendedorId: string;
   imagen?: string;
-  tipo?: string;
+  categoria: CategoriaPlatillo; // Categoría obligatoria
+  cantidadDisponible?: number; // Opcional
+  notasAdicionales?: string; // Opcional
   createdAt?: Date;
   updatedAt?: Date;
 }

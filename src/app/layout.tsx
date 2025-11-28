@@ -3,6 +3,7 @@ import { Open_Sans, Nunito } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import MainWrapper from "@/components/layout/MainWrapper";
 import { AlertProvider } from "@/components/context/AlertContext";
 
 const openSans = Open_Sans({
@@ -42,7 +43,7 @@ export default function RootLayout({
       >
         <AlertProvider>
           <Header />
-          <main className="flex-grow pt-16 lg:pt-20">{children}</main>
+          <MainWrapper>{children}</MainWrapper>
           <Footer />
         </AlertProvider>
       </body>

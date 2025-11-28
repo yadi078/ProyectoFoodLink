@@ -229,7 +229,7 @@ npm run lint
 npm run type-check
 ```
 
-## 📁 Estructura del Proyecto
+## 📁Estructura del Proyecto
 
 ```
 Proyecto FoodLink/
