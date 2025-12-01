@@ -16,6 +16,7 @@ import {
   type LoginFormData,
 } from "@/utils/validators/authValidators";
 import { loginUser } from "@/services/auth/authService";
+import UserTypeSelector from "./UserTypeSelector";
 
 type TipoUsuario = "alumno" | "vendedor" | null;
 
@@ -154,7 +155,7 @@ export default function LoginForm() {
 
       {/* Mensaje de error general */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+        <div className="bg-error-50 border border-error-200 text-error-700 px-5 py-4 rounded-xl shadow-soft">
           {error}
         </div>
       )}
@@ -162,86 +163,17 @@ export default function LoginForm() {
       {/* Paso 1: Selección de tipo de usuario */}
       {currentStep === 1 && (
         <div className="space-y-6 animate-fadeIn">
-          <div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              ¿Qué tipo de usuario eres?
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Selecciona el tipo de cuenta con la que deseas iniciar sesión
-            </p>
-          </div>
-
           <input
             type="hidden"
             {...register("tipoUsuario")}
             value={tipoUsuario || ""}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button
-              type="button"
-              onClick={() => handleTipoUsuarioSelect("alumno")}
-              className={`p-6 rounded-xl border-2 transition-all text-left ${
-                tipoUsuario === "alumno"
-                  ? "border-primary-600 bg-primary-50 shadow-md"
-                  : "border-gray-200 hover:border-primary-300 hover:bg-gray-50"
-              }`}
-            >
-              <div className="flex items-center space-x-4">
-                <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl ${
-                    tipoUsuario === "alumno"
-                      ? "bg-primary-600 text-white"
-                      : "bg-gray-200 text-gray-500"
-                  }`}
-                >
-                  🎓
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-800 text-lg">
-                    Alumno/Maestro
-                  </h4>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Accede a tu cuenta de estudiante
-                  </p>
-                </div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleTipoUsuarioSelect("vendedor")}
-              className={`p-6 rounded-xl border-2 transition-all text-left ${
-                tipoUsuario === "vendedor"
-                  ? "border-primary-600 bg-primary-50 shadow-md"
-                  : "border-gray-200 hover:border-primary-300 hover:bg-gray-50"
-              }`}
-            >
-              <div className="flex items-center space-x-4">
-                <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl ${
-                    tipoUsuario === "vendedor"
-                      ? "bg-primary-600 text-white"
-                      : "bg-gray-200 text-gray-500"
-                  }`}
-                >
-                  👨‍🍳
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-800 text-lg">
-                    Vendedor (Cocinero)
-                  </h4>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Accede a tu cuenta de vendedor
-                  </p>
-                </div>
-              </div>
-            </button>
-          </div>
-
-          {errors.tipoUsuario && (
-            <p className="form-error">{errors.tipoUsuario.message}</p>
-          )}
+          <UserTypeSelector
+            selectedType={tipoUsuario}
+            onSelect={handleTipoUsuarioSelect}
+            error={errors.tipoUsuario?.message}
+          />
 
           <div className="flex justify-end pt-4">
             <button

@@ -91,27 +91,6 @@ export const registerUser = async (
   }
 };
 
-/**
- * Registro de nuevo vendedor (función de compatibilidad)
- * @deprecated Usar registerUser en su lugar
- */
-export const registerVendedor = async (
-  email: string,
-  password: string,
-  nombre: string,
-  telefono?: string
-): Promise<UserCredential> => {
-  // Nota: Esta función de compatibilidad usa 'Zona Centro' por defecto
-  // Se recomienda usar registerUser directamente
-  return registerUser(
-    "vendedor",
-    email,
-    password,
-    nombre,
-    "Zona Centro",
-    telefono
-  );
-};
 
 /**
  * Inicio de sesión de usuario (alumno o vendedor)
@@ -151,16 +130,6 @@ export const loginUser = async (
   }
 };
 
-/**
- * Inicio de sesión de vendedor (función de compatibilidad)
- * @deprecated Usar loginUser en su lugar
- */
-export const loginVendedor = async (
-  email: string,
-  password: string
-): Promise<UserCredential> => {
-  return loginUser("vendedor", email, password);
-};
 
 /**
  * Cerrar sesión

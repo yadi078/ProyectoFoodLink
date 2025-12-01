@@ -16,6 +16,7 @@ import {
 } from "@/services/platillos/calificacionService";
 import type { Platillo } from "@/lib/firebase/types";
 import type { Vendedor } from "@/lib/firebase/types";
+import { formatPrice, formatDate } from "@/utils/formatters";
 
 interface PlatilloConVendedor extends Platillo {
   vendedorNombre?: string;
@@ -299,31 +300,31 @@ export default function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white py-8">
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#fbaf32] mb-2 font-display flex items-center gap-3">
+          <h1 className="text-3xl md:text-4xl font-bold text-primary-500 mb-3 font-display flex items-center gap-3">
             <span>🍽️</span>
             <span>Menú Disponible</span>
           </h1>
-          <p className="text-[#757575]">
+          <p className="text-gray-600 text-base">
             Explora los platillos disponibles de nuestros cocineros locales
           </p>
           {!user && (
-            <div className="mt-4 p-4 bg-[rgba(0,0,0,0.04)] border border-[#fbaf32] rounded-lg">
-              <p className="text-[#454545] text-sm">
+            <div className="mt-6 p-5 bg-primary-50 border border-primary-200 rounded-xl">
+              <p className="text-gray-800 text-sm">
                 💡 <strong>Nota:</strong> Necesitas{" "}
                 <Link
                   href="/vendedor/login"
-                  className="text-[#719a0a] hover:text-[#fbaf32] underline font-semibold transition-colors"
+                  className="text-primary-600 hover:text-primary-700 underline font-semibold transition-colors duration-200"
                 >
                   iniciar sesión
                 </Link>{" "}
                 o{" "}
                 <Link
                   href="/vendedor/signup"
-                  className="text-[#719a0a] hover:text-[#fbaf32] underline font-semibold transition-colors"
+                  className="text-primary-600 hover:text-primary-700 underline font-semibold transition-colors duration-200"
                 >
                   registrarte
                 </Link>{" "}
@@ -334,10 +335,10 @@ export default function MenuPage() {
         </div>
 
         {/* Filtros */}
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6 mb-6">
-          <div className="grid sm:grid-cols-2 gap-4">
+        <div className="bg-white rounded-2xl shadow-soft p-6 sm:p-8 mb-8 border border-gray-200">
+          <div className="grid sm:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-800 mb-3">
                 Buscar por nombre
               </label>
               <input
@@ -349,7 +350,7 @@ export default function MenuPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-800 mb-3">
                 Filtrar por disponibilidad
               </label>
               <select
@@ -367,14 +368,14 @@ export default function MenuPage() {
 
         {/* Grid de Menús */}
         {menusFiltrados.length > 0 ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {menusFiltrados.map((menu) => (
               <div
                 key={menu.id}
-                className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden"
+                className="bg-white rounded-2xl shadow-soft hover:shadow-medium transition-all duration-200 overflow-hidden border border-gray-200 hover:border-primary-500 hover:-translate-y-1"
               >
                 {/* Imagen del Producto con icono del ojito */}
-                <div className="relative h-64 bg-gray-200 overflow-hidden">
+                <div className="relative h-64 bg-gray-100 overflow-hidden">
                   {menu.imagen &&
                   menu.imagen.trim() &&
                   (menu.imagen.startsWith("http://") ||
@@ -411,7 +412,7 @@ export default function MenuPage() {
                   {/* Icono del ojito para ver detalles */}
                   <button
                     onClick={() => abrirModalDetalles(menu)}
-                    className="absolute top-3 left-3 w-10 h-10 bg-[#2d5016] rounded-full flex items-center justify-center hover:bg-[#3a6a1d] transition-colors shadow-lg z-10"
+                    className="absolute top-4 left-4 w-11 h-11 bg-primary-500 rounded-xl flex items-center justify-center hover:bg-primary-600 transition-all duration-200 shadow-medium hover:scale-110 z-10 backdrop-blur-sm bg-opacity-90"
                     aria-label="Ver detalles"
                   >
                     <svg
@@ -437,15 +438,15 @@ export default function MenuPage() {
                 </div>
 
                 {/* Información del producto */}
-                <div className="p-5 bg-[#f5f5dc]">
-                  <h3 className="text-xl font-bold text-[#3a3a3a] mb-2">
+                <div className="p-6 bg-white">
+                  <h3 className="text-xl font-bold text-gray-800 mb-3">
                     {menu.nombre}
                   </h3>
 
                   {/* Calificación del vendedor */}
                   {menu.vendedorCalificacion &&
                     menu.vendedorCalificacion > 0 && (
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2 mb-3">
                         <div className="flex items-center">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <span
@@ -461,22 +462,22 @@ export default function MenuPage() {
                             </span>
                           ))}
                         </div>
-                        <span className="text-sm text-[#3a3a3a]">
+                        <span className="text-sm text-gray-700 font-medium">
                           {menu.vendedorCalificacion.toFixed(1)}
                         </span>
                       </div>
                     )}
 
-                  <p className="text-sm text-[#3a3a3a] mb-3 line-clamp-2">
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
                     {menu.descripcion}
                   </p>
 
-                  <div className="flex items-center justify-between mb-4">
-                    <p className="text-2xl font-bold text-[#fbaf32]">
-                      ${menu.precio.toFixed(2)}
+                  <div className="flex items-center justify-between mb-5">
+                    <p className="text-2xl font-bold text-primary-500">
+                      {formatPrice(menu.precio)}
                     </p>
                     {menu.cantidadDisponible !== undefined && (
-                      <p className="text-xs text-[#757575]">
+                      <p className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-lg">
                         Disponibles: {menu.cantidadDisponible}
                       </p>
                     )}
@@ -485,9 +486,9 @@ export default function MenuPage() {
                   <button
                     onClick={() => handlePedido(menu, menu.disponible)}
                     disabled={!menu.disponible}
-                    className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-colors flex items-center justify-center gap-2 ${
+                    className={`w-full py-3.5 px-4 rounded-xl font-semibold text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft ${
                       menu.disponible
-                        ? "bg-[#fbaf32] hover:bg-[#e69d1f]"
+                        ? "bg-primary-500 hover:bg-primary-600 hover:shadow-medium hover:-translate-y-0.5"
                         : "bg-gray-400 cursor-not-allowed"
                     }`}
                   >
@@ -501,26 +502,26 @@ export default function MenuPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 bg-[rgba(0,0,0,0.04)] rounded-lg">
+          <div className="text-center py-16 bg-white rounded-2xl shadow-soft border border-gray-200">
             {platillos.length === 0 ? (
               <>
-                <div className="text-6xl mb-4">🍽️</div>
-                <p className="text-[#454545] text-lg mb-4 font-display">
+                <div className="text-6xl mb-6">🍽️</div>
+                <p className="text-gray-800 text-xl mb-4 font-display font-semibold">
                   No hay menús disponibles en este momento
                 </p>
-                <p className="text-[#757575] mb-4">
+                <p className="text-gray-600 mb-6 text-base">
                   Los cocineros están preparando nuevos platillos. ¡Vuelve
                   pronto!
                 </p>
-                <p className="text-sm text-[#757575] mt-4">
+                <p className="text-sm text-gray-500 mt-4">
                   💡 Tip: Si eres vendedor, inicia sesión para agregar tus
                   platillos al menú.
                 </p>
               </>
             ) : (
               <>
-                <div className="text-4xl mb-4">🔍</div>
-                <p className="text-[#454545] text-lg mb-2 font-display">
+                <div className="text-5xl mb-6">🔍</div>
+                <p className="text-gray-800 text-xl mb-3 font-display font-semibold">
                   No se encontraron menús con los filtros seleccionados.
                 </p>
                 <button
@@ -528,7 +529,7 @@ export default function MenuPage() {
                     setFiltro("");
                     setTipoComida("todos");
                   }}
-                  className="mt-4 btn-primary"
+                  className="mt-6 btn-primary shadow-medium hover:shadow-large"
                 >
                   Limpiar Filtros
                 </button>
@@ -540,11 +541,11 @@ export default function MenuPage() {
         {/* Modal de Detalles del Producto */}
         {mostrarModal && productoSeleccionado && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
             onClick={cerrarModal}
           >
             <div
-              className="bg-[#f5f5dc] rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-large border border-gray-200"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex flex-col md:flex-row">
@@ -570,17 +571,17 @@ export default function MenuPage() {
                 <div className="md:w-1/2 p-6 md:p-8">
                   <button
                     onClick={cerrarModal}
-                    className="absolute top-4 right-4 text-[#3a3a3a] hover:text-[#2d5016] text-2xl"
+                    className="absolute top-5 right-5 text-gray-500 hover:text-gray-700 text-3xl w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-all duration-200"
                   >
                     ×
                   </button>
 
-                  <h2 className="text-3xl font-bold text-[#3a3a3a] mb-3">
+                  <h2 className="text-3xl font-bold text-gray-800 mb-4">
                     {productoSeleccionado.nombre}
                   </h2>
 
                   {/* Categoría */}
-                  <span className="inline-block px-3 py-1 bg-[#2d5016] text-white text-sm rounded-full mb-4">
+                  <span className="inline-block px-4 py-1.5 bg-primary-500 text-white text-sm font-semibold rounded-full mb-5">
                     {productoSeleccionado.categoria}
                   </span>
 
@@ -609,12 +610,12 @@ export default function MenuPage() {
                     </span>
                   </div>
 
-                  <p className="text-[#3a3a3a] mb-4">
+                  <p className="text-gray-700 mb-5 leading-relaxed">
                     {productoSeleccionado.descripcion}
                   </p>
 
-                  <p className="text-3xl font-bold text-[#fbaf32] mb-6">
-                    ${productoSeleccionado.precio.toFixed(2)}
+                  <p className="text-3xl font-bold text-primary-500 mb-6">
+                    {formatPrice(productoSeleccionado.precio)}
                   </p>
 
                   {productoSeleccionado.cantidadDisponible !== undefined && (
@@ -633,9 +634,9 @@ export default function MenuPage() {
                         )
                       }
                       disabled={!productoSeleccionado.disponible}
-                      className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-colors flex items-center justify-center gap-2 ${
+                      className={`w-full py-3.5 px-4 rounded-xl font-semibold text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft ${
                         productoSeleccionado.disponible
-                          ? "bg-[#fbaf32] hover:bg-[#e69d1f]"
+                          ? "bg-primary-500 hover:bg-primary-600 hover:shadow-medium hover:-translate-y-0.5"
                           : "bg-gray-400 cursor-not-allowed"
                       }`}
                     >
@@ -665,7 +666,7 @@ export default function MenuPage() {
                           );
                           setMostrarFormularioResena(!mostrarFormularioResena);
                         }}
-                        className="w-full py-3 px-4 rounded-lg font-semibold bg-[#d32f2f] hover:bg-[#b71c1c] text-white transition-colors flex items-center justify-center gap-2"
+                        className="w-full py-3.5 px-4 rounded-xl font-semibold bg-error-500 hover:bg-error-600 text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft hover:shadow-medium hover:-translate-y-0.5"
                       >
                         <svg
                           className="w-5 h-5"
@@ -685,7 +686,7 @@ export default function MenuPage() {
                           : "Dejar Reseña"}
                       </button>
                     ) : (
-                      <div className="w-full py-3 px-4 rounded-lg bg-gray-200 text-gray-600 text-center text-sm">
+                      <div className="w-full py-3.5 px-4 rounded-xl bg-gray-100 text-gray-600 text-center text-sm border border-gray-200">
                         Inicia sesión para dejar una reseña
                       </div>
                     )}
@@ -693,8 +694,8 @@ export default function MenuPage() {
 
                   {/* Formulario de reseña */}
                   {mostrarFormularioResena && user && (
-                    <div className="bg-white p-4 rounded-lg mb-6">
-                      <h3 className="font-semibold text-[#3a3a3a] mb-3">
+                    <div className="bg-gray-50 p-6 rounded-xl mb-6 border border-gray-200">
+                      <h3 className="font-semibold text-gray-800 mb-4 text-lg">
                         Calificar Producto
                       </h3>
                       <div className="mb-4">
@@ -735,7 +736,7 @@ export default function MenuPage() {
                               comentario: e.target.value,
                             })
                           }
-                          className="w-full p-2 border border-gray-300 rounded-lg"
+                          className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
                           rows={3}
                           placeholder="Escribe tu opinión sobre este producto..."
                         />
@@ -743,7 +744,7 @@ export default function MenuPage() {
                       <button
                         onClick={handleEnviarResena}
                         disabled={cargandoResena}
-                        className="w-full py-2 px-4 bg-[#2d5016] text-white rounded-lg font-semibold hover:bg-[#3a6a1d] transition-colors disabled:opacity-50"
+                        className="w-full py-3 px-4 bg-primary-500 text-white rounded-xl font-semibold hover:bg-primary-600 transition-all duration-200 disabled:opacity-50 shadow-soft hover:shadow-medium"
                       >
                         {cargandoResena ? "Enviando..." : "Enviar Reseña"}
                       </button>
@@ -752,20 +753,23 @@ export default function MenuPage() {
 
                   {/* Reseñas de clientes */}
                   <div className="mt-6">
-                    <h3 className="text-xl font-bold text-[#3a3a3a] mb-4">
+                    <h3 className="text-xl font-bold text-gray-800 mb-5">
                       Reseñas de Clientes
                     </h3>
                     {calificaciones.length > 0 ? (
                       <div className="space-y-4">
                         {calificaciones.map((cal) => (
-                          <div key={cal.id} className="bg-white p-4 rounded-lg">
-                            <div className="flex items-center gap-3 mb-2">
-                              <div className="w-10 h-10 bg-[#2d5016] rounded-full flex items-center justify-center text-white font-semibold">
+                          <div
+                            key={cal.id}
+                            className="bg-gray-50 p-5 rounded-xl border border-gray-200"
+                          >
+                            <div className="flex items-center gap-3 mb-3">
+                              <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center text-white font-semibold shadow-soft">
                                 {cal.estudianteNombre?.[0]?.toUpperCase() ||
                                   "U"}
                               </div>
                               <div>
-                                <p className="font-semibold text-[#3a3a3a]">
+                                <p className="font-semibold text-gray-800">
                                   {cal.estudianteNombre || "Usuario"}
                                 </p>
                                 <div className="flex items-center gap-1">
@@ -785,27 +789,20 @@ export default function MenuPage() {
                               </div>
                             </div>
                             {cal.comentario && (
-                              <p className="text-[#3a3a3a] text-sm mt-2">
+                              <p className="text-gray-700 text-sm mt-3 leading-relaxed">
                                 {cal.comentario}
                               </p>
                             )}
                             {cal.createdAt && (
-                              <p className="text-xs text-[#757575] mt-2">
-                                {new Date(cal.createdAt).toLocaleDateString(
-                                  "es-ES",
-                                  {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                  }
-                                )}
+                              <p className="text-xs text-gray-500 mt-3">
+                                {formatDate(cal.createdAt)}
                               </p>
                             )}
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-[#757575] text-center py-4">
+                      <p className="text-gray-600 text-center py-6 bg-gray-50 rounded-xl border border-gray-200">
                         Aún no hay reseñas para este producto.
                       </p>
                     )}

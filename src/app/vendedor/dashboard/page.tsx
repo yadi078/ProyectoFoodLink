@@ -228,20 +228,20 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-16 lg:pt-20">
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-1 pb-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12">
         {/* Header del Dashboard - Parte del contenido normal */}
-        <div className="bg-white shadow-sm mb-6 rounded-lg">
-          <div className="px-4 sm:px-6 lg:px-8 py-4">
+        <div className="bg-white shadow-soft mb-8 rounded-2xl border border-gray-200">
+          <div className="px-6 sm:px-8 py-6">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1 className="text-2xl font-bold text-gray-800 font-display">
                   🍲 {vendedor.nombreNegocio || "FoodLink"}
                 </h1>
-                <p className="text-sm text-gray-600">Panel de Vendedor</p>
+                <p className="text-sm text-gray-600 mt-1">Panel de Vendedor</p>
               </div>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-sm"
+                className="px-5 py-2.5 text-sm font-semibold text-white bg-error-500 hover:bg-error-600 rounded-xl transition-all duration-200 shadow-soft hover:shadow-medium"
               >
                 Cerrar Sesión
               </button>
@@ -250,22 +250,22 @@ export default function DashboardPage() {
         </div>
         {/* Mensajes de éxito/error */}
         {success && (
-          <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+          <div className="mb-6 bg-success-50 border border-success-200 text-success-700 px-5 py-4 rounded-xl shadow-soft">
             {success}
           </div>
         )}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="mb-6 bg-error-50 border border-error-200 text-error-700 px-5 py-4 rounded-xl shadow-soft">
             {error}
           </div>
         )}
 
         {/* Bienvenida */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-gray-800">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-800 font-display mb-2">
             ¡Bienvenido, {vendedor.nombre}!
           </h2>
-          <p className="text-gray-600 mt-1">
+          <p className="text-gray-600 text-base">
             Administra tus productos desde aquí
           </p>
         </div>
@@ -273,8 +273,8 @@ export default function DashboardPage() {
         {!showForm ? (
           <>
             {/* Herramientas de Administración */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+            <div className="bg-white rounded-2xl shadow-soft p-6 sm:p-8 mb-8 border border-gray-200">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                 {/* Búsqueda */}
                 <div className="flex-1">
                   <input
@@ -318,7 +318,7 @@ export default function DashboardPage() {
               {/* Botón Agregar Producto */}
               <button
                 onClick={() => setShowForm(true)}
-                className="btn-primary w-full md:w-auto"
+                className="btn-primary w-full md:w-auto shadow-medium hover:shadow-large"
               >
                 ➕ Agregar Nuevo Producto
               </button>
@@ -326,8 +326,8 @@ export default function DashboardPage() {
 
             {/* Lista de Productos */}
             {filteredPlatillos.length === 0 ? (
-              <div className="bg-white rounded-lg shadow p-12 text-center">
-                <p className="text-gray-500 text-lg">
+              <div className="bg-white rounded-2xl shadow-soft p-12 text-center border border-gray-200">
+                <p className="text-gray-600 text-lg font-medium">
                   {platillos.length === 0
                     ? "No tienes productos aún. ¡Agrega tu primer producto!"
                     : "No se encontraron productos con los filtros aplicados."}
@@ -348,32 +348,40 @@ export default function DashboardPage() {
 
             {/* Estadísticas */}
             {platillos.length > 0 && (
-              <div className="mt-6 bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              <div className="mt-8 bg-white rounded-2xl shadow-soft p-6 sm:p-8 border border-gray-200">
+                <h3 className="text-lg font-bold text-gray-800 mb-6 font-display">
                   Resumen
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Total Productos</p>
-                    <p className="text-2xl font-bold text-gray-900">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  <div className="text-center p-4 bg-gray-50 rounded-xl">
+                    <p className="text-sm text-gray-600 mb-2 font-medium">
+                      Total Productos
+                    </p>
+                    <p className="text-3xl font-bold text-gray-800">
                       {platillos.length}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Disponibles</p>
-                    <p className="text-2xl font-bold text-green-600">
+                  <div className="text-center p-4 bg-success-50 rounded-xl">
+                    <p className="text-sm text-gray-600 mb-2 font-medium">
+                      Disponibles
+                    </p>
+                    <p className="text-3xl font-bold text-success-600">
                       {platillos.filter((p) => p.disponible).length}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">No Disponibles</p>
-                    <p className="text-2xl font-bold text-red-600">
+                  <div className="text-center p-4 bg-error-50 rounded-xl">
+                    <p className="text-sm text-gray-600 mb-2 font-medium">
+                      No Disponibles
+                    </p>
+                    <p className="text-3xl font-bold text-error-600">
                       {platillos.filter((p) => !p.disponible).length}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Categorías</p>
-                    <p className="text-2xl font-bold text-primary-600">
+                  <div className="text-center p-4 bg-primary-50 rounded-xl">
+                    <p className="text-sm text-gray-600 mb-2 font-medium">
+                      Categorías
+                    </p>
+                    <p className="text-3xl font-bold text-primary-600">
                       {new Set(platillos.map((p) => p.categoria)).size}
                     </p>
                   </div>
@@ -383,8 +391,8 @@ export default function DashboardPage() {
           </>
         ) : (
           /* Formulario de Agregar/Editar */
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+          <div className="bg-white rounded-2xl shadow-soft p-6 sm:p-8 border border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 font-display">
               {editingProducto ? "Editar Producto" : "Agregar Nuevo Producto"}
             </h2>
             <ProductoForm

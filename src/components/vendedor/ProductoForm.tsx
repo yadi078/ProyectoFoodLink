@@ -17,7 +17,10 @@ const CATEGORIAS: CategoriaPlatillo[] = [
 
 interface ProductoFormProps {
   producto?: Platillo;
-  onSubmit: (data: Omit<Platillo, "id" | "createdAt" | "updatedAt">, imageFile?: File) => Promise<void>;
+  onSubmit: (
+    data: Omit<Platillo, "id" | "createdAt" | "updatedAt">,
+    imageFile?: File
+  ) => Promise<void>;
   onCancel: () => void;
   isLoading?: boolean;
 }
@@ -66,7 +69,7 @@ export default function ProductoForm({
   // Limpiar objeto URL cuando el componente se desmonte o cambie la imagen
   useEffect(() => {
     return () => {
-      if (previewImage && previewImage.startsWith('blob:')) {
+      if (previewImage && previewImage.startsWith("blob:")) {
         URL.revokeObjectURL(previewImage);
       }
     };
@@ -202,7 +205,9 @@ export default function ProductoForm({
             value={formData.descripcion}
             onChange={handleChange}
             rows={3}
-            className={`form-input ${errors.descripcion ? "form-input-error" : ""}`}
+            className={`form-input ${
+              errors.descripcion ? "form-input-error" : ""
+            }`}
             placeholder="Describe tu producto..."
           />
           {errors.descripcion && (
@@ -227,7 +232,9 @@ export default function ProductoForm({
               min="0"
               value={formData.precio}
               onChange={handleChange}
-              className={`w-full py-3 pr-4 pl-[3.5rem] border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 outline-none text-base min-h-[44px] ${errors.precio ? "border-red-500 focus:ring-red-500" : ""}`}
+              className={`w-full py-3 pr-4 pl-[3.5rem] border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 outline-none text-base min-h-[44px] ${
+                errors.precio ? "border-red-500 focus:ring-red-500" : ""
+              }`}
               placeholder="0.00"
             />
           </div>
@@ -244,7 +251,9 @@ export default function ProductoForm({
             name="categoria"
             value={formData.categoria}
             onChange={handleChange}
-            className={`form-input ${errors.categoria ? "form-input-error" : ""}`}
+            className={`form-input ${
+              errors.categoria ? "form-input-error" : ""
+            }`}
           >
             {CATEGORIAS.map((cat) => (
               <option key={cat} value={cat}>
@@ -252,9 +261,7 @@ export default function ProductoForm({
               </option>
             ))}
           </select>
-          {errors.categoria && (
-            <p className="form-error">{errors.categoria}</p>
-          )}
+          {errors.categoria && <p className="form-error">{errors.categoria}</p>}
         </div>
 
         {/* Imagen - Carga de archivo */}
@@ -291,8 +298,8 @@ export default function ProductoForm({
             disabled={!!imageFile}
           />
           <p className="text-xs text-gray-500 mt-1">
-            {imageFile 
-              ? "Desactiva la selección de archivo para usar una URL" 
+            {imageFile
+              ? "Desactiva la selección de archivo para usar una URL"
               : "Si prefieres usar una URL en lugar de subir un archivo"}
           </p>
         </div>
@@ -361,16 +368,20 @@ export default function ProductoForm({
       </div>
 
       {/* Botones */}
-      <div className="flex justify-end space-x-4 pt-4 border-t">
+      <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
         <button
           type="button"
           onClick={onCancel}
-          className="btn-secondary"
+          className="btn-secondary shadow-soft hover:shadow-medium"
           disabled={isLoading}
         >
           Cancelar
         </button>
-        <button type="submit" className="btn-primary" disabled={isLoading}>
+        <button
+          type="submit"
+          className="btn-primary shadow-medium hover:shadow-large"
+          disabled={isLoading}
+        >
           {isLoading
             ? "Guardando..."
             : producto
@@ -381,4 +392,3 @@ export default function ProductoForm({
     </form>
   );
 }
-

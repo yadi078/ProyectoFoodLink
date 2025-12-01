@@ -1,66 +1,109 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
-        // Naranja (Primary - Acciones principales) - Colores más claros
+        // Primario: #FF6B35 (Naranja vibrante y moderno)
         primary: {
-          50: '#fffbf5',
-          100: '#fff4e6',
-          200: '#ffe8cc',
-          300: '#ffd9b3',
-          400: '#ffc999',
-          500: '#ffb366',  // Más claro
-          600: '#ff9933',  // Principal para navbar
-          700: '#ff8800',
-          800: '#e67a00',
-          900: '#cc6b00',
+          50: "#fff5f2",
+          100: "#ffe8e0",
+          200: "#ffd1c0",
+          300: "#ffb399",
+          400: "#ff8c66",
+          500: "#FF6B35", // Color primario principal
+          600: "#e55a2b",
+          700: "#cc4a21",
+          800: "#b33a17",
+          900: "#992a0d",
         },
-        // Verde (Success, positivo, comida saludable) - Colores más claros
-        green: {
-          50: '#f0fff4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#6ee7b7',  // Más claro para texto en navbar
-          500: '#4ade80',
-          600: '#34d399',  // Más claro
-          700: '#10b981',
-          800: '#059669',
-          900: '#047857',
-        },
-        // Amarillo (Warning, destacados, energía) - Colores más claros
-        yellow: {
-          50: '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b',
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
-        },
-        // Colores personalizados del diseño
+        // Secundario: #FFA552 (Naranja claro, complementario)
         secondary: {
-          DEFAULT: '#719a0a',  // Verde oliva
-          600: '#719a0a',
+          50: "#fff9f0",
+          100: "#fff2e0",
+          200: "#ffe5c0",
+          300: "#ffd8a0",
+          400: "#ffcb80",
+          500: "#FFA552", // Color secundario principal
+          600: "#e6943a",
+          700: "#cc8322",
+          800: "#b3720a",
+          900: "#996100",
+        },
+        // Fondo principal: #F9FAFB
+        background: {
+          DEFAULT: "#F9FAFB",
+          card: "#FFFFFF",
+        },
+        // Texto principal: #1F2937
+        text: {
+          primary: "#1F2937",
+          secondary: "#6B7280",
+        },
+        // Gris claro: #E5E7EB
+        gray: {
+          50: "#F9FAFB",
+          100: "#F3F4F6",
+          200: "#E5E7EB",
+          300: "#D1D5DB",
+          400: "#9CA3AF",
+          500: "#6B7280",
+          600: "#4B5563",
+          700: "#374151",
+          800: "#1F2937",
+          900: "#111827",
+        },
+        // Éxito: #10B981
+        success: {
+          50: "#ecfdf5",
+          100: "#d1fae5",
+          200: "#a7f3d0",
+          300: "#6ee7b7",
+          400: "#34d399",
+          500: "#10B981",
+          600: "#059669",
+          700: "#047857",
+          800: "#065f46",
+          900: "#064e3b",
+        },
+        // Error: #EF4444
+        error: {
+          50: "#fef2f2",
+          100: "#fee2e2",
+          200: "#fecaca",
+          300: "#fca5a5",
+          400: "#f87171",
+          500: "#EF4444",
+          600: "#dc2626",
+          700: "#b91c1c",
+          800: "#991b1b",
+          900: "#7f1d1d",
         },
       },
       fontFamily: {
-        sans: ['var(--font-sans)', 'Open Sans', 'sans-serif'],
-        display: ['var(--font-display)', 'Nunito', 'sans-serif'],
+        sans: ["var(--font-sans)", "Inter", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "Poppins", "sans-serif"],
+      },
+      borderRadius: {
+        xl: "12px",
+        "2xl": "16px",
+      },
+      boxShadow: {
+        soft: "0 2px 8px rgba(0, 0, 0, 0.08)",
+        medium: "0 4px 16px rgba(0, 0, 0, 0.12)",
+        large: "0 8px 24px rgba(0, 0, 0, 0.16)",
+      },
+      transitionDuration: {
+        "200": "200ms",
+        "250": "250ms",
       },
     },
   },
   plugins: [],
-}
-export default config
-
+};
+export default config;

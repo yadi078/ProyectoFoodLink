@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Open_Sans, Nunito } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -7,15 +7,15 @@ import MainWrapper from "@/components/layout/MainWrapper";
 import { AlertProvider } from "@/components/context/AlertContext";
 import { CartProvider } from "@/components/context/CartContext";
 
-const openSans = Open_Sans({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400"],
+  weight: ["400", "500", "600"],
   variable: "--font-sans",
 });
 
-const nunito = Nunito({
+const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-display",
 });
 
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     maximumScale: 5,
     userScalable: true,
   },
-  themeColor: "#fbaf32",
+  themeColor: "#FF6B35",
 };
 
 export default function RootLayout({
@@ -40,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
-        className={`${openSans.variable} ${nunito.variable} font-sans flex flex-col min-h-screen`}
+        className={`${inter.variable} ${poppins.variable} font-sans flex flex-col min-h-screen`}
       >
         <AlertProvider>
           <CartProvider>

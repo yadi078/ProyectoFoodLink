@@ -9,31 +9,31 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="relative w-full bg-[rgba(0,0,0,0.04)]">
+    <footer className="relative w-full bg-gray-50 border-t border-gray-200">
       <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
           {/* Our Address */}
           <div className="max-w-md">
-            <h2 className="text-2xl font-bold font-display text-[#fbaf32] mb-4 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-0.5 after:bg-[#719a0a]">
+            <h2 className="text-2xl font-bold font-display text-primary-500 mb-4 relative pb-3 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-0.5 after:bg-secondary-500 after:rounded-full">
               Contacto
             </h2>
-            <div className="space-y-3">
-              <p className="flex items-start text-[#757575]">
-                <span className="mr-2">📍</span>
-                Aguascalientes
+            <div className="space-y-4">
+              <p className="flex items-start text-gray-600 text-base">
+                <span className="mr-3 text-xl">📍</span>
+                <span>Aguascalientes</span>
               </p>
-              <p className="flex items-start text-[#757575]">
-                <span className="mr-2">📞</span>
-                465 141 0772
+              <p className="flex items-start text-gray-600 text-base">
+                <span className="mr-3 text-xl">📞</span>
+                <span>465 141 0772</span>
               </p>
-              <p className="flex items-start text-[#757575]">
-                <span className="mr-2">📧</span>
-                2236000371@utna.edu.mx
+              <p className="flex items-start text-gray-600 text-base">
+                <span className="mr-3 text-xl">📧</span>
+                <span>2236000371@utna.edu.mx</span>
               </p>
-              <div className="flex gap-3 mt-4">
+              <div className="flex gap-3 mt-6">
                 <a
                   href="#"
-                  className="w-10 h-10 rounded-full bg-[#fbaf32] text-white flex items-center justify-center hover:bg-[#719a0a] transition-colors"
+                  className="w-12 h-12 rounded-xl bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
                   aria-label="Facebook"
                 >
                   <svg
@@ -46,7 +46,7 @@ export default function Footer() {
                 </a>
                 <a
                   href="#"
-                  className="w-10 h-10 rounded-full bg-[#fbaf32] text-white flex items-center justify-center hover:bg-[#719a0a] transition-colors"
+                  className="w-12 h-12 rounded-xl bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
                   aria-label="YouTube"
                 >
                   <svg
@@ -59,7 +59,7 @@ export default function Footer() {
                 </a>
                 <a
                   href="#"
-                  className="w-10 h-10 rounded-full bg-[#fbaf32] text-white flex items-center justify-center hover:bg-[#719a0a] transition-colors"
+                  className="w-12 h-12 rounded-xl bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
                   aria-label="Instagram"
                 >
                   <svg
@@ -77,12 +77,15 @@ export default function Footer() {
       </div>
 
       {/* Copyright */}
-      <div className="bg-white py-4">
+      <div className="bg-white border-t border-gray-200 py-6">
         <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
-          <div className="text-center text-[#757575]">
-            <p>
+          <div className="text-center text-gray-600">
+            <p className="text-sm">
               Copyright &copy;{" "}
-              <Link href="/" className="text-[#fbaf32] hover:text-[#719a0a]">
+              <Link
+                href="/"
+                className="text-primary-500 hover:text-primary-600 font-semibold transition-colors duration-200"
+              >
                 FoodLink
               </Link>
               , Todos los derechos reservados.
@@ -94,7 +97,7 @@ export default function Footer() {
       {/* Back to Top Button */}
       <a
         href="#"
-        className="fixed bottom-[15px] right-[15px] w-11 h-11 bg-[#fbaf32] text-white rounded-[5px] flex items-center justify-center transition-colors hover:bg-[#719a0a] z-[9] hidden lg:flex"
+        className="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-primary-600 z-[9] hidden lg:flex shadow-medium hover:shadow-large hover:scale-110"
         aria-label="Volver arriba"
       >
         <svg

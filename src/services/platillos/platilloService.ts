@@ -36,6 +36,19 @@ export async function uploadProductImage(file: File): Promise<string> {
 }
 
 /**
+ * Helper para limpiar campos opcionales antes de guardar en Firebase
+ */
+const cleanOptionalField = <T>(
+  value: T | undefined | null,
+  validator?: (val: T) => boolean
+): T | null => {
+  if (value === undefined || value === null) return null;
+  if (validator && !validator(value)) return null;
+  if (typeof value === "string" && value.trim() === "") return null;
+  return value;
+};
+
+/**
  * Obtener todos los platillos de un vendedor
  */
 export const getPlatillosByVendedor = async (
@@ -163,23 +176,18 @@ export const createPlatillo = async (
       updatedAt: Timestamp.now(),
     };
 
-    // Solo agregar campos opcionales si tienen valor válido
-    if (imageUrl && imageUrl.trim() !== "") {
-      cleanData.imagen = imageUrl.trim();
-    }
-    if (
-      platilloData.cantidadDisponible !== undefined &&
-      platilloData.cantidadDisponible !== null &&
-      !isNaN(platilloData.cantidadDisponible)
-    ) {
-      cleanData.cantidadDisponible = platilloData.cantidadDisponible;
-    }
-    if (
-      platilloData.notasAdicionales &&
-      platilloData.notasAdicionales.trim() !== ""
-    ) {
-      cleanData.notasAdicionales = platilloData.notasAdicionales.trim();
-    }
+    // Agregar campos opcionales solo si tienen valor válido
+    const imagen = cleanOptionalField(imageUrl, (url) => url.trim() !== "");
+    if (imagen) cleanData.imagen = imagen.trim();
+
+    const cantidad = cleanOptionalField(
+      platilloData.cantidadDisponible,
+      (val) => !isNaN(val)
+    );
+    if (cantidad !== null) cleanData.cantidadDisponible = cantidad;
+
+    const notas = cleanOptionalField(platilloData.notasAdicionales);
+    if (notas) cleanData.notasAdicionales = notas.trim();
 
     console.log("📦 Datos a guardar en Firebase:", cleanData);
     const docRef = await addDoc(platillosRef, cleanData);
@@ -213,52 +221,28 @@ export const updatePlatillo = async (
       updatedAt: Timestamp.now(),
     };
 
-    // Solo agregar campos que estén definidos
-    if (platilloData.nombre !== undefined) {
-      updateData.nombre = platilloData.nombre;
+    // Agregar campos solo si están definidos
+    if (platilloData.nombre !== undefined) updateData.nombre = platilloData.nombre;
+    if (platilloData.descripcion !== undefined) updateData.descripcion = platilloData.descripcion;
+    if (platilloData.precio !== undefined) updateData.precio = platilloData.precio;
+    if (platilloData.disponible !== undefined) updateData.disponible = platilloData.disponible;
+    if (platilloData.categoria !== undefined) updateData.categoria = platilloData.categoria;
+
+    // Manejar imagen: priorizar nueva imagen subida, luego imagen del formulario
+    const finalImageUrl = imageUrl !== undefined ? imageUrl : platilloData.imagen;
+    if (finalImageUrl !== undefined) {
+      updateData.imagen = cleanOptionalField(finalImageUrl, (url) => url.trim() !== "");
     }
-    if (platilloData.descripcion !== undefined) {
-      updateData.descripcion = platilloData.descripcion;
-    }
-    if (platilloData.precio !== undefined) {
-      updateData.precio = platilloData.precio;
-    }
-    if (platilloData.disponible !== undefined) {
-      updateData.disponible = platilloData.disponible;
-    }
-    if (platilloData.categoria !== undefined) {
-      updateData.categoria = platilloData.categoria;
-    }
-    if (imageUrl !== undefined) {
-      if (imageUrl && imageUrl.trim() !== "") {
-        updateData.imagen = imageUrl.trim();
-      } else {
-        // Si es string vacío, eliminar el campo
-        updateData.imagen = null;
-      }
-    } else if (platilloData.imagen !== undefined) {
-      // Si no hay nueva imagen pero se modificó el campo imagen
-      if (platilloData.imagen) {
-        updateData.imagen = platilloData.imagen;
-      } else {
-        updateData.imagen = null;
-      }
-    }
+
+    // Campos opcionales
     if (platilloData.cantidadDisponible !== undefined) {
-      if (platilloData.cantidadDisponible !== null && platilloData.cantidadDisponible !== undefined) {
-        updateData.cantidadDisponible = platilloData.cantidadDisponible;
-      } else {
-        // Si es null o undefined, eliminar el campo
-        updateData.cantidadDisponible = null;
-      }
+      updateData.cantidadDisponible = cleanOptionalField(
+        platilloData.cantidadDisponible,
+        (val) => !isNaN(val)
+      );
     }
     if (platilloData.notasAdicionales !== undefined) {
-      if (platilloData.notasAdicionales) {
-        updateData.notasAdicionales = platilloData.notasAdicionales;
-      } else {
-        // Si es string vacío, eliminar el campo
-        updateData.notasAdicionales = null;
-      }
+      updateData.notasAdicionales = cleanOptionalField(platilloData.notasAdicionales);
     }
 
     await updateDoc(platilloRef, updateData);

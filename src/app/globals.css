@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 body {
-  color: #757575;
-  background: #ffffff;
-  font-family: "Open Sans", sans-serif;
+  color: #1f2937;
+  background: #f9fafb;
+  font-family: var(--font-sans), "Inter", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Mejoras para móviles */
@@ -19,21 +19,22 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Nunito", sans-serif;
-  color: #454545;
+  font-family: var(--font-display), "Poppins", sans-serif;
+  color: #1f2937;
+  font-weight: 600;
 }
 
 a {
-  font-family: "Nunito", sans-serif;
-  font-weight: 600;
-  color: #fbaf32;
-  transition: 0.3s;
+  font-family: var(--font-display), "Poppins", sans-serif;
+  font-weight: 500;
+  color: #ff6b35;
+  transition: all 200ms ease;
 }
 
 a:hover,
 a:active,
 a:focus {
-  color: #719a0a;
+  color: #ffa552;
   outline: none;
   text-decoration: none;
 }
@@ -46,125 +47,154 @@ a:focus {
 
 /* Estilos para componentes de formulario */
 .form-input {
-  @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 outline-none;
+  @apply w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 outline-none bg-white;
   font-size: 16px; /* Previene zoom en iOS al enfocar inputs */
   min-height: 44px; /* Tamaño mínimo táctil */
   touch-action: manipulation;
+  color: #1f2937;
+}
+
+.form-input:focus {
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
 }
 
 .form-input-error {
-  @apply border-red-500 focus:ring-red-500;
+  @apply border-error-500 focus:ring-error-500 focus:border-error-500;
 }
 
 .form-label {
-  @apply block text-sm font-medium text-gray-700 mb-2;
+  @apply block text-sm font-medium text-gray-800 mb-2;
 }
 
 .form-error {
-  @apply text-sm text-red-600 mt-1;
+  @apply text-sm text-error-600 mt-1;
 }
 
-/* Botón personalizado estilo plantilla */
+/* Botones modernos y elegantes */
 .btn-primary {
-  @apply font-display font-semibold text-sm sm:text-base px-4 sm:px-6 py-2.5 sm:py-3 text-white;
-  background: #fbaf32;
-  border: 2px solid #fbaf32;
-  border-radius: 5px;
-  transition: 0.5s;
-  min-height: 44px; /* Tamaño mínimo táctil para móviles */
-  touch-action: manipulation; /* Mejora la respuesta táctil */
-  -webkit-tap-highlight-color: transparent; /* Elimina el highlight azul en móviles */
+  @apply font-display font-semibold text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-3.5 text-white;
+  background: #ff6b35;
+  border: none;
+  border-radius: 12px;
+  transition: all 200ms ease;
+  min-height: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.25);
 }
 
 .btn-primary:hover {
-  color: #fbaf32;
-  background: transparent;
-  border-color: #fbaf32;
+  background: #ffa552;
+  box-shadow: 0 4px 16px rgba(255, 107, 53, 0.35);
+  transform: translateY(-1px);
 }
 
 .btn-primary:active {
-  transform: scale(0.98); /* Feedback táctil */
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.25);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .btn-secondary {
-  @apply font-display font-semibold text-sm sm:text-base px-4 sm:px-6 py-2.5 sm:py-3 text-white;
-  background: #719a0a;
-  border: 2px solid #719a0a;
-  border-radius: 5px;
-  transition: 0.5s;
-  min-height: 44px; /* Tamaño mínimo táctil para móviles */
+  @apply font-display font-semibold text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-3.5 text-white;
+  background: #ffa552;
+  border: none;
+  border-radius: 12px;
+  transition: all 200ms ease;
+  min-height: 44px;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 2px 8px rgba(255, 165, 82, 0.25);
 }
 
 .btn-secondary:hover {
-  color: #719a0a;
-  background: transparent;
-  border-color: #719a0a;
+  background: #ff6b35;
+  box-shadow: 0 4px 16px rgba(255, 165, 82, 0.35);
+  transform: translateY(-1px);
 }
 
 .btn-secondary:active {
-  transform: scale(0.98);
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(255, 165, 82, 0.25);
 }
 
 .btn-outline {
-  @apply font-display font-semibold text-sm sm:text-base px-4 sm:px-6 py-2.5 sm:py-3;
-  color: #fbaf32;
+  @apply font-display font-semibold text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-3.5;
+  color: #ff6b35;
   background: transparent;
-  border: 2px solid #fbaf32;
-  border-radius: 5px;
-  transition: 0.5s;
-  min-height: 44px; /* Tamaño mínimo táctil para móviles */
+  border: 2px solid #ff6b35;
+  border-radius: 12px;
+  transition: all 200ms ease;
+  min-height: 44px;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
 .btn-outline:hover {
   color: #ffffff;
-  background: #fbaf32;
+  background: #ff6b35;
+  border-color: #ff6b35;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(255, 107, 53, 0.25);
 }
 
 .btn-outline:active {
-  transform: scale(0.98);
+  transform: translateY(0) scale(0.98);
 }
 
 .btn-yellow {
-  @apply font-display font-semibold text-base px-6 py-3 text-gray-800;
-  background: #fbaf32;
-  border: 2px solid #fbaf32;
-  border-radius: 5px;
-  transition: 0.5s;
+  @apply font-display font-semibold text-base px-6 py-3 text-white;
+  background: #ffa552;
+  border: none;
+  border-radius: 12px;
+  transition: all 200ms ease;
+  box-shadow: 0 2px 8px rgba(255, 165, 82, 0.25);
 }
 
-/* Section Header estilo plantilla */
+.btn-yellow:hover {
+  background: #ff6b35;
+  box-shadow: 0 4px 16px rgba(255, 165, 82, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Section Header moderno */
 .section-header p {
-  color: #719a0a;
-  margin-bottom: 5px;
-  font-size: 20px;
+  color: #ff6b35;
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .section-header h2 {
   margin: 0;
-  font-size: 45px;
+  font-size: 32px;
   font-weight: 700;
-  color: #454545;
+  color: #1f2937;
+  line-height: 1.2;
 }
 
 @media (max-width: 991.98px) {
   .section-header h2 {
-    font-size: 40px;
+    font-size: 28px;
   }
 }
 
 @media (max-width: 767.98px) {
   .section-header h2 {
-    font-size: 35px;
+    font-size: 24px;
   }
 }
 
 @media (max-width: 575.98px) {
   .section-header h2 {
-    font-size: 30px;
+    font-size: 22px;
   }
 }
 
@@ -228,18 +258,21 @@ a:focus {
 
 /* Estilos para sección Food */
 .food {
-  background: rgba(0, 0, 0, 0.04);
+  background: #f9fafb;
 }
 
 .food-item {
   background: white;
-  border-radius: 15px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 200ms ease;
+  border: 1px solid #e5e7eb;
 }
 
 .food-item:hover {
-  box-shadow: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  border-color: #ff6b35;
 }
 
 /* Estilos para menu items */
@@ -247,28 +280,31 @@ a:focus {
   display: flex;
   align-items: center;
   gap: 20px;
-  padding: 16px;
+  padding: 20px;
   background: white;
-  border-radius: 15px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 200ms ease;
   margin-bottom: 24px;
+  border: 1px solid #e5e7eb;
 }
 
 .menu-item:hover {
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  border-color: #ff6b35;
 }
 
 .menu-item img {
-  border-radius: 15px;
+  border-radius: 12px;
   object-fit: cover;
 }
 
-/* Container max-width estilo plantilla */
+/* Container max-width moderno */
 .container {
   max-width: 1366px;
   margin: 0 auto;
-  padding: 0 15px;
+  padding: 0 16px;
 }
 
 @media (min-width: 992px) {
