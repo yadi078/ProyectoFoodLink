@@ -39,14 +39,20 @@ export default function CartSidebar() {
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-50"
+        className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-[9998] transition-opacity duration-300"
         onClick={closeCart}
+        aria-hidden="true"
       />
 
       {/* Sidebar */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-large z-50 flex flex-col border-l border-gray-200">
+      <div 
+        className="fixed right-0 top-0 h-full w-[90vw] sm:w-96 max-w-md bg-white shadow-large z-[9999] flex flex-col border-l border-gray-200 animate-slide-in-right overflow-hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Carrito de compras"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50 flex-shrink-0">
           <h2 className="text-xl font-bold text-gray-800 font-display">
             Carrito de Compras
           </h2>
@@ -210,7 +216,7 @@ export default function CartSidebar() {
 
         {/* Footer con total y botones */}
         {items.length > 0 && (
-          <div className="border-t border-gray-200 p-6 space-y-4 bg-gray-50">
+          <div className="border-t border-gray-200 p-6 space-y-4 bg-gray-50 flex-shrink-0">
             <div className="flex justify-between items-center">
               <span className="text-lg font-semibold text-gray-800">
                 Total:

@@ -9,18 +9,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Primario: #FF6B35 (Naranja vibrante y moderno)
+        // Primario: #719a0a (Verde oliva - color original)
         primary: {
-          50: "#fff5f2",
-          100: "#ffe8e0",
-          200: "#ffd1c0",
-          300: "#ffb399",
-          400: "#ff8c66",
-          500: "#FF6B35", // Color primario principal
-          600: "#e55a2b",
-          700: "#cc4a21",
-          800: "#b33a17",
-          900: "#992a0d",
+          50: "#f5f8f0",
+          100: "#e8f0d8",
+          200: "#d1e1b1",
+          300: "#bad28a",
+          400: "#a3c363",
+          500: "#719a0a", // Color primario principal
+          600: "#5a7b08",
+          700: "#435c06",
+          800: "#2c3d04",
+          900: "#151e02",
         },
         // Secundario: #FFA552 (Naranja claro, complementario)
         secondary: {

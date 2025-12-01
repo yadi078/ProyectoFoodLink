@@ -27,7 +27,7 @@ h6 {
 a {
   font-family: var(--font-display), "Poppins", sans-serif;
   font-weight: 500;
-  color: #ff6b35;
+  color: #719a0a;
   transition: all 200ms ease;
 }
 
@@ -73,25 +73,25 @@ a:focus {
 /* Botones modernos y elegantes */
 .btn-primary {
   @apply font-display font-semibold text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-3.5 text-white;
-  background: #ff6b35;
+  background: #719a0a;
   border: none;
   border-radius: 12px;
   transition: all 200ms ease;
   min-height: 44px;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.25);
+  box-shadow: 0 2px 8px rgba(113, 154, 10, 0.25);
 }
 
 .btn-primary:hover {
   background: #ffa552;
-  box-shadow: 0 4px 16px rgba(255, 107, 53, 0.35);
+  box-shadow: 0 4px 16px rgba(113, 154, 10, 0.35);
   transform: translateY(-1px);
 }
 
 .btn-primary:active {
   transform: translateY(0) scale(0.98);
-  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.25);
+  box-shadow: 0 2px 8px rgba(113, 154, 10, 0.25);
 }
 
 .btn-primary:disabled {
@@ -125,9 +125,9 @@ a:focus {
 
 .btn-outline {
   @apply font-display font-semibold text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-3.5;
-  color: #ff6b35;
+  color: #719a0a;
   background: transparent;
-  border: 2px solid #ff6b35;
+  border: 2px solid #719a0a;
   border-radius: 12px;
   transition: all 200ms ease;
   min-height: 44px;
@@ -137,10 +137,10 @@ a:focus {
 
 .btn-outline:hover {
   color: #ffffff;
-  background: #ff6b35;
-  border-color: #ff6b35;
+  background: #719a0a;
+  border-color: #719a0a;
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(255, 107, 53, 0.25);
+  box-shadow: 0 4px 16px rgba(113, 154, 10, 0.25);
 }
 
 .btn-outline:active {
@@ -157,14 +157,14 @@ a:focus {
 }
 
 .btn-yellow:hover {
-  background: #ff6b35;
+  background: #719a0a;
   box-shadow: 0 4px 16px rgba(255, 165, 82, 0.35);
   transform: translateY(-1px);
 }
 
 /* Section Header moderno */
 .section-header p {
-  color: #ff6b35;
+  color: #719a0a;
   margin-bottom: 8px;
   font-size: 16px;
   font-weight: 500;
@@ -272,7 +272,7 @@ a:focus {
 .food-item:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   transform: translateY(-2px);
-  border-color: #ff6b35;
+  border-color: #719a0a;
 }
 
 /* Estilos para menu items */
@@ -292,7 +292,7 @@ a:focus {
 .menu-item:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   transform: translateY(-2px);
-  border-color: #ff6b35;
+  border-color: #719a0a;
 }
 
 .menu-item img {
@@ -358,4 +358,18 @@ a:focus {
 
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-out;
+}
+
+/* Animación para el carrito de compras */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out;
 }

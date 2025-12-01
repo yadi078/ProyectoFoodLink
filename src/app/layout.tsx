@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     maximumScale: 5,
     userScalable: true,
   },
-  themeColor: "#FF6B35",
+  themeColor: "#719a0a",
 };
 
 export default function RootLayout({
