@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { useAlert } from "@/components/context/AlertContext";
+import { useCart } from "@/components/context/CartContext";
 import { getPlatillosDisponibles } from "@/services/menus/menuService";
 import { getVendedorConCalificacion } from "@/services/vendedores/vendedorService";
 import type { Platillo } from "@/lib/firebase/types";
@@ -19,6 +20,7 @@ export default function MenuPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { showAlert } = useAlert();
+  const { addItem, openCart } = useCart();
   const [filtro, setFiltro] = useState("");
   const [tipoComida, setTipoComida] = useState("todos");
   const [platillos, setPlatillos] = useState<PlatilloConVendedor[]>([]);
@@ -108,19 +110,16 @@ export default function MenuPage() {
     return coincideNombre && coincideDisponible;
   });
 
-  const handlePedido = (menuId: string, disponible: boolean) => {
+  const handlePedido = (platillo: Platillo, disponible: boolean) => {
     if (!disponible) {
       showAlert("Este menú no está disponible en este momento", "warning");
       return;
     }
 
-    if (!user) {
-      showAlert("Debes iniciar sesión para hacer un pedido", "info");
-      router.push("/vendedor/login");
-      return;
-    }
-
-    router.push(`/estudiante/pedido/${menuId}`);
+    // Agregar al carrito
+    addItem(platillo, 1);
+    showAlert(`${platillo.nombre} agregado al carrito`, "success");
+    openCart();
   };
 
   if (loading) {
@@ -210,10 +209,43 @@ export default function MenuPage() {
                 key={menu.id}
                 className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden border-2 border-transparent hover:border-primary-300"
               >
+                {/* Imagen del Producto */}
+                <div className="relative h-48 bg-gray-200 overflow-hidden">
+                  {menu.imagen &&
+                  menu.imagen.trim() &&
+                  (menu.imagen.startsWith("http://") ||
+                    menu.imagen.startsWith("https://")) &&
+                  menu.imagen.length > 10 ? (
+                    <>
+                      <img
+                        src={menu.imagen}
+                        alt={menu.nombre}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = "none";
+                          const parent = target.parentElement;
+                          if (parent) {
+                            const fallback = parent.querySelector(
+                              ".image-fallback"
+                            ) as HTMLElement;
+                            if (fallback) {
+                              fallback.style.display = "flex";
+                            }
+                          }
+                        }}
+                      />
+                      <div className="image-fallback hidden w-full h-full absolute inset-0 flex items-center justify-center text-gray-400">
+                        <span className="text-6xl">🍽️</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      <span className="text-6xl">🍽️</span>
+                    </div>
+                  )}
+                </div>
                 <div className="p-4 sm:p-6">
-                  <div className="text-5xl sm:text-6xl text-center mb-3 sm:mb-4">
-                    {menu.imagen || "🍽️"}
-                  </div>
                   <h3 className="text-lg sm:text-xl font-bold text-[#454545] mb-2 font-display">
                     {menu.nombre}
                   </h3>
@@ -224,7 +256,7 @@ export default function MenuPage() {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <p className="text-xl sm:text-2xl font-bold text-[#fbaf32]">
-                        €{menu.precio.toFixed(2)}
+                        ${menu.precio.toFixed(2)}
                       </p>
                       <p className="text-xs sm:text-sm text-[#757575]">
                         {menu.vendedorNombre || "Vendedor"}
@@ -251,13 +283,13 @@ export default function MenuPage() {
                       Ver Detalles
                     </Link>
                     <button
-                      onClick={() => handlePedido(menu.id, menu.disponible)}
+                      onClick={() => handlePedido(menu, menu.disponible)}
                       disabled={!menu.disponible}
                       className={`btn-primary flex-1 text-xs sm:text-sm py-2 ${
                         !menu.disponible ? "opacity-50 cursor-not-allowed" : ""
                       }`}
                     >
-                      {menu.disponible ? "Pedir Ahora" : "Agotado"}
+                      {menu.disponible ? "Agregar al Carrito" : "Agotado"}
                     </button>
                   </div>
                 </div>

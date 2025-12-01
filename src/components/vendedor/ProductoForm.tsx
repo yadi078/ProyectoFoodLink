@@ -185,7 +185,7 @@ export default function ProductoForm({
             Precio *
           </label>
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-semibold pointer-events-none z-10">
               $
             </span>
             <input
@@ -196,7 +196,7 @@ export default function ProductoForm({
               min="0"
               value={formData.precio}
               onChange={handleChange}
-              className={`form-input pl-10 ${errors.precio ? "form-input-error" : ""}`}
+              className={`w-full py-3 pr-4 pl-[3.5rem] border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 outline-none text-base min-h-[44px] ${errors.precio ? "border-red-500 focus:ring-red-500" : ""}`}
               placeholder="0.00"
             />
           </div>

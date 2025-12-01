@@ -6,15 +6,29 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/components/context/CartContext";
+import CartSidebar from "@/components/cart/CartSidebar";
+import { logoutVendedor } from "@/services/auth/authService";
 import { useState, useEffect } from "react";
 
 export default function Header() {
   const pathname = usePathname();
-  const { user, loading } = useAuth();
+  const router = useRouter();
+  const { user, vendedor, loading } = useAuth();
+  const { getTotalItems, toggleCart, clearCart } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const isVendedor = vendedor !== null;
+  const totalItems = getTotalItems();
+
+  const handleLogout = async () => {
+    await logoutVendedor();
+    clearCart();
+    router.push("/");
+  };
 
   const isActive = (path: string) => pathname === path;
   const isHomePage = pathname === "/";
@@ -174,15 +188,53 @@ export default function Header() {
                 </Link>
               </>
             )}
-            {user && (
+            {!loading && user && (
+              <button
+                onClick={handleLogout}
+                className={`px-4 py-2 font-display font-semibold transition-colors ${
+                  shouldBeTransparent
+                    ? "text-white/80 hover:text-white"
+                    : "text-[#666666] hover:text-[#fbaf32]"
+                }`}
+              >
+                Cerrar Sesión
+              </button>
+            )}
+            {user && isVendedor && (
               <Link
-                href={
-                  user.displayName ? "/vendedor/dashboard" : "/estudiante/menu"
-                }
+                href="/vendedor/dashboard"
                 className="btn-primary px-6 py-2 text-sm"
               >
                 Ir al Panel
               </Link>
+            )}
+            {(!user || !isVendedor) && (
+              <button
+                onClick={toggleCart}
+                className="relative px-4 py-2 rounded-lg transition-colors hover:bg-gray-100"
+                aria-label="Carrito de compras"
+              >
+                <svg
+                  className={`w-6 h-6 ${
+                    shouldBeTransparent ? "text-white" : "text-[#666666]"
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[#fbaf32] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {totalItems > 9 ? "9+" : totalItems}
+                  </span>
+                )}
+              </button>
             )}
           </div>
         </div>
@@ -259,19 +311,61 @@ export default function Header() {
               </Link>
             </>
           )}
-          {user && (
+          {!loading && user && (
+            <button
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleLogout();
+              }}
+              className="block w-full px-3 py-2 rounded-md text-base font-medium text-[#666666] hover:text-[#fbaf32] mt-2"
+            >
+              Cerrar Sesión
+            </button>
+          )}
+          {user && isVendedor && (
             <Link
-              href={
-                user.displayName ? "/vendedor/dashboard" : "/estudiante/menu"
-              }
+              href="/vendedor/dashboard"
               onClick={() => setIsMobileMenuOpen(false)}
               className="btn-primary block text-center mt-2"
             >
               Ir al Panel
             </Link>
           )}
+          {(!user || !isVendedor) && (
+            <button
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                toggleCart();
+              }}
+              className="relative w-full px-4 py-3 rounded-lg bg-[#fbaf32] text-white font-semibold mt-2 flex items-center justify-center gap-2"
+              aria-label="Carrito de compras"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              Carrito
+              {totalItems > 0 && (
+                <span className="bg-white text-[#fbaf32] text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {totalItems > 9 ? "9+" : totalItems}
+                </span>
+              )}
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Cart Sidebar */}
+      <CartSidebar />
     </header>
   );
 }

@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import MainWrapper from "@/components/layout/MainWrapper";
 import { AlertProvider } from "@/components/context/AlertContext";
+import { CartProvider } from "@/components/context/CartContext";
 
 const openSans = Open_Sans({
   subsets: ["latin"],
@@ -42,9 +43,11 @@ export default function RootLayout({
         className={`${openSans.variable} ${nunito.variable} font-sans flex flex-col min-h-screen`}
       >
         <AlertProvider>
-          <Header />
-          <MainWrapper>{children}</MainWrapper>
-          <Footer />
+          <CartProvider>
+            <Header />
+            <MainWrapper>{children}</MainWrapper>
+            <Footer />
+          </CartProvider>
         </AlertProvider>
       </body>
     </html>
