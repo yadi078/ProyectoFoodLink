@@ -17,7 +17,7 @@ const CATEGORIAS: CategoriaPlatillo[] = [
 
 interface ProductoFormProps {
   producto?: Platillo;
-  onSubmit: (data: Omit<Platillo, "id" | "createdAt" | "updatedAt">) => Promise<void>;
+  onSubmit: (data: Omit<Platillo, "id" | "createdAt" | "updatedAt">, imageFile?: File) => Promise<void>;
   onCancel: () => void;
   isLoading?: boolean;
 }
@@ -39,6 +39,7 @@ export default function ProductoForm({
     imagen: "",
   });
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -57,8 +58,19 @@ export default function ProductoForm({
       if (producto.imagen) {
         setPreviewImage(producto.imagen);
       }
+      // Limpiar archivo de imagen al editar (mantener la existente por defecto)
+      setImageFile(null);
     }
   }, [producto]);
+
+  // Limpiar objeto URL cuando el componente se desmonte o cambie la imagen
+  useEffect(() => {
+    return () => {
+      if (previewImage && previewImage.startsWith('blob:')) {
+        URL.revokeObjectURL(previewImage);
+      }
+    };
+  }, [previewImage]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -70,9 +82,23 @@ export default function ProductoForm({
 
     if (type === "checkbox") {
       setFormData((prev) => ({ ...prev, [name]: checked }));
+    } else if (type === "file") {
+      const file = (e.target as HTMLInputElement).files?.[0] || null;
+      setImageFile(file);
+      if (file) {
+        // Crear preview de la imagen seleccionada
+        const objectUrl = URL.createObjectURL(file);
+        setPreviewImage(objectUrl);
+      } else {
+        // Si no hay archivo, volver a la imagen existente (si está editando)
+        setPreviewImage(producto?.imagen || null);
+      }
     } else if (name === "imagen") {
+      // Mantener compatibilidad con input de URL (opcional)
       setFormData((prev) => ({ ...prev, [name]: value }));
-      setPreviewImage(value || null);
+      if (!imageFile) {
+        setPreviewImage(value || null);
+      }
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -134,7 +160,12 @@ export default function ProductoForm({
         productoData.notasAdicionales = formData.notasAdicionales.trim();
       }
 
-      await onSubmit(productoData);
+      // Si hay una URL de imagen manual (sin archivo), mantenerla
+      if (!imageFile && formData.imagen && formData.imagen.trim()) {
+        productoData.imagen = formData.imagen.trim();
+      }
+
+      await onSubmit(productoData, imageFile || undefined);
     } catch (error) {
       console.error("Error al guardar producto:", error);
     }
@@ -226,10 +257,28 @@ export default function ProductoForm({
           )}
         </div>
 
-        {/* Imagen */}
+        {/* Imagen - Carga de archivo */}
+        <div className="md:col-span-2">
+          <label htmlFor="imagenFile" className="form-label">
+            Imagen del Producto
+          </label>
+          <input
+            id="imagenFile"
+            name="imagenFile"
+            type="file"
+            accept="image/*"
+            onChange={handleChange}
+            className="form-input"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Selecciona una imagen desde tu computadora o dispositivo móvil
+          </p>
+        </div>
+
+        {/* Imagen - URL alternativa (opcional) */}
         <div className="md:col-span-2">
           <label htmlFor="imagen" className="form-label">
-            URL de la Imagen
+            O ingresa una URL de imagen (opcional)
           </label>
           <input
             id="imagen"
@@ -239,9 +288,12 @@ export default function ProductoForm({
             onChange={handleChange}
             className="form-input"
             placeholder="https://ejemplo.com/imagen.jpg"
+            disabled={!!imageFile}
           />
           <p className="text-xs text-gray-500 mt-1">
-            Ingresa la URL de la imagen del producto
+            {imageFile 
+              ? "Desactiva la selección de archivo para usar una URL" 
+              : "Si prefieres usar una URL en lugar de subir un archivo"}
           </p>
         </div>
 

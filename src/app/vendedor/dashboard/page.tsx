@@ -112,17 +112,21 @@ export default function DashboardPage() {
   };
 
   const handleCreateProducto = async (
-    data: Omit<Platillo, "id" | "createdAt" | "updatedAt">
+    data: Omit<Platillo, "id" | "createdAt" | "updatedAt">,
+    imageFile?: File
   ) => {
     if (!vendedor) return;
 
     try {
       setIsSubmitting(true);
       setError(null);
-      await createPlatillo({
-        ...data,
-        vendedorId: vendedor.uid,
-      });
+      await createPlatillo(
+        {
+          ...data,
+          vendedorId: vendedor.uid,
+        },
+        imageFile
+      );
       setSuccess("Producto agregado exitosamente");
       setShowForm(false);
       await loadPlatillos();
@@ -135,14 +139,15 @@ export default function DashboardPage() {
   };
 
   const handleUpdateProducto = async (
-    data: Omit<Platillo, "id" | "createdAt" | "updatedAt">
+    data: Omit<Platillo, "id" | "createdAt" | "updatedAt">,
+    imageFile?: File
   ) => {
     if (!editingProducto) return;
 
     try {
       setIsSubmitting(true);
       setError(null);
-      await updatePlatillo(editingProducto.id, data);
+      await updatePlatillo(editingProducto.id, data, imageFile);
       setSuccess("Producto actualizado exitosamente");
       setShowForm(false);
       setEditingProducto(undefined);

@@ -16,8 +16,24 @@ import {
   orderBy,
   Timestamp,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase/config";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "@/lib/firebase/config";
 import type { Platillo, CategoriaPlatillo } from "@/lib/firebase/types";
+
+/**
+ * Subir imagen de producto a Firebase Storage
+ */
+export async function uploadProductImage(file: File): Promise<string> {
+  try {
+    const imageRef = ref(storage, `products/${Date.now()}-${file.name}`);
+    await uploadBytes(imageRef, file);
+    const downloadURL = await getDownloadURL(imageRef);
+    return downloadURL;
+  } catch (error: any) {
+    console.error("Error subiendo imagen:", error);
+    throw new Error("Error al subir la imagen");
+  }
+}
 
 /**
  * Obtener todos los platillos de un vendedor
@@ -123,10 +139,17 @@ export const getPlatilloById = async (
  * Crear un nuevo platillo
  */
 export const createPlatillo = async (
-  platilloData: Omit<Platillo, "id" | "createdAt" | "updatedAt">
+  platilloData: Omit<Platillo, "id" | "createdAt" | "updatedAt">,
+  imageFile?: File
 ): Promise<string> => {
   try {
     const platillosRef = collection(db, "platillos");
+    
+    // Subir imagen si se proporciona un archivo
+    let imageUrl = platilloData.imagen;
+    if (imageFile) {
+      imageUrl = await uploadProductImage(imageFile);
+    }
     
     // Filtrar campos undefined para evitar errores en Firebase
     const cleanData: any = {
@@ -141,8 +164,8 @@ export const createPlatillo = async (
     };
 
     // Solo agregar campos opcionales si tienen valor válido
-    if (platilloData.imagen && platilloData.imagen.trim() !== "") {
-      cleanData.imagen = platilloData.imagen.trim();
+    if (imageUrl && imageUrl.trim() !== "") {
+      cleanData.imagen = imageUrl.trim();
     }
     if (
       platilloData.cantidadDisponible !== undefined &&
@@ -173,10 +196,17 @@ export const createPlatillo = async (
  */
 export const updatePlatillo = async (
   platilloId: string,
-  platilloData: Partial<Omit<Platillo, "id" | "vendedorId" | "createdAt">>
+  platilloData: Partial<Omit<Platillo, "id" | "vendedorId" | "createdAt">>,
+  imageFile?: File
 ): Promise<void> => {
   try {
     const platilloRef = doc(db, "platillos", platilloId);
+    
+    // Subir imagen si se proporciona un archivo
+    let imageUrl = platilloData.imagen;
+    if (imageFile) {
+      imageUrl = await uploadProductImage(imageFile);
+    }
     
     // Filtrar campos undefined para evitar errores en Firebase
     const updateData: any = {
@@ -199,11 +229,18 @@ export const updatePlatillo = async (
     if (platilloData.categoria !== undefined) {
       updateData.categoria = platilloData.categoria;
     }
-    if (platilloData.imagen !== undefined) {
+    if (imageUrl !== undefined) {
+      if (imageUrl && imageUrl.trim() !== "") {
+        updateData.imagen = imageUrl.trim();
+      } else {
+        // Si es string vacío, eliminar el campo
+        updateData.imagen = null;
+      }
+    } else if (platilloData.imagen !== undefined) {
+      // Si no hay nueva imagen pero se modificó el campo imagen
       if (platilloData.imagen) {
         updateData.imagen = platilloData.imagen;
       } else {
-        // Si es string vacío, eliminar el campo
         updateData.imagen = null;
       }
     }

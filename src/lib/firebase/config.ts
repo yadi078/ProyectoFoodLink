@@ -3,9 +3,10 @@
  * Utiliza variables de entorno para mantener las credenciales seguras
  */
 
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
+import { initializeApp, getApps, FirebaseApp } from "firebase/app";
+import { getAuth, Auth } from "firebase/auth";
+import { getFirestore, Firestore } from "firebase/firestore";
+import { getStorage, FirebaseStorage } from "firebase/storage";
 
 interface FirebaseConfig {
   apiKey: string;
@@ -34,8 +35,8 @@ const getFirebaseConfig = (): FirebaseConfig => {
 
   if (missingVars.length > 0) {
     throw new Error(
-      `Faltan variables de entorno de Firebase: ${missingVars.join(', ')}\n` +
-      'Por favor, crea un archivo .env con las credenciales de Firebase.'
+      `Faltan variables de entorno de Firebase: ${missingVars.join(", ")}\n` +
+        "Por favor, crea un archivo .env con las credenciales de Firebase."
     );
   }
 
@@ -46,8 +47,9 @@ const getFirebaseConfig = (): FirebaseConfig => {
 let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
+let storage: FirebaseStorage;
 
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   // Solo ejecutar en el cliente
   if (getApps().length === 0) {
     app = initializeApp(getFirebaseConfig());
@@ -57,8 +59,8 @@ if (typeof window !== 'undefined') {
 
   auth = getAuth(app);
   db = getFirestore(app);
+  storage = getStorage(app);
 }
 
-export { app, auth, db };
+export { app, auth, db, storage };
 export type { FirebaseConfig };
-
