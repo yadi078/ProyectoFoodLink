@@ -23,9 +23,9 @@ export default function ConfirmarPedidoModal({
   const [loading, setLoading] = useState(false);
 
   const handleConfirmar = async () => {
-    // Validar dirección si es entrega
+    // Validar nombre de institución si es entrega
     if (tipoEntrega === "entrega" && !direccion.trim()) {
-      alert("Por favor ingresa la dirección de entrega");
+      alert("Por favor ingresa el nombre de tu institución educativa");
       return;
     }
 
@@ -133,27 +133,31 @@ export default function ConfirmarPedidoModal({
                 }`}
                 disabled={loading}
               >
-                <div className="text-2xl mb-1">🚚</div>
-                <div className="font-semibold text-sm">A domicilio</div>
+                <div className="text-2xl mb-1">🏫</div>
+                <div className="font-semibold text-sm leading-tight">
+                  Entrega en puerta
+                  <br />
+                  de la institución
+                </div>
               </button>
             </div>
           </div>
 
-          {/* Dirección de entrega (solo si selecciona entrega) */}
+          {/* Nombre de la institución (solo si selecciona entrega) */}
           {tipoEntrega === "entrega" && (
             <div className="space-y-2 animate-fade-in">
               <label
                 htmlFor="direccion"
                 className="block text-sm font-semibold text-gray-700"
               >
-                Dirección de entrega <span className="text-error-500">*</span>
+                Nombre de tu institución educativa <span className="text-error-500">*</span>
               </label>
               <input
                 type="text"
                 id="direccion"
                 value={direccion}
                 onChange={(e) => setDireccion(e.target.value)}
-                placeholder="Ej: Calle Principal #123, Col. Centro"
+                placeholder="Ej: Universidad Tecnológica, Preparatoria Regional..."
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
                 disabled={loading}
               />

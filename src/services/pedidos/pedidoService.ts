@@ -16,8 +16,8 @@ import type { CartItem } from "@/components/context/CartContext";
 export interface CrearPedidoParams {
   estudianteId: string;
   items: CartItem[];
-  tipoEntrega: "recoger" | "entrega";
-  direccionEntrega?: string;
+  tipoEntrega: "recoger" | "entrega"; // 'recoger' en punto de venta, 'entrega' en puerta de institución
+  direccionEntrega?: string; // Nombre de la institución educativa
   notas?: string;
 }
 

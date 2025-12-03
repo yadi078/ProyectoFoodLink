@@ -2,7 +2,7 @@
  * Tipos y interfaces para Firebase y la aplicación
  */
 
-export type Zona = 'Zona Norte' | 'Zona Centro' | 'Zona Sur';
+export type Zona = "Zona Norte" | "Zona Centro" | "Zona Sur";
 
 export interface Vendedor {
   uid: string;
@@ -78,9 +78,15 @@ export interface Pedido {
     precioUnitario: number;
   }[];
   precioTotal: number;
-  estado: 'pendiente' | 'confirmado' | 'en_preparacion' | 'listo' | 'entregado' | 'cancelado';
-  tipoEntrega: 'recoger' | 'entrega';
-  direccionEntrega?: string;
+  estado:
+    | "pendiente"
+    | "confirmado"
+    | "en_preparacion"
+    | "listo"
+    | "entregado"
+    | "cancelado";
+  tipoEntrega: "recoger" | "entrega"; // 'recoger' en punto de venta, 'entrega' en puerta de institución
+  direccionEntrega?: string; // Nombre de la institución educativa cuando tipoEntrega es 'entrega'
   notas?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -95,4 +101,3 @@ export interface Calificacion {
   comentario?: string;
   createdAt: Date;
 }
-
