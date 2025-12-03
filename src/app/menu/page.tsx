@@ -289,7 +289,7 @@ export default function MenuPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#faf8f5]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 border-b-2 border-primary-600 mx-auto"></div>
           <p className="mt-3 sm:mt-4 text-gray-600 text-sm sm:text-base">
@@ -304,7 +304,7 @@ export default function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-3 sm:py-4 md:py-6">
+    <div className="min-h-screen bg-[#faf8f5] py-3 sm:py-4 md:py-6">
       <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-4 pt-2 sm:pt-3">
         {/* Header */}
         <div className="mb-3 sm:mb-4 md:mb-6">
@@ -416,7 +416,7 @@ export default function MenuPage() {
                   {/* Icono del ojito para ver detalles */}
                   <button
                     onClick={() => abrirModalDetalles(menu)}
-                    className="absolute top-2 left-2 w-7 h-7 sm:w-8 sm:h-8 bg-primary-500 rounded-lg flex items-center justify-center hover:bg-primary-600 transition-all duration-200 shadow-medium hover:scale-110 z-10 backdrop-blur-sm bg-opacity-90"
+                    className="absolute top-2 left-2 w-7 h-7 sm:w-8 sm:h-8 bg-primary-500 text-white rounded-lg flex items-center justify-center hover:bg-primary-600 hover:text-white transition-all duration-200 shadow-medium hover:scale-110 z-10 backdrop-blur-sm bg-opacity-90"
                     aria-label="Ver detalles"
                   >
                     <svg
@@ -487,7 +487,7 @@ export default function MenuPage() {
                     disabled={!menu.disponible}
                     className={`w-full py-2 px-3 rounded-lg font-semibold text-sm text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft ${
                       menu.disponible
-                        ? "bg-primary-500 hover:bg-primary-600 hover:shadow-medium hover:-translate-y-0.5"
+                        ? "bg-primary-500 hover:bg-primary-600 hover:text-white hover:shadow-medium hover:-translate-y-0.5"
                         : "bg-gray-400 cursor-not-allowed"
                     }`}
                   >
@@ -634,7 +634,7 @@ export default function MenuPage() {
                       disabled={!productoSeleccionado.disponible}
                       className={`w-full py-2 px-3 rounded-lg font-semibold text-sm text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft ${
                         productoSeleccionado.disponible
-                          ? "bg-primary-500 hover:bg-primary-600 hover:shadow-medium hover:-translate-y-0.5"
+                          ? "bg-primary-500 hover:bg-primary-600 hover:text-white hover:shadow-medium hover:-translate-y-0.5"
                           : "bg-gray-400 cursor-not-allowed"
                       }`}
                     >
@@ -664,7 +664,7 @@ export default function MenuPage() {
                           );
                           setMostrarFormularioResena(!mostrarFormularioResena);
                         }}
-                        className="w-full py-2 px-3 rounded-lg font-semibold text-sm bg-error-500 hover:bg-error-600 text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft hover:shadow-medium hover:-translate-y-0.5"
+                        className="w-full py-2 px-3 rounded-lg font-semibold text-sm bg-error-500 hover:bg-error-600 text-white hover:text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft hover:shadow-medium hover:-translate-y-0.5"
                       >
                         <svg
                           className="w-4 h-4"
@@ -742,7 +742,7 @@ export default function MenuPage() {
                       <button
                         onClick={handleEnviarResena}
                         disabled={cargandoResena}
-                        className="w-full py-2 px-3 text-sm bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition-all duration-200 disabled:opacity-50 shadow-soft hover:shadow-medium"
+                        className="w-full py-2 px-3 text-sm bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 hover:text-white transition-all duration-200 disabled:opacity-50 shadow-soft hover:shadow-medium"
                       >
                         {cargandoResena ? "Enviando..." : "Enviar Reseña"}
                       </button>

@@ -256,7 +256,9 @@ export default function SignupForm() {
             <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
               Datos Personales
             </h3>
-            <p className="text-sm text-gray-600 mb-4">Completa tu información básica</p>
+            <p className="text-sm text-gray-600 mb-4">
+              Completa tu información básica
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

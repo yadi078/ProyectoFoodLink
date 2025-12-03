@@ -40,9 +40,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
-      <body
-        className={`${inter.variable} ${poppins.variable} font-sans flex flex-col min-h-screen`}
+    <html lang="es" className={`${inter.variable} ${poppins.variable}`}>
+      <body 
+        className={`${inter.className} flex flex-col min-h-screen`}
+        suppressHydrationWarning
       >
         <AlertProvider>
           <CartProvider>

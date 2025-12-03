@@ -111,7 +111,7 @@ export default function PreguntasPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative w-full py-8 sm:py-12 md:py-16 bg-gradient-to-b from-[#fbaf32] to-[#ff9933]">
+      <section className="relative w-full py-8 sm:py-12 md:py-16 bg-gradient-to-b from-[#FFA552] to-[#ff9933]">
         <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl mx-auto px-4">
           <div className="text-center text-white">
             <div className="mb-4 sm:mb-5">
@@ -160,7 +160,7 @@ export default function PreguntasPage() {
                           {faq.question}
                         </span>
                         <svg
-                          className={`w-5 h-5 text-[#fbaf32] transition-transform ${
+                          className={`w-5 h-5 text-[#FFA552] transition-transform ${
                             isOpen ? "transform rotate-180" : ""
                           }`}
                           fill="none"
@@ -211,4 +211,3 @@ export default function PreguntasPage() {
     </div>
   );
 }
-

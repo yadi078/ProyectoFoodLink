@@ -33,7 +33,7 @@ export default function Footer() {
               <div className="flex gap-2 mt-3 sm:mt-4">
                 <a
                   href="#"
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 hover:text-white transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
                   aria-label="Facebook"
                 >
                   <svg
@@ -46,7 +46,7 @@ export default function Footer() {
                 </a>
                 <a
                   href="#"
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 hover:text-white transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
                   aria-label="YouTube"
                 >
                   <svg
@@ -59,7 +59,7 @@ export default function Footer() {
                 </a>
                 <a
                   href="#"
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 hover:text-white transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
                   aria-label="Instagram"
                 >
                   <svg
@@ -97,7 +97,7 @@ export default function Footer() {
       {/* Back to Top Button */}
       <a
         href="#"
-        className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 w-10 h-10 sm:w-11 sm:h-11 bg-primary-500 text-white rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-primary-600 z-[9] hidden lg:flex shadow-medium hover:shadow-large hover:scale-110"
+        className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 w-10 h-10 sm:w-11 sm:h-11 bg-primary-500 text-white rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-primary-600 hover:text-white z-[9] hidden lg:flex shadow-medium hover:shadow-large hover:scale-110"
         aria-label="Volver arriba"
       >
         <svg

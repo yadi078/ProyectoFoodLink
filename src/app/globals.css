@@ -4,8 +4,8 @@
 
 body {
   color: #1f2937;
-  background: #f9fafb;
-  font-family: var(--font-sans), "Inter", system-ui, sans-serif;
+  background: #faf8f5;
+  font-family: var(--font-sans, "Inter", system-ui, sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Mejoras para móviles */
@@ -19,13 +19,13 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-display), "Poppins", sans-serif;
+  font-family: var(--font-display, "Poppins", sans-serif);
   color: #1f2937;
   font-weight: 600;
 }
 
 a {
-  font-family: var(--font-display), "Poppins", sans-serif;
+  font-family: var(--font-display, "Poppins", sans-serif);
   font-weight: 500;
   color: #719a0a;
   transition: all 200ms ease;
@@ -84,13 +84,15 @@ a:focus {
 
 .btn-primary:hover {
   background: #ffa552;
-  box-shadow: 0 4px 16px rgba(113, 154, 10, 0.35);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(255, 165, 82, 0.35);
   transform: translateY(-1px);
 }
 
 .btn-primary:active {
+  color: #ffffff;
   transform: translateY(0) scale(0.98);
-  box-shadow: 0 2px 8px rgba(113, 154, 10, 0.25);
+  box-shadow: 0 2px 8px rgba(255, 165, 82, 0.25);
 }
 
 .btn-primary:disabled {
@@ -111,14 +113,16 @@ a:focus {
 }
 
 .btn-secondary:hover {
-  background: #ff6b35;
-  box-shadow: 0 4px 16px rgba(255, 165, 82, 0.35);
+  background: #719a0a;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(113, 154, 10, 0.35);
   transform: translateY(-1px);
 }
 
 .btn-secondary:active {
+  color: #ffffff;
   transform: translateY(0) scale(0.98);
-  box-shadow: 0 2px 8px rgba(255, 165, 82, 0.25);
+  box-shadow: 0 2px 8px rgba(113, 154, 10, 0.25);
 }
 
 .btn-outline {
@@ -134,14 +138,16 @@ a:focus {
 
 .btn-outline:hover {
   color: #ffffff;
-  background: #719a0a;
-  border-color: #719a0a;
+  background: #ffa552;
+  border-color: #ffa552;
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(113, 154, 10, 0.25);
+  box-shadow: 0 4px 16px rgba(255, 165, 82, 0.25);
 }
 
 .btn-outline:active {
+  color: #ffffff;
   transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(255, 165, 82, 0.25);
 }
 
 .btn-yellow {
@@ -154,8 +160,15 @@ a:focus {
 
 .btn-yellow:hover {
   background: #719a0a;
-  box-shadow: 0 4px 16px rgba(255, 165, 82, 0.35);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(113, 154, 10, 0.35);
   transform: translateY(-1px);
+}
+
+.btn-yellow:active {
+  color: #ffffff;
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(113, 154, 10, 0.25);
 }
 
 /* Section Header moderno */
@@ -249,11 +262,11 @@ a:focus {
 
 /* Estilos para sección Booking */
 .booking {
-  background: rgba(0, 0, 0, 0.04);
+  background: #faf8f5;
 }
 
 .booking-form {
-  background: #fbaf32;
+  background: #ffa552;
   padding: 60px 30px;
 }
 
@@ -272,7 +285,7 @@ a:focus {
 
 /* Estilos para sección Food */
 .food {
-  background: #f9fafb;
+  background: #faf8f5;
 }
 
 .food-item {

@@ -175,7 +175,7 @@ export default function LoginForm() {
             error={errors.tipoUsuario?.message}
           />
 
-          <div className="flex justify-end pt-4">
+          <div className="flex justify-center pt-4">
             <button
               type="button"
               onClick={handleNext}
@@ -238,7 +238,7 @@ export default function LoginForm() {
             )}
           </div>
 
-          <div className="flex justify-between pt-4">
+          <div className="flex justify-center gap-4 pt-4">
             <button
               type="button"
               onClick={handleBack}

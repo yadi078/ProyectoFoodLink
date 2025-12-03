@@ -32,60 +32,15 @@ export default function CartSidebar() {
   // Filtrar items con cantidad > 0 para mostrar solo los que realmente están en el carrito
   const validItems = items.filter((item) => {
     // Validar que el item tenga estructura correcta y cantidad > 0
-    const isValid =
+    return (
       item &&
       item.platillo &&
       item.platillo.id &&
       typeof item.cantidad === "number" &&
       item.cantidad > 0 &&
-      item.cantidad < 1000; // Límite razonable
-
-    if (!isValid && item) {
-      console.warn("⚠️ Item inválido filtrado:", {
-        item,
-        tienePlatillo: !!item.platillo,
-        tieneId: !!item.platillo?.id,
-        cantidad: item.cantidad,
-        tipoCantidad: typeof item.cantidad,
-      });
-    }
-
-    return isValid;
+      item.cantidad < 1000 // Límite razonable
+    );
   });
-
-  // Debug: Log para ver qué está pasando
-  useEffect(() => {
-    if (isCartOpen) {
-      console.log("🛒 CartSidebar - Carrito abierto");
-      console.log("🛒 CartSidebar - Items en carrito:", items.length);
-      console.log("🛒 CartSidebar - Items válidos:", validItems.length);
-      console.log(
-        "🛒 CartSidebar - Items detalle:",
-        JSON.stringify(items, null, 2)
-      );
-      console.log(
-        "🛒 CartSidebar - ValidItems detalle:",
-        JSON.stringify(validItems, null, 2)
-      );
-
-      // Verificar cada item individualmente
-      items.forEach((item, index) => {
-        console.log(`🛒 Item ${index}:`, {
-          tienePlatillo: !!item.platillo,
-          platilloId: item.platillo?.id,
-          platilloNombre: item.platillo?.nombre,
-          cantidad: item.cantidad,
-          cantidadEsNumero: typeof item.cantidad === "number",
-          cantidadMayorACero: item.cantidad > 0,
-          esValido:
-            item &&
-            item.platillo &&
-            typeof item.cantidad === "number" &&
-            item.cantidad > 0,
-        });
-      });
-    }
-  }, [items, isCartOpen, validItems]);
 
   const handleCheckout = () => {
     if (!user) {
@@ -110,7 +65,6 @@ export default function CartSidebar() {
 
     try {
       // 1. Validar disponibilidad de platillos
-      console.log("🔍 Validando disponibilidad de platillos...");
       const validacion = await validarDisponibilidadPlatillos(validItems);
 
       if (!validacion.valido) {
@@ -123,7 +77,6 @@ export default function CartSidebar() {
       }
 
       // 2. Crear el pedido
-      console.log("💾 Creando pedido...");
       const pedidosCreados = await crearPedido({
         estudianteId: user.uid,
         items: validItems,
@@ -131,8 +84,6 @@ export default function CartSidebar() {
         direccionEntrega: direccion,
         notas,
       });
-
-      console.log("✅ Pedidos creados:", pedidosCreados);
 
       // 3. Mostrar mensaje de éxito
       const cantidadVendedores = pedidosCreados.length;
@@ -148,7 +99,7 @@ export default function CartSidebar() {
       setIsModalOpen(false);
       closeCart();
     } catch (error) {
-      console.error("❌ Error al crear pedido:", error);
+      console.error("Error al crear pedido:", error);
       showAlert(
         error instanceof Error
           ? error.message

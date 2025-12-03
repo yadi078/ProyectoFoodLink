@@ -47,9 +47,9 @@ export default function ContactoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#faf8f5]">
       {/* Hero Section */}
-      <section className="relative w-full py-6 sm:py-8 md:py-12 bg-white">
+      <section className="relative w-full py-6 sm:py-8 md:py-12 bg-[#faf8f5]">
         <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl mx-auto px-4">
           <div className="text-center">
             <div className="mb-3 sm:mb-4">
@@ -57,7 +57,7 @@ export default function ContactoPage() {
                 <span className="text-lg sm:text-xl">📧</span>
                 <span>Contáctanos</span>
               </h1>
-              <p className="text-[#fbaf32] text-base sm:text-lg md:text-xl font-semibold font-display">
+              <p className="text-[#FFA552] text-base sm:text-lg md:text-xl font-semibold font-display">
                 Estamos Aquí para Ayudarte
               </p>
             </div>
@@ -70,7 +70,7 @@ export default function ContactoPage() {
       </section>
 
       {/* Contact Section */}
-      <section className="relative w-full py-6 sm:py-8 md:py-12 bg-[rgba(0,0,0,0.04)]">
+      <section className="relative w-full py-6 sm:py-8 md:py-12 bg-[#f5f1ec]">
         <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
             {/* Left Side - Contact Info */}
@@ -79,16 +79,18 @@ export default function ContactoPage() {
                 <p className="text-[#719a0a] text-xs sm:text-sm mb-1.5 font-semibold">
                   Información de Contacto
                 </p>
-                <h2 className="text-[#fbaf32] text-lg sm:text-xl md:text-2xl font-bold font-display">
+                <h2 className="text-[#FFA552] text-lg sm:text-xl md:text-2xl font-bold font-display">
                   Ponte en Contacto
                 </h2>
               </div>
 
               <div className="space-y-4 sm:space-y-5 md:space-y-6">
                 <div className="flex items-start">
-                  <div className="text-2xl sm:text-2.5xl md:text-3xl mr-3 sm:mr-4">📍</div>
+                  <div className="text-2xl sm:text-2.5xl md:text-3xl mr-3 sm:mr-4">
+                    📍
+                  </div>
                   <div>
-                    <h3 className="font-bold font-display mb-1.5 sm:mb-2 text-[#fbaf32] text-sm sm:text-base md:text-lg">
+                    <h3 className="font-bold font-display mb-1.5 sm:mb-2 text-[#FFA552] text-sm sm:text-base md:text-lg">
                       Dirección
                     </h3>
                     <p className="text-xs sm:text-sm md:text-base text-[#757575]">
@@ -100,15 +102,17 @@ export default function ContactoPage() {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="text-2xl sm:text-2.5xl md:text-3xl mr-3 sm:mr-4">📞</div>
+                  <div className="text-2xl sm:text-2.5xl md:text-3xl mr-3 sm:mr-4">
+                    📞
+                  </div>
                   <div>
-                    <h3 className="font-bold font-display mb-1.5 sm:mb-2 text-[#fbaf32] text-sm sm:text-base md:text-lg">
+                    <h3 className="font-bold font-display mb-1.5 sm:mb-2 text-[#FFA552] text-sm sm:text-base md:text-lg">
                       Teléfono
                     </h3>
                     <p className="text-xs sm:text-sm md:text-base text-[#757575]">
                       <a
                         href="tel:+34123456789"
-                        className="text-[#719a0a] hover:text-[#fbaf32] transition-colors font-semibold"
+                        className="text-[#719a0a] hover:text-[#FFA552] transition-colors font-semibold"
                       >
                         +34 123 456 789
                       </a>
@@ -119,15 +123,17 @@ export default function ContactoPage() {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="text-2xl sm:text-2.5xl md:text-3xl mr-3 sm:mr-4">📧</div>
+                  <div className="text-2xl sm:text-2.5xl md:text-3xl mr-3 sm:mr-4">
+                    📧
+                  </div>
                   <div>
-                    <h3 className="font-bold font-display mb-1.5 sm:mb-2 text-[#fbaf32] text-sm sm:text-base md:text-lg">
+                    <h3 className="font-bold font-display mb-1.5 sm:mb-2 text-[#FFA552] text-sm sm:text-base md:text-lg">
                       Email
                     </h3>
                     <p className="text-xs sm:text-sm md:text-base text-[#757575]">
                       <a
                         href="mailto:contacto@foodlink.com"
-                        className="text-[#719a0a] hover:text-[#fbaf32] transition-colors font-semibold"
+                        className="text-[#719a0a] hover:text-[#FFA552] transition-colors font-semibold"
                       >
                         contacto@foodlink.com
                       </a>
@@ -138,15 +144,17 @@ export default function ContactoPage() {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="text-2xl sm:text-2.5xl md:text-3xl mr-3 sm:mr-4">💬</div>
+                  <div className="text-2xl sm:text-2.5xl md:text-3xl mr-3 sm:mr-4">
+                    💬
+                  </div>
                   <div>
-                    <h3 className="font-bold font-display mb-1.5 sm:mb-2 text-[#fbaf32] text-sm sm:text-base md:text-lg">
+                    <h3 className="font-bold font-display mb-1.5 sm:mb-2 text-[#FFA552] text-sm sm:text-base md:text-lg">
                       Redes Sociales
                     </h3>
                     <div className="flex gap-2 sm:gap-3 mt-1.5 sm:mt-2">
                       <a
                         href="#"
-                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#fbaf32] text-white flex items-center justify-center hover:bg-[#719a0a] transition-colors"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#FFA552] text-white flex items-center justify-center hover:bg-[#719a0a] transition-colors"
                         aria-label="Facebook"
                       >
                         <svg
@@ -159,7 +167,7 @@ export default function ContactoPage() {
                       </a>
                       <a
                         href="#"
-                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#fbaf32] text-white flex items-center justify-center hover:bg-[#719a0a] transition-colors"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#FFA552] text-white flex items-center justify-center hover:bg-[#719a0a] transition-colors"
                         aria-label="Instagram"
                       >
                         <svg
@@ -182,7 +190,7 @@ export default function ContactoPage() {
                 <p className="text-[#719a0a] text-xs sm:text-sm mb-1.5 font-semibold">
                   Envíanos un Mensaje
                 </p>
-                <h2 className="text-[#fbaf32] text-lg sm:text-xl md:text-2xl font-bold font-display">
+                <h2 className="text-[#FFA552] text-lg sm:text-xl md:text-2xl font-bold font-display">
                   Formulario de Contacto
                 </h2>
               </div>

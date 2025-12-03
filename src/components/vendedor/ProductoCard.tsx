@@ -77,13 +77,13 @@ export default function ProductoCard({
         <div className="flex space-x-1.5 sm:space-x-2">
           <button
             onClick={() => onEdit(producto)}
-            className="flex-1 px-3 sm:px-3.5 md:px-4 py-2 sm:py-2.5 bg-primary-500 text-white rounded-lg sm:rounded-xl hover:bg-primary-600 transition-all duration-200 text-xs sm:text-sm font-semibold shadow-soft hover:shadow-medium"
+            className="flex-1 px-3 sm:px-3.5 md:px-4 py-2 sm:py-2.5 bg-primary-500 text-white rounded-lg sm:rounded-xl hover:bg-primary-600 hover:text-white transition-all duration-200 text-xs sm:text-sm font-semibold shadow-soft hover:shadow-medium"
           >
             Editar
           </button>
           <button
             onClick={() => onDelete(producto.id)}
-            className="flex-1 px-3 sm:px-3.5 md:px-4 py-2 sm:py-2.5 bg-error-500 text-white rounded-lg sm:rounded-xl hover:bg-error-600 transition-all duration-200 text-xs sm:text-sm font-semibold shadow-soft hover:shadow-medium"
+            className="flex-1 px-3 sm:px-3.5 md:px-4 py-2 sm:py-2.5 bg-error-500 text-white rounded-lg sm:rounded-xl hover:bg-error-600 hover:text-white transition-all duration-200 text-xs sm:text-sm font-semibold shadow-soft hover:shadow-medium"
           >
             Eliminar
           </button>

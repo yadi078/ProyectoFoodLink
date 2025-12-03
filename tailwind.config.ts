@@ -22,7 +22,7 @@ const config: Config = {
           800: "#2c3d04",
           900: "#151e02",
         },
-        // Secundario: #FFA552 (Naranja claro, complementario)
+        // Secundario: #FFA552 (Naranja, complementario)
         secondary: {
           50: "#fff9f0",
           100: "#fff2e0",

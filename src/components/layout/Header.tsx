@@ -16,12 +16,19 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, vendedor, loading } = useAuth();
-  const { getTotalItems, toggleCart, clearCart } = useCart();
+  const { getTotalItems, toggleCart, clearCart, isHydrated } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const isVendedor = vendedor !== null;
-  const totalItems = getTotalItems();
+  // Solo mostrar el contador después de la hidratación para evitar problemas SSR
+  const totalItems = mounted && isHydrated ? getTotalItems() : 0;
+
+  // Marcar como montado en el cliente
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogout = async () => {
     await logoutVendedor();
@@ -32,39 +39,16 @@ export default function Header() {
   const isActive = (path: string) => pathname === path;
   const isHomePage = pathname === "/";
 
-  // Detectar scroll para cambiar el estilo del header en la homepage
+  // Siempre mostrar el header con fondo sólido
   useEffect(() => {
-    if (!isHomePage) {
-      setIsScrolled(true); // En otras páginas siempre mostrar fondo blanco
-      return;
-    }
+    setIsScrolled(true);
+  }, []);
 
-    const handleScroll = () => {
-      // Cambiar estilo cuando se hace scroll más allá de la altura del viewport
-      const scrollPosition = window.scrollY;
-      const viewportHeight = window.innerHeight;
-      // Cambiar cuando se haya scrolleado más del 80% de la altura del viewport
-      setIsScrolled(scrollPosition > viewportHeight * 0.8);
-    };
-
-    // Verificar posición inicial
-    handleScroll();
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isHomePage]);
-
-  // Determinar si el header debe ser transparente
-  const shouldBeTransparent = isHomePage && !isScrolled;
+  // El header siempre tiene fondo sólido
+  const shouldBeTransparent = false;
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 w-full z-[999] py-2 sm:py-2.5 md:py-3 transition-all duration-300 ${
-        shouldBeTransparent
-          ? "bg-transparent shadow-none"
-          : "bg-white shadow-soft backdrop-blur-sm"
-      }`}
-    >
+    <header className="fixed top-0 left-0 right-0 w-full z-[999] py-2 sm:py-2.5 md:py-3 transition-all duration-300 bg-[#faf8f5] shadow-soft backdrop-blur-sm">
       <nav className="max-w-[1366px] mx-auto px-4 sm:px-6 md:px-8">
         <div className="flex justify-between items-center h-11 sm:h-12 md:h-14 lg:h-auto">
           {/* Logo */}
@@ -73,30 +57,14 @@ export default function Header() {
             className="flex items-center transition-transform hover:scale-105 duration-200"
           >
             <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-[45px] font-bold font-display leading-none">
-              <span
-                className={
-                  shouldBeTransparent ? "text-white" : "text-primary-500"
-                }
-              >
-                Food
-              </span>
-              <span
-                className={
-                  shouldBeTransparent ? "text-white" : "text-secondary-500"
-                }
-              >
-                Link
-              </span>
+              <span className="text-primary-500">Food</span>
+              <span className="text-secondary-500">Link</span>
             </span>
           </Link>
 
           {/* Botón mobile menu */}
           <button
-            className={`lg:hidden focus:outline-none transition-colors ${
-              shouldBeTransparent
-                ? "text-white hover:text-white/80"
-                : "text-[#666666] hover:text-[#fbaf32]"
-            }`}
+            className="lg:hidden focus:outline-none transition-colors text-[#666666] hover:text-[#FFA552]"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             <svg
@@ -120,11 +88,7 @@ export default function Header() {
               href="/"
               className={`px-3 py-2 font-display text-sm font-medium transition-all duration-200 rounded-lg ${
                 isActive("/")
-                  ? shouldBeTransparent
-                    ? "text-white bg-white/20"
-                    : "text-primary-500 bg-primary-50"
-                  : shouldBeTransparent
-                  ? "text-white/90 hover:text-white hover:bg-white/10"
+                  ? "text-primary-500 bg-primary-50"
                   : "text-gray-700 hover:text-primary-500 hover:bg-gray-50"
               }`}
             >
@@ -135,8 +99,6 @@ export default function Header() {
               className={`px-3 py-2 font-display text-sm font-medium transition-all duration-200 rounded-lg ${
                 isActive("/menu")
                   ? "text-primary-500 bg-primary-50"
-                  : shouldBeTransparent
-                  ? "text-white/90 hover:text-white hover:bg-white/10"
                   : "text-gray-700 hover:text-primary-500 hover:bg-gray-50"
               }`}
             >
@@ -147,8 +109,6 @@ export default function Header() {
               className={`px-3 py-2 font-display text-sm font-medium transition-all duration-200 rounded-lg ${
                 isActive("/sobre-nosotros")
                   ? "text-primary-500 bg-primary-50"
-                  : shouldBeTransparent
-                  ? "text-white/90 hover:text-white hover:bg-white/10"
                   : "text-gray-700 hover:text-primary-500 hover:bg-gray-50"
               }`}
             >
@@ -159,8 +119,6 @@ export default function Header() {
               className={`px-3 py-2 font-display text-sm font-medium transition-all duration-200 rounded-lg ${
                 isActive("/contacto")
                   ? "text-primary-500 bg-primary-50"
-                  : shouldBeTransparent
-                  ? "text-white/90 hover:text-white hover:bg-white/10"
                   : "text-gray-700 hover:text-primary-500 hover:bg-gray-50"
               }`}
             >
@@ -170,34 +128,19 @@ export default function Header() {
               <>
                 <Link
                   href="/vendedor/login"
-                  className={`px-3 py-2 font-display text-sm font-medium transition-all duration-200 rounded-lg ${
-                    shouldBeTransparent
-                      ? "text-white/90 hover:text-white hover:bg-white/10"
-                      : "text-gray-700 hover:text-primary-500 hover:bg-gray-50"
-                  }`}
+                  className="px-3 py-2 font-display text-sm font-medium transition-all duration-200 rounded-lg text-gray-700 hover:text-primary-500 hover:bg-gray-50"
                 >
                   Iniciar Sesión
                 </Link>
-                <Link
-                  href="/vendedor/signup"
-                  className={`px-4 py-2 text-sm font-display font-semibold transition-all duration-200 rounded-lg ${
-                    shouldBeTransparent
-                      ? "bg-white/20 hover:bg-white/30 text-white border-2 border-white/30 hover:border-white/50 backdrop-blur-sm"
-                      : "btn-primary"
-                  }`}
-                >
-                  Registrarse
+                <Link href="/menu" className="btn-primary px-4 py-2 text-sm">
+                  Hacer pedido
                 </Link>
               </>
             )}
             {!loading && user && (
               <button
                 onClick={handleLogout}
-                className={`px-3 py-2 font-display text-sm font-medium transition-all duration-200 rounded-lg ${
-                  shouldBeTransparent
-                    ? "text-white/90 hover:text-white hover:bg-white/10"
-                    : "text-gray-700 hover:text-primary-500 hover:bg-gray-50"
-                }`}
+                className="px-3 py-2 font-display text-sm font-medium transition-all duration-200 rounded-lg text-gray-700 hover:text-primary-500 hover:bg-gray-50"
               >
                 Cerrar Sesión
               </button>
@@ -213,17 +156,11 @@ export default function Header() {
             {(!user || !isVendedor) && (
               <button
                 onClick={toggleCart}
-                className={`relative px-2 py-2 rounded-lg transition-all duration-200 ${
-                  shouldBeTransparent
-                    ? "hover:bg-white/10"
-                    : "hover:bg-gray-100"
-                }`}
+                className="relative px-2 py-2 rounded-lg transition-all duration-200 hover:bg-gray-100"
                 aria-label="Carrito de compras"
               >
                 <svg
-                  className={`w-5 h-5 transition-colors ${
-                    shouldBeTransparent ? "text-white" : "text-gray-700"
-                  }`}
+                  className="w-5 h-5 transition-colors text-gray-700"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -252,13 +189,13 @@ export default function Header() {
           isMobileMenuOpen
             ? "max-h-96 opacity-100"
             : "max-h-0 opacity-0 overflow-hidden"
-        } bg-white shadow-medium`}
+        } bg-[#faf8f5] shadow-medium`}
       >
         <div className="px-4 pt-3 pb-4 space-y-1 border-t border-gray-200">
           <Link
             href="/"
             onClick={() => setIsMobileMenuOpen(false)}
-            className={`block px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+            className={`block px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-center ${
               isActive("/")
                 ? "text-primary-500 bg-primary-50"
                 : "text-gray-700 hover:text-primary-500 hover:bg-gray-50"
@@ -269,7 +206,7 @@ export default function Header() {
           <Link
             href="/menu"
             onClick={() => setIsMobileMenuOpen(false)}
-            className={`block px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+            className={`block px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-center ${
               isActive("/menu")
                 ? "text-primary-500 bg-primary-50"
                 : "text-gray-700 hover:text-primary-500 hover:bg-gray-50"
@@ -280,7 +217,7 @@ export default function Header() {
           <Link
             href="/sobre-nosotros"
             onClick={() => setIsMobileMenuOpen(false)}
-            className={`block px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+            className={`block px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-center ${
               isActive("/sobre-nosotros")
                 ? "text-primary-500 bg-primary-50"
                 : "text-gray-700 hover:text-primary-500 hover:bg-gray-50"
@@ -291,7 +228,7 @@ export default function Header() {
           <Link
             href="/contacto"
             onClick={() => setIsMobileMenuOpen(false)}
-            className={`block px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+            className={`block px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-center ${
               isActive("/contacto")
                 ? "text-primary-500 bg-primary-50"
                 : "text-gray-700 hover:text-primary-500 hover:bg-gray-50"
@@ -304,16 +241,16 @@ export default function Header() {
               <Link
                 href="/vendedor/login"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-primary-500 hover:bg-gray-50 transition-all duration-200"
+                className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-primary-500 hover:bg-gray-50 transition-all duration-200 text-center"
               >
                 Iniciar Sesión
               </Link>
               <Link
-                href="/vendedor/signup"
+                href="/menu"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="btn-primary block text-center mt-2"
               >
-                Registrarse
+                Hacer pedido
               </Link>
             </>
           )}
@@ -323,7 +260,7 @@ export default function Header() {
                 setIsMobileMenuOpen(false);
                 handleLogout();
               }}
-              className="block w-full px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-primary-500 hover:bg-gray-50 transition-all duration-200 mt-2"
+              className="block w-full px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-primary-500 hover:bg-gray-50 transition-all duration-200 mt-2 text-center"
             >
               Cerrar Sesión
             </button>
@@ -343,7 +280,7 @@ export default function Header() {
                 setIsMobileMenuOpen(false);
                 toggleCart();
               }}
-              className="relative w-full px-3 py-2 rounded-lg bg-primary-500 text-white text-sm font-semibold mt-2 flex items-center justify-center gap-2 hover:bg-primary-600 transition-all duration-200 shadow-medium"
+              className="relative w-full px-3 py-2 rounded-lg bg-primary-500 text-white text-sm font-semibold mt-2 flex items-center justify-center gap-2 hover:bg-primary-600 hover:text-white transition-all duration-200 shadow-medium"
               aria-label="Carrito de compras"
             >
               <svg

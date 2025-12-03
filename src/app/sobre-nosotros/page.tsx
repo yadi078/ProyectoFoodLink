@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 
 export default function SobreNosotrosPage() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#faf8f5]">
       {/* Hero Section */}
-      <section className="relative w-full pt-6 sm:pt-8 md:pt-12 pb-3 sm:pb-4 bg-white">
+      <section className="relative w-full pt-6 sm:pt-8 md:pt-12 pb-3 sm:pb-4 bg-[#faf8f5]">
         <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-[#fbaf32] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold font-display mb-2 flex items-center justify-center gap-2">
+            <h1 className="text-[#FFA552] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold font-display mb-2 flex items-center justify-center gap-2">
               <span className="text-lg sm:text-xl">👥</span>
               <span>Sobre Nosotros</span>
             </h1>
@@ -47,7 +47,7 @@ export default function SobreNosotrosPage() {
                 <p className="text-[#719a0a] text-sm sm:text-base md:text-lg lg:text-xl mb-1.5 sm:mb-2 font-semibold">
                   Nuestra Historia
                 </p>
-                <h2 className="text-[#fbaf32] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold font-display">
+                <h2 className="text-[#FFA552] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold font-display">
                   ¿Quiénes Somos?
                 </h2>
               </div>
@@ -79,12 +79,14 @@ export default function SobreNosotrosPage() {
       </section>
 
       {/* Mission & Vision Section */}
-      <section className="relative w-full py-8 sm:py-12 md:py-16 lg:py-[60px] bg-[rgba(0,0,0,0.04)]">
+      <section className="relative w-full py-8 sm:py-12 md:py-16 lg:py-[60px] bg-[#f5f1ec]">
         <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
             {/* Mission */}
             <div className="bg-white p-4 sm:p-5 md:p-6 lg:p-8 rounded-lg sm:rounded-xl md:rounded-[15px] shadow-[0_0_30px_rgba(0,0,0,0.08)]">
-              <div className="text-3xl sm:text-4xl md:text-5xl mb-3 sm:mb-4 text-center">🎯</div>
+              <div className="text-3xl sm:text-4xl md:text-5xl mb-3 sm:mb-4 text-center">
+                🎯
+              </div>
               <h3 className="text-lg sm:text-xl md:text-2xl font-bold font-display mb-3 sm:mb-4 text-center">
                 Nuestra Misión
               </h3>
@@ -97,7 +99,9 @@ export default function SobreNosotrosPage() {
 
             {/* Vision */}
             <div className="bg-white p-4 sm:p-5 md:p-6 lg:p-8 rounded-lg sm:rounded-xl md:rounded-[15px] shadow-[0_0_30px_rgba(0,0,0,0.08)]">
-              <div className="text-3xl sm:text-4xl md:text-5xl mb-3 sm:mb-4 text-center">🌟</div>
+              <div className="text-3xl sm:text-4xl md:text-5xl mb-3 sm:mb-4 text-center">
+                🌟
+              </div>
               <h3 className="text-lg sm:text-xl md:text-2xl font-bold font-display mb-3 sm:mb-4 text-center">
                 Nuestra Visión
               </h3>
@@ -118,7 +122,7 @@ export default function SobreNosotrosPage() {
             <p className="text-[#719a0a] text-sm sm:text-base md:text-lg lg:text-xl mb-1.5 sm:mb-2 font-semibold">
               Nuestros Valores
             </p>
-            <h2 className="text-[#fbaf32] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold font-display">
+            <h2 className="text-[#FFA552] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold font-display">
               Lo Que Nos Define
             </h2>
           </div>
@@ -154,11 +158,15 @@ export default function SobreNosotrosPage() {
                 key={index}
                 className="bg-white p-4 sm:p-5 md:p-6 rounded-lg sm:rounded-xl md:rounded-[15px] shadow-[0_0_30px_rgba(0,0,0,0.08)] hover:shadow-lg transition-all text-center"
               >
-                <div className="text-3xl sm:text-4xl md:text-5xl mb-3 sm:mb-4">{value.icon}</div>
+                <div className="text-3xl sm:text-4xl md:text-5xl mb-3 sm:mb-4">
+                  {value.icon}
+                </div>
                 <h3 className="text-base sm:text-lg md:text-xl font-bold font-display mb-2 sm:mb-3">
                   {value.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-[#757575]">{value.description}</p>
+                <p className="text-xs sm:text-sm text-[#757575]">
+                  {value.description}
+                </p>
               </div>
             ))}
           </div>
@@ -169,7 +177,7 @@ export default function SobreNosotrosPage() {
       <section className="relative w-full py-8 sm:py-12 md:py-16 lg:py-[60px] bg-[rgba(0,0,0,0.04)]">
         <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-[#fbaf32] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold font-display mb-3 sm:mb-4">
+            <h2 className="text-[#FFA552] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold font-display mb-3 sm:mb-4">
               ¿Quieres Unirte a Nosotros?
             </h2>
             <p className="text-sm sm:text-base md:text-lg text-[#757575] mb-6 sm:mb-7 md:mb-8 max-w-2xl mx-auto">

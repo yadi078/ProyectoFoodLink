@@ -91,7 +91,6 @@ export const registerUser = async (
   }
 };
 
-
 /**
  * Inicio de sesión de usuario (alumno o vendedor)
  * Autentica con Firebase y verifica que el usuario existe en la colección correspondiente
@@ -129,7 +128,6 @@ export const loginUser = async (
     throw mapFirebaseError(error);
   }
 };
-
 
 /**
  * Cerrar sesión

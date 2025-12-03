@@ -13,11 +13,10 @@ export default function MainWrapper({
   return (
     <main
       className={`flex-grow ${
-        isHomePage ? "pt-0" : "pt-16 lg:pt-20"
+        isHomePage ? "pt-[60px] sm:pt-[64px] md:pt-[70px]" : "pt-16 lg:pt-20"
       }`}
     >
       {children}
     </main>
   );
 }
-
