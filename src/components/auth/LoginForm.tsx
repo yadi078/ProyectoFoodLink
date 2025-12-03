@@ -110,7 +110,7 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Indicador de pasos */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <div className="flex items-center justify-between">
           {[1, 2].map((step) => {
             const isActive = step === currentStep;
@@ -120,7 +120,7 @@ export default function LoginForm() {
               <div key={step} className="flex items-center flex-1">
                 <div className="flex flex-col items-center flex-1">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
+                    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold transition-all text-sm sm:text-base ${
                       isActive
                         ? "bg-primary-600 text-white scale-110"
                         : isCompleted
@@ -131,7 +131,7 @@ export default function LoginForm() {
                     {isCompleted ? "✓" : step}
                   </div>
                   <span
-                    className={`text-xs mt-2 text-center ${
+                    className={`text-[10px] sm:text-xs mt-1.5 sm:mt-2 text-center ${
                       isActive
                         ? "text-primary-600 font-semibold"
                         : "text-gray-500"
@@ -190,12 +190,12 @@ export default function LoginForm() {
 
       {/* Paso 2: Credenciales */}
       {currentStep === 2 && (
-        <div className="space-y-6 animate-fadeIn">
+        <div className="space-y-4 animate-fadeIn">
           <div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
               Credenciales de Acceso
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-sm text-gray-600 mb-4">
               Ingresa tu correo electrónico y contraseña
             </p>
           </div>

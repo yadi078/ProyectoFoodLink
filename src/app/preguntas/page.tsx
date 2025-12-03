@@ -111,19 +111,19 @@ export default function PreguntasPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative w-full py-16 sm:py-20 md:py-24 bg-gradient-to-b from-[#fbaf32] to-[#ff9933]">
-        <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
+      <section className="relative w-full py-8 sm:py-12 md:py-16 bg-gradient-to-b from-[#fbaf32] to-[#ff9933]">
+        <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl mx-auto px-4">
           <div className="text-center text-white">
-            <div className="mb-6">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-display mb-2 flex items-center justify-center gap-3">
+            <div className="mb-4 sm:mb-5">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display mb-2 flex items-center justify-center gap-2">
                 <span>❓</span>
                 <span>¿Tienes Preguntas?</span>
               </h1>
-              <p className="text-white text-xl sm:text-2xl">
+              <p className="text-white text-lg sm:text-xl">
                 Preguntas Frecuentes
               </p>
             </div>
-            <p className="text-lg sm:text-xl max-w-2xl mx-auto opacity-90">
+            <p className="text-sm sm:text-base max-w-2xl mx-auto opacity-90">
               Encuentra respuestas a las preguntas más comunes sobre FoodLink
             </p>
           </div>
@@ -131,14 +131,14 @@ export default function PreguntasPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="relative w-full py-12 sm:py-16 md:py-[60px]">
-        <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <section className="relative w-full py-6 sm:py-8 md:py-12">
+        <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl mx-auto px-4">
           {faqs.map((category, categoryIndex) => (
-            <div key={categoryIndex} className="mb-12">
-              <h2 className="text-2xl sm:text-3xl font-bold font-display mb-6 text-[#454545]">
+            <div key={categoryIndex} className="mb-6 sm:mb-8">
+              <h2 className="text-xl sm:text-2xl font-bold font-display mb-4 sm:mb-5 text-[#454545]">
                 {category.category}
               </h2>
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {category.questions.map((faq, index) => {
                   const globalIndex =
                     faqs
@@ -150,13 +150,13 @@ export default function PreguntasPage() {
                   return (
                     <div
                       key={index}
-                      className="bg-white rounded-[15px] shadow-[0_0_30px_rgba(0,0,0,0.08)] overflow-hidden"
+                      className="bg-white rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.08)] overflow-hidden"
                     >
                       <button
                         onClick={() => toggleQuestion(globalIndex)}
-                        className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 transition-colors"
+                        className="w-full px-4 sm:px-5 py-3 sm:py-4 text-left flex justify-between items-center hover:bg-gray-50 transition-colors"
                       >
-                        <span className="font-semibold font-display text-lg text-[#454545]">
+                        <span className="font-semibold font-display text-sm sm:text-base text-[#454545]">
                           {faq.question}
                         </span>
                         <svg
@@ -176,8 +176,8 @@ export default function PreguntasPage() {
                         </svg>
                       </button>
                       {isOpen && (
-                        <div className="px-6 py-4 border-t border-gray-200">
-                          <p className="text-[#757575] leading-relaxed">
+                        <div className="px-4 sm:px-5 py-3 sm:py-4 border-t border-gray-200">
+                          <p className="text-sm text-[#757575] leading-relaxed">
                             {faq.answer}
                           </p>
                         </div>
@@ -192,13 +192,13 @@ export default function PreguntasPage() {
       </section>
 
       {/* Contact CTA Section */}
-      <section className="relative w-full py-12 sm:py-16 md:py-[60px] bg-[rgba(0,0,0,0.04)]">
-        <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
-          <div className="text-center bg-white p-8 sm:p-12 rounded-[15px] shadow-[0_0_30px_rgba(0,0,0,0.08)]">
-            <h2 className="text-3xl sm:text-4xl font-bold font-display mb-4">
+      <section className="relative w-full py-6 sm:py-8 md:py-12 bg-[rgba(0,0,0,0.04)]">
+        <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl mx-auto px-4">
+          <div className="text-center bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.08)]">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold font-display mb-3 sm:mb-4">
               ¿No Encontraste tu Respuesta?
             </h2>
-            <p className="text-lg text-[#757575] mb-6">
+            <p className="text-sm sm:text-base text-[#757575] mb-4 sm:mb-5">
               Si tienes más preguntas, no dudes en contactarnos. Estamos aquí
               para ayudarte.
             </p>

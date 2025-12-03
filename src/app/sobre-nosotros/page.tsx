@@ -11,14 +11,14 @@ export default function SobreNosotrosPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative w-full pt-8 sm:pt-12 md:pt-16 pb-4 sm:pb-6 md:pb-8 bg-white">
-        <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
+      <section className="relative w-full pt-6 sm:pt-8 md:pt-12 pb-3 sm:pb-4 bg-white">
+        <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-[#fbaf32] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-display mb-2 flex items-center justify-center gap-3">
-              <span>👥</span>
+            <h1 className="text-[#fbaf32] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold font-display mb-2 flex items-center justify-center gap-2">
+              <span className="text-lg sm:text-xl">👥</span>
               <span>Sobre Nosotros</span>
             </h1>
-            <p className="text-[#719a0a] text-xl sm:text-2xl md:text-3xl font-semibold font-display">
+            <p className="text-[#719a0a] text-base sm:text-lg md:text-xl font-semibold font-display">
               Conectando Comunidades Desde 2020
             </p>
           </div>
@@ -26,12 +26,12 @@ export default function SobreNosotrosPage() {
       </section>
 
       {/* About Section */}
-      <section className="relative w-full py-12 sm:py-16 md:py-[60px]">
-        <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-center">
+      <section className="relative w-full py-6 sm:py-8 md:py-12">
+        <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8 items-center">
             {/* Left Side - Image */}
             <div className="relative">
-              <div className="relative w-full rounded-[15px] overflow-hidden">
+              <div className="relative w-full rounded-lg sm:rounded-xl md:rounded-[15px] overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1556910096-6f5e72db6803?q=80&w=2000"
                   alt="Sobre Nosotros"
@@ -43,16 +43,16 @@ export default function SobreNosotrosPage() {
 
             {/* Right Side - Content */}
             <div>
-              <div className="mb-6 sm:mb-8">
-                <p className="text-[#719a0a] text-xl mb-2 font-semibold">
+              <div className="mb-4 sm:mb-5 md:mb-6 lg:mb-8">
+                <p className="text-[#719a0a] text-sm sm:text-base md:text-lg lg:text-xl mb-1.5 sm:mb-2 font-semibold">
                   Nuestra Historia
                 </p>
-                <h2 className="text-[#fbaf32] text-3xl sm:text-4xl font-bold font-display">
+                <h2 className="text-[#fbaf32] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold font-display">
                   ¿Quiénes Somos?
                 </h2>
               </div>
-              <div className="space-y-4 mb-6">
-                <p className="text-base text-[#757575]">
+              <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-5 md:mb-6">
+                <p className="text-sm sm:text-base text-[#757575]">
                   FoodLink es una plataforma innovadora que conecta cocineros
                   talentosos con estudiantes universitarios y personas que
                   buscan comida casera de calidad. Creemos en el poder de la
@@ -79,16 +79,16 @@ export default function SobreNosotrosPage() {
       </section>
 
       {/* Mission & Vision Section */}
-      <section className="relative w-full py-12 sm:py-16 md:py-[60px] bg-[rgba(0,0,0,0.04)]">
+      <section className="relative w-full py-8 sm:py-12 md:py-16 lg:py-[60px] bg-[rgba(0,0,0,0.04)]">
         <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-8 sm:gap-12">
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
             {/* Mission */}
-            <div className="bg-white p-6 sm:p-8 rounded-[15px] shadow-[0_0_30px_rgba(0,0,0,0.08)]">
-              <div className="text-5xl mb-4 text-center">🎯</div>
-              <h3 className="text-2xl font-bold font-display mb-4 text-center">
+            <div className="bg-white p-4 sm:p-5 md:p-6 lg:p-8 rounded-lg sm:rounded-xl md:rounded-[15px] shadow-[0_0_30px_rgba(0,0,0,0.08)]">
+              <div className="text-3xl sm:text-4xl md:text-5xl mb-3 sm:mb-4 text-center">🎯</div>
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold font-display mb-3 sm:mb-4 text-center">
                 Nuestra Misión
               </h3>
-              <p className="text-[#757575] text-center">
+              <p className="text-sm sm:text-base text-[#757575] text-center">
                 Facilitar el acceso a comida casera de calidad para estudiantes
                 universitarios, mientras apoyamos a cocineros locales y
                 microemprendedores que preparan platillos con amor y dedicación.
@@ -96,12 +96,12 @@ export default function SobreNosotrosPage() {
             </div>
 
             {/* Vision */}
-            <div className="bg-white p-6 sm:p-8 rounded-[15px] shadow-[0_0_30px_rgba(0,0,0,0.08)]">
-              <div className="text-5xl mb-4 text-center">🌟</div>
-              <h3 className="text-2xl font-bold font-display mb-4 text-center">
+            <div className="bg-white p-4 sm:p-5 md:p-6 lg:p-8 rounded-lg sm:rounded-xl md:rounded-[15px] shadow-[0_0_30px_rgba(0,0,0,0.08)]">
+              <div className="text-3xl sm:text-4xl md:text-5xl mb-3 sm:mb-4 text-center">🌟</div>
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold font-display mb-3 sm:mb-4 text-center">
                 Nuestra Visión
               </h3>
-              <p className="text-[#757575] text-center">
+              <p className="text-sm sm:text-base text-[#757575] text-center">
                 Ser la plataforma líder en España que conecta comunidades
                 universitarias con cocineros locales, creando una red de apoyo
                 mutuo y fomentando la economía local.
@@ -112,18 +112,18 @@ export default function SobreNosotrosPage() {
       </section>
 
       {/* Values Section */}
-      <section className="relative w-full py-12 sm:py-16 md:py-[60px]">
+      <section className="relative w-full py-8 sm:py-12 md:py-16 lg:py-[60px]">
         <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <p className="text-[#719a0a] text-xl mb-2 font-semibold">
+          <div className="text-center mb-8 sm:mb-10 md:mb-12">
+            <p className="text-[#719a0a] text-sm sm:text-base md:text-lg lg:text-xl mb-1.5 sm:mb-2 font-semibold">
               Nuestros Valores
             </p>
-            <h2 className="text-[#fbaf32] text-3xl sm:text-4xl font-bold font-display">
+            <h2 className="text-[#fbaf32] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold font-display">
               Lo Que Nos Define
             </h2>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 lg:gap-8">
             {[
               {
                 icon: "❤️",
@@ -152,13 +152,13 @@ export default function SobreNosotrosPage() {
             ].map((value, index) => (
               <div
                 key={index}
-                className="bg-white p-6 rounded-[15px] shadow-[0_0_30px_rgba(0,0,0,0.08)] hover:shadow-lg transition-all text-center"
+                className="bg-white p-4 sm:p-5 md:p-6 rounded-lg sm:rounded-xl md:rounded-[15px] shadow-[0_0_30px_rgba(0,0,0,0.08)] hover:shadow-lg transition-all text-center"
               >
-                <div className="text-5xl mb-4">{value.icon}</div>
-                <h3 className="text-xl font-bold font-display mb-3">
+                <div className="text-3xl sm:text-4xl md:text-5xl mb-3 sm:mb-4">{value.icon}</div>
+                <h3 className="text-base sm:text-lg md:text-xl font-bold font-display mb-2 sm:mb-3">
                   {value.title}
                 </h3>
-                <p className="text-sm text-[#757575]">{value.description}</p>
+                <p className="text-xs sm:text-sm text-[#757575]">{value.description}</p>
               </div>
             ))}
           </div>
@@ -166,13 +166,13 @@ export default function SobreNosotrosPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative w-full py-12 sm:py-16 md:py-[60px] bg-[rgba(0,0,0,0.04)]">
+      <section className="relative w-full py-8 sm:py-12 md:py-16 lg:py-[60px] bg-[rgba(0,0,0,0.04)]">
         <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-[#fbaf32] text-3xl sm:text-4xl font-bold font-display mb-4">
+            <h2 className="text-[#fbaf32] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold font-display mb-3 sm:mb-4">
               ¿Quieres Unirte a Nosotros?
             </h2>
-            <p className="text-lg text-[#757575] mb-8 max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base md:text-lg text-[#757575] mb-6 sm:mb-7 md:mb-8 max-w-2xl mx-auto">
               Si eres cocinero y quieres compartir tus platillos con
               estudiantes, o si eres estudiante buscando comida casera, ¡únete a
               nuestra comunidad!

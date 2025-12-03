@@ -228,20 +228,20 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-16 lg:pt-20">
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12">
+      <main className="max-w-[450px] sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-4 pt-3 sm:pt-4 pb-8 sm:pb-12">
         {/* Header del Dashboard - Parte del contenido normal */}
-        <div className="bg-white shadow-soft mb-8 rounded-2xl border border-gray-200">
-          <div className="px-6 sm:px-8 py-6">
-            <div className="flex justify-between items-center">
+        <div className="bg-white shadow-soft mb-4 sm:mb-6 rounded-lg sm:rounded-xl border border-gray-200">
+          <div className="px-4 sm:px-6 py-4 sm:py-5">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <div>
-                <h1 className="text-2xl font-bold text-gray-800 font-display">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-800 font-display">
                   🍲 {vendedor.nombreNegocio || "FoodLink"}
                 </h1>
-                <p className="text-sm text-gray-600 mt-1">Panel de Vendedor</p>
+                <p className="text-xs sm:text-sm text-gray-600 mt-1">Panel de Vendedor</p>
               </div>
               <button
                 onClick={handleLogout}
-                className="px-5 py-2.5 text-sm font-semibold text-white bg-error-500 hover:bg-error-600 rounded-xl transition-all duration-200 shadow-soft hover:shadow-medium"
+                className="px-4 py-2 text-sm font-semibold text-white bg-error-500 hover:bg-error-600 rounded-lg transition-all duration-200 shadow-soft hover:shadow-medium"
               >
                 Cerrar Sesión
               </button>
@@ -261,11 +261,11 @@ export default function DashboardPage() {
         )}
 
         {/* Bienvenida */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 font-display mb-2">
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 font-display mb-2">
             ¡Bienvenido, {vendedor.nombre}!
           </h2>
-          <p className="text-gray-600 text-base">
+          <p className="text-sm sm:text-base text-gray-600">
             Administra tus productos desde aquí
           </p>
         </div>
@@ -273,8 +273,8 @@ export default function DashboardPage() {
         {!showForm ? (
           <>
             {/* Herramientas de Administración */}
-            <div className="bg-white rounded-2xl shadow-soft p-6 sm:p-8 mb-8 border border-gray-200">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <div className="bg-white rounded-lg sm:rounded-xl shadow-soft p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-200">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4 mb-4 sm:mb-5">
                 {/* Búsqueda */}
                 <div className="flex-1">
                   <input
@@ -287,7 +287,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Filtros y Ordenamiento */}
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                   <select
                     value={filter}
                     onChange={(e) => setFilter(e.target.value as FilterOption)}
@@ -326,15 +326,15 @@ export default function DashboardPage() {
 
             {/* Lista de Productos */}
             {filteredPlatillos.length === 0 ? (
-              <div className="bg-white rounded-2xl shadow-soft p-12 text-center border border-gray-200">
-                <p className="text-gray-600 text-lg font-medium">
+              <div className="bg-white rounded-lg sm:rounded-xl shadow-soft p-6 sm:p-8 text-center border border-gray-200">
+                <p className="text-gray-600 text-base sm:text-lg font-medium">
                   {platillos.length === 0
                     ? "No tienes productos aún. ¡Agrega tu primer producto!"
                     : "No se encontraron productos con los filtros aplicados."}
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                 {filteredPlatillos.map((producto) => (
                   <ProductoCard
                     key={producto.id}
@@ -348,40 +348,40 @@ export default function DashboardPage() {
 
             {/* Estadísticas */}
             {platillos.length > 0 && (
-              <div className="mt-8 bg-white rounded-2xl shadow-soft p-6 sm:p-8 border border-gray-200">
-                <h3 className="text-lg font-bold text-gray-800 mb-6 font-display">
+              <div className="mt-4 sm:mt-6 bg-white rounded-lg sm:rounded-xl shadow-soft p-4 sm:p-6 border border-gray-200">
+                <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4 sm:mb-5 font-display">
                   Resumen
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  <div className="text-center p-4 bg-gray-50 rounded-xl">
-                    <p className="text-sm text-gray-600 mb-2 font-medium">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                  <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg sm:rounded-xl">
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1.5 sm:mb-2 font-medium">
                       Total Productos
                     </p>
-                    <p className="text-3xl font-bold text-gray-800">
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-800">
                       {platillos.length}
                     </p>
                   </div>
-                  <div className="text-center p-4 bg-success-50 rounded-xl">
-                    <p className="text-sm text-gray-600 mb-2 font-medium">
+                  <div className="text-center p-3 sm:p-4 bg-success-50 rounded-lg sm:rounded-xl">
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1.5 sm:mb-2 font-medium">
                       Disponibles
                     </p>
-                    <p className="text-3xl font-bold text-success-600">
+                    <p className="text-2xl sm:text-3xl font-bold text-success-600">
                       {platillos.filter((p) => p.disponible).length}
                     </p>
                   </div>
-                  <div className="text-center p-4 bg-error-50 rounded-xl">
-                    <p className="text-sm text-gray-600 mb-2 font-medium">
+                  <div className="text-center p-3 sm:p-4 bg-error-50 rounded-lg sm:rounded-xl">
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1.5 sm:mb-2 font-medium">
                       No Disponibles
                     </p>
-                    <p className="text-3xl font-bold text-error-600">
+                    <p className="text-2xl sm:text-3xl font-bold text-error-600">
                       {platillos.filter((p) => !p.disponible).length}
                     </p>
                   </div>
-                  <div className="text-center p-4 bg-primary-50 rounded-xl">
-                    <p className="text-sm text-gray-600 mb-2 font-medium">
+                  <div className="text-center p-3 sm:p-4 bg-primary-50 rounded-lg sm:rounded-xl">
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1.5 sm:mb-2 font-medium">
                       Categorías
                     </p>
-                    <p className="text-3xl font-bold text-primary-600">
+                    <p className="text-2xl sm:text-3xl font-bold text-primary-600">
                       {new Set(platillos.map((p) => p.categoria)).size}
                     </p>
                   </div>
@@ -391,8 +391,8 @@ export default function DashboardPage() {
           </>
         ) : (
           /* Formulario de Agregar/Editar */
-          <div className="bg-white rounded-2xl shadow-soft p-6 sm:p-8 border border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 font-display">
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-soft p-4 sm:p-6 border border-gray-200">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-5 font-display">
               {editingProducto ? "Editar Producto" : "Agregar Nuevo Producto"}
             </h2>
             <ProductoForm

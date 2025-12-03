@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import MainWrapper from "@/components/layout/MainWrapper";
 import { AlertProvider } from "@/components/context/AlertContext";
 import { CartProvider } from "@/components/context/CartContext";
+import CartSidebar from "@/components/cart/CartSidebar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,12 +24,13 @@ export const metadata: Metadata = {
   title: "FoodLink - Conecta estudiantes con comida casera",
   description:
     "Plataforma que conecta estudiantes universitarios con vendedores de comida casera",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
   themeColor: "#719a0a",
 };
 
@@ -47,6 +49,7 @@ export default function RootLayout({
             <Header />
             <MainWrapper>{children}</MainWrapper>
             <Footer />
+            <CartSidebar />
           </CartProvider>
         </AlertProvider>
       </body>

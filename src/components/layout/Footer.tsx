@@ -10,34 +10,34 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="relative w-full bg-gray-50 border-t border-gray-200">
-      <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-8">
+      <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-4 sm:py-6 md:py-8">
+        <div className="mb-4 sm:mb-6">
           {/* Our Address */}
           <div className="max-w-md">
-            <h2 className="text-2xl font-bold font-display text-primary-500 mb-4 relative pb-3 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-0.5 after:bg-secondary-500 after:rounded-full">
+            <h2 className="text-lg sm:text-xl font-bold font-display text-primary-500 mb-3 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 sm:after:w-16 after:h-0.5 after:bg-secondary-500 after:rounded-full">
               Contacto
             </h2>
-            <div className="space-y-4">
-              <p className="flex items-start text-gray-600 text-base">
-                <span className="mr-3 text-xl">📍</span>
+            <div className="space-y-2 sm:space-y-3">
+              <p className="flex items-start text-gray-600 text-sm">
+                <span className="mr-2 text-base">📍</span>
                 <span>Aguascalientes</span>
               </p>
-              <p className="flex items-start text-gray-600 text-base">
-                <span className="mr-3 text-xl">📞</span>
+              <p className="flex items-start text-gray-600 text-sm">
+                <span className="mr-2 text-base">📞</span>
                 <span>465 141 0772</span>
               </p>
-              <p className="flex items-start text-gray-600 text-base">
-                <span className="mr-3 text-xl">📧</span>
+              <p className="flex items-start text-gray-600 text-sm">
+                <span className="mr-2 text-base">📧</span>
                 <span>2236000371@utna.edu.mx</span>
               </p>
-              <div className="flex gap-3 mt-6">
+              <div className="flex gap-2 mt-3 sm:mt-4">
                 <a
                   href="#"
-                  className="w-12 h-12 rounded-xl bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
                   aria-label="Facebook"
                 >
                   <svg
-                    className="w-5 h-5"
+                    className="w-4 h-4 sm:w-5 sm:h-5"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -46,11 +46,11 @@ export default function Footer() {
                 </a>
                 <a
                   href="#"
-                  className="w-12 h-12 rounded-xl bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
                   aria-label="YouTube"
                 >
                   <svg
-                    className="w-5 h-5"
+                    className="w-4 h-4 sm:w-5 sm:h-5"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -59,11 +59,11 @@ export default function Footer() {
                 </a>
                 <a
                   href="#"
-                  className="w-12 h-12 rounded-xl bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary-500 text-white flex items-center justify-center hover:bg-primary-600 transition-all duration-200 shadow-soft hover:shadow-medium hover:scale-105"
                   aria-label="Instagram"
                 >
                   <svg
-                    className="w-5 h-5"
+                    className="w-4 h-4 sm:w-5 sm:h-5"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -77,10 +77,10 @@ export default function Footer() {
       </div>
 
       {/* Copyright */}
-      <div className="bg-white border-t border-gray-200 py-6">
-        <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
+      <div className="bg-white border-t border-gray-200 py-3 sm:py-4">
+        <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-4">
           <div className="text-center text-gray-600">
-            <p className="text-sm">
+            <p className="text-xs sm:text-sm">
               Copyright &copy;{" "}
               <Link
                 href="/"
@@ -97,11 +97,11 @@ export default function Footer() {
       {/* Back to Top Button */}
       <a
         href="#"
-        className="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-primary-600 z-[9] hidden lg:flex shadow-medium hover:shadow-large hover:scale-110"
+        className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 w-10 h-10 sm:w-11 sm:h-11 bg-primary-500 text-white rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-primary-600 z-[9] hidden lg:flex shadow-medium hover:shadow-large hover:scale-110"
         aria-label="Volver arriba"
       >
         <svg
-          className="w-5 h-5"
+          className="w-4 h-4 sm:w-5 sm:h-5"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

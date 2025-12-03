@@ -71,10 +71,15 @@ export interface Pedido {
   id: string;
   estudianteId: string;
   vendedorId: string;
-  platilloId: string;
-  cantidad: number;
+  items: {
+    platilloId: string;
+    nombre: string;
+    cantidad: number;
+    precioUnitario: number;
+  }[];
   precioTotal: number;
   estado: 'pendiente' | 'confirmado' | 'en_preparacion' | 'listo' | 'entregado' | 'cancelado';
+  tipoEntrega: 'recoger' | 'entrega';
   direccionEntrega?: string;
   notas?: string;
   createdAt: Date;

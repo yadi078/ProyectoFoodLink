@@ -49,19 +49,19 @@ export default function ContactoPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative w-full py-16 sm:py-20 md:py-24 bg-white">
-        <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
+      <section className="relative w-full py-6 sm:py-8 md:py-12 bg-white">
+        <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl mx-auto px-4">
           <div className="text-center">
-            <div className="mb-6">
-              <h1 className="text-[#719a0a] text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-3 font-bold font-display flex items-center justify-center gap-3">
-                <span>📧</span>
+            <div className="mb-3 sm:mb-4">
+              <h1 className="text-[#719a0a] text-xl sm:text-2xl md:text-3xl mb-2 font-bold font-display flex items-center justify-center gap-2">
+                <span className="text-lg sm:text-xl">📧</span>
                 <span>Contáctanos</span>
               </h1>
-              <p className="text-[#fbaf32] text-xl sm:text-2xl md:text-3xl font-semibold font-display">
+              <p className="text-[#fbaf32] text-base sm:text-lg md:text-xl font-semibold font-display">
                 Estamos Aquí para Ayudarte
               </p>
             </div>
-            <p className="text-[#757575] text-base sm:text-lg max-w-2xl mx-auto">
+            <p className="text-[#757575] text-sm sm:text-base max-w-2xl mx-auto">
               ¿Tienes alguna pregunta? ¿Necesitas ayuda? No dudes en
               contactarnos. Estamos aquí para ayudarte.
             </p>
@@ -70,28 +70,28 @@ export default function ContactoPage() {
       </section>
 
       {/* Contact Section */}
-      <section className="relative w-full py-12 sm:py-16 md:py-[60px] bg-[rgba(0,0,0,0.04)]">
-        <div className="container mx-auto max-w-[1366px] px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12">
+      <section className="relative w-full py-6 sm:py-8 md:py-12 bg-[rgba(0,0,0,0.04)]">
+        <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
             {/* Left Side - Contact Info */}
             <div>
-              <div className="mb-8">
-                <p className="text-[#719a0a] text-xl mb-2 font-semibold">
+              <div className="mb-4 sm:mb-5">
+                <p className="text-[#719a0a] text-xs sm:text-sm mb-1.5 font-semibold">
                   Información de Contacto
                 </p>
-                <h2 className="text-[#fbaf32] text-3xl sm:text-4xl font-bold font-display">
+                <h2 className="text-[#fbaf32] text-lg sm:text-xl md:text-2xl font-bold font-display">
                   Ponte en Contacto
                 </h2>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-5 md:space-y-6">
                 <div className="flex items-start">
-                  <div className="text-3xl mr-4">📍</div>
+                  <div className="text-2xl sm:text-2.5xl md:text-3xl mr-3 sm:mr-4">📍</div>
                   <div>
-                    <h3 className="font-bold font-display mb-2 text-[#fbaf32]">
+                    <h3 className="font-bold font-display mb-1.5 sm:mb-2 text-[#fbaf32] text-sm sm:text-base md:text-lg">
                       Dirección
                     </h3>
-                    <p className="text-[#757575]">
+                    <p className="text-xs sm:text-sm md:text-base text-[#757575]">
                       Disponible en toda España
                       <br />
                       Servicio en todas las universidades
@@ -100,12 +100,12 @@ export default function ContactoPage() {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="text-3xl mr-4">📞</div>
+                  <div className="text-2xl sm:text-2.5xl md:text-3xl mr-3 sm:mr-4">📞</div>
                   <div>
-                    <h3 className="font-bold font-display mb-2 text-[#fbaf32]">
+                    <h3 className="font-bold font-display mb-1.5 sm:mb-2 text-[#fbaf32] text-sm sm:text-base md:text-lg">
                       Teléfono
                     </h3>
-                    <p className="text-[#757575]">
+                    <p className="text-xs sm:text-sm md:text-base text-[#757575]">
                       <a
                         href="tel:+34123456789"
                         className="text-[#719a0a] hover:text-[#fbaf32] transition-colors font-semibold"
@@ -119,12 +119,12 @@ export default function ContactoPage() {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="text-3xl mr-4">📧</div>
+                  <div className="text-2xl sm:text-2.5xl md:text-3xl mr-3 sm:mr-4">📧</div>
                   <div>
-                    <h3 className="font-bold font-display mb-2 text-[#fbaf32]">
+                    <h3 className="font-bold font-display mb-1.5 sm:mb-2 text-[#fbaf32] text-sm sm:text-base md:text-lg">
                       Email
                     </h3>
-                    <p className="text-[#757575]">
+                    <p className="text-xs sm:text-sm md:text-base text-[#757575]">
                       <a
                         href="mailto:contacto@foodlink.com"
                         className="text-[#719a0a] hover:text-[#fbaf32] transition-colors font-semibold"
@@ -138,19 +138,19 @@ export default function ContactoPage() {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="text-3xl mr-4">💬</div>
+                  <div className="text-2xl sm:text-2.5xl md:text-3xl mr-3 sm:mr-4">💬</div>
                   <div>
-                    <h3 className="font-bold font-display mb-2 text-[#fbaf32]">
+                    <h3 className="font-bold font-display mb-1.5 sm:mb-2 text-[#fbaf32] text-sm sm:text-base md:text-lg">
                       Redes Sociales
                     </h3>
-                    <div className="flex gap-3 mt-2">
+                    <div className="flex gap-2 sm:gap-3 mt-1.5 sm:mt-2">
                       <a
                         href="#"
-                        className="w-10 h-10 rounded-full bg-[#fbaf32] text-white flex items-center justify-center hover:bg-[#719a0a] transition-colors"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#fbaf32] text-white flex items-center justify-center hover:bg-[#719a0a] transition-colors"
                         aria-label="Facebook"
                       >
                         <svg
-                          className="w-5 h-5"
+                          className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5"
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >
@@ -159,11 +159,11 @@ export default function ContactoPage() {
                       </a>
                       <a
                         href="#"
-                        className="w-10 h-10 rounded-full bg-[#fbaf32] text-white flex items-center justify-center hover:bg-[#719a0a] transition-colors"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#fbaf32] text-white flex items-center justify-center hover:bg-[#719a0a] transition-colors"
                         aria-label="Instagram"
                       >
                         <svg
-                          className="w-5 h-5"
+                          className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5"
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >
@@ -177,12 +177,12 @@ export default function ContactoPage() {
             </div>
 
             {/* Right Side - Contact Form */}
-            <div className="bg-white p-6 sm:p-8 rounded-[15px] shadow-[0_0_30px_rgba(0,0,0,0.08)]">
-              <div className="mb-6">
-                <p className="text-[#719a0a] text-xl mb-2 font-semibold">
+            <div className="bg-white p-3 sm:p-4 md:p-6 rounded-lg sm:rounded-xl shadow-[0_0_30px_rgba(0,0,0,0.08)]">
+              <div className="mb-3 sm:mb-4">
+                <p className="text-[#719a0a] text-xs sm:text-sm mb-1.5 font-semibold">
                   Envíanos un Mensaje
                 </p>
-                <h2 className="text-[#fbaf32] text-3xl sm:text-4xl font-bold font-display">
+                <h2 className="text-[#fbaf32] text-lg sm:text-xl md:text-2xl font-bold font-display">
                   Formulario de Contacto
                 </h2>
               </div>

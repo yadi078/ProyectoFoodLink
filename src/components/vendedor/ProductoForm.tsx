@@ -312,7 +312,8 @@ export default function ProductoForm({
               <img
                 src={previewImage}
                 alt="Vista previa"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-center"
+                style={{ objectFit: "cover", objectPosition: "center" }}
                 onError={() => setPreviewImage(null)}
               />
             </div>
