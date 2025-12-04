@@ -192,6 +192,12 @@ const getConversaciones = async (
 
 /**
  * Suscribirse a mensajes de una conversación (tiempo real)
+ * 
+ * NOTA IMPORTANTE: Esta consulta requiere un índice compuesto en Firestore.
+ * Si ves un error en la consola, crea el índice usando el link proporcionado
+ * en el error de Firebase, o crea manualmente un índice para la colección "mensajes":
+ * - Campo 1: conversacionId (Ascending)
+ * - Campo 2: createdAt (Ascending)
  */
 export const suscribirseAMensajes = (
   conversacionId: string,
@@ -204,17 +210,30 @@ export const suscribirseAMensajes = (
     orderBy("createdAt", "asc")
   );
 
-  const unsubscribe = onSnapshot(q, (snapshot) => {
-    const mensajes = snapshot.docs.map((doc) => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: timestampToDate(data.createdAt),
-      } as Mensaje;
-    });
-    callback(mensajes);
-  });
+  const unsubscribe = onSnapshot(
+    q,
+    (snapshot) => {
+      const mensajes = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: timestampToDate(data.createdAt),
+        } as Mensaje;
+      });
+      callback(mensajes);
+    },
+    (error) => {
+      console.error("Error en suscripción a mensajes:", error);
+      // Si hay error de índice, devolver array vacío
+      if (error.code === "failed-precondition") {
+        console.warn(
+          "⚠️ Se requiere crear un índice en Firestore. Por favor, sigue el link en el error para crearlo."
+        );
+      }
+      callback([]);
+    }
+  );
 
   return unsubscribe;
 };

@@ -18,7 +18,7 @@ export interface CrearPedidoParams {
   estudianteId: string;
   items: CartItem[];
   tipoEntrega: "entrega" | "recoger";
-  horaEntrega: string; // Formato HH:mm
+  horaEntrega: string; // Formato HH:mm (24 horas, ej: 14:30, 18:00)
   notas?: string;
   descuentoAplicado?: number;
   codigoPromocional?: string;
@@ -67,10 +67,11 @@ export const crearPedido = async (
     throw new Error("La hora de entrega es requerida");
   }
 
-  // Validar formato de hora (HH:mm)
+  // Validar formato de hora (HH:mm - formato 24 horas)
+  // Acepta horas de 00:00 a 23:59
   const horaRegex = /^([0-1][0-9]|2[0-3]):([0-5][0-9])$/;
   if (!horaRegex.test(horaEntrega)) {
-    throw new Error("Formato de hora inválido. Use HH:mm");
+    throw new Error("Formato de hora inválido. Use formato 24 horas HH:mm (ej: 14:30)");
   }
 
   // Validar que el usuario exista en vendedores o estudiantes
@@ -190,24 +191,34 @@ export const crearPedido = async (
       }));
 
       // Crear el documento del pedido
-      const pedidoData = {
+      // Firebase no acepta 'undefined', solo incluir campos con valores válidos
+      const pedidoData: any = {
         estudianteId,
         vendedorId,
         items: itemsParaGuardar,
         precioTotal,
-        precioOriginal: descuentoVendedor > 0 ? precioOriginal : undefined,
-        descuentoAplicado:
-          descuentoVendedor > 0 ? descuentoVendedor : undefined,
-        codigoPromocional: codigoPromocional || undefined,
         estado: "pendiente",
         tipoEntrega,
         horaEntrega, // Guardar la hora de entrega
         fechaEntrega, // Guardar la fecha (siempre el día actual)
-        notas: notas || null,
         vendedorCalificado: false,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       };
+
+      // Solo agregar campos opcionales si tienen valores
+      if (descuentoVendedor > 0) {
+        pedidoData.precioOriginal = precioOriginal;
+        pedidoData.descuentoAplicado = descuentoVendedor;
+      }
+
+      if (codigoPromocional) {
+        pedidoData.codigoPromocional = codigoPromocional;
+      }
+
+      if (notas) {
+        pedidoData.notas = notas;
+      }
 
       // Guardar en Firestore
       const docRef = await addDoc(collection(db, "pedidos"), pedidoData);

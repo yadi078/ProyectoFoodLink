@@ -11,7 +11,7 @@ FoodLink es una aplicación que busca resolver el problema de los estudiantes un
 - **Estilos**: Tailwind CSS
 - **Backend/Cloud**: Firebase (Authentication + Firestore)
 - **Validación**: Zod + React Hook Form
-- **Versión**: 1.0.0
+- **Versión**: 4.0.0
 
 ## 📋 Requisitos Previos
 
@@ -151,14 +151,21 @@ NEXT_PUBLIC_ENV=development
    - Selecciona modo "Producción" o "Prueba" (para desarrollo puedes usar "Prueba")
    - Selecciona una ubicación para tu base de datos
 
-4. **Obtén las credenciales de configuración**:
+4. **Configura las reglas de seguridad**:
+
+   - En Firestore Database, ve a la pestaña "Rules"
+   - Copia el contenido del archivo `firestore.rules` de este proyecto
+   - Pégalo en el editor de Firebase Console
+   - Haz clic en "Publicar" o "Publish"
+
+5. **Obtén las credenciales de configuración**:
 
    - Ve a Configuración del proyecto (ícono de engranaje)
    - Ve a "Configuración del proyecto"
    - Baja hasta "Tus aplicaciones" y selecciona la opción web (ícono `</>`)
    - Copia las credenciales que aparecen
 
-5. **Crea el archivo `.env`** en la raíz del proyecto con el siguiente contenido:
+6. **Crea el archivo `.env`** en la raíz del proyecto con el siguiente contenido:
 
 ```env
 NEXT_PUBLIC_FIREBASE_API_KEY=tu_api_key_aqui
@@ -171,6 +178,26 @@ NEXT_PUBLIC_ENV=development
 ```
 
 **⚠️ IMPORTANTE**: Reemplaza todos los valores que dicen "tu\_..." con tus credenciales reales de Firebase.
+
+### Paso 8: Crear Índices en Firestore (CRÍTICO) 🔥
+
+**Sin estos índices, algunas funciones NO funcionarán** (especialmente el chat).
+
+#### Opción Automática (Recomendada):
+1. Ejecuta la aplicación
+2. Navega por todas las secciones (especialmente `/mensajes`)
+3. Abre la consola del navegador (F12)
+4. Si ves errores de Firebase sobre índices faltantes, copia el link que aparece en el error
+5. Pega el link en el navegador - Firebase creará el índice automáticamente
+
+#### Índice Crítico (Manual):
+Si no ves el error, crea este índice manualmente en Firebase Console:
+
+**Colección: `mensajes`**
+- Campo 1: `conversacionId` (Ascending)
+- Campo 2: `createdAt` (Ascending)
+
+**📖 Consulta el archivo `INDICES_FIRESTORE.md` para la lista completa de índices** o `SOLUCION_RAPIDA_CHAT.md` si el chat no funciona.
 
 ## 🔄 Actualizar el Repositorio a la Última Versión
 
@@ -323,24 +350,45 @@ El proyecto sigue [Semantic Versioning](https://semver.org/):
 
 - **v1.0.0**: Versión inicial con módulo de autenticación de vendedores
 
-## 📝 Funcionalidades Actuales (v1.0.0)
+## 📝 Funcionalidades Actuales (v4.0.0)
 
-### Módulo de Autenticación de Vendedores
+### Para Estudiantes
+- ✅ Ver menú de platillos disponibles
+- ✅ Filtrar platillos por categoría
+- ✅ Carrito de compras
+- ✅ Realizar pedidos
+- ✅ Ver historial de pedidos
+- ✅ Calificar platillos y vendedores
+- ✅ Sistema de chat con vendedores
+- ✅ Aplicar códigos promocionales
 
-- ✅ Registro de vendedores (`/vendedor/signup`)
-- ✅ Inicio de sesión de vendedores (`/vendedor/login`)
-- ✅ Panel de vendedor (`/vendedor/dashboard`)
+### Para Vendedores
+- ✅ Registro e inicio de sesión (`/vendedor/signup`, `/vendedor/login`)
+- ✅ Panel de control con estadísticas (`/vendedor/dashboard`)
+- ✅ Gestión de menú y platillos (`/vendedor/menu`)
+- ✅ Gestión de pedidos (`/vendedor/ordenes`)
+- ✅ Ver y responder reseñas (`/vendedor/resenas`)
+- ✅ Sistema de chat con clientes (`/vendedor/mensajes`)
+- ✅ Configuración de perfil (`/vendedor/configuracion`)
+- ✅ Crear y gestionar promociones
+
+### Funcionalidades Generales
 - ✅ Validación estricta de formularios
 - ✅ Manejo seguro de sesiones con Firebase
-- ✅ Interfaz responsiva
+- ✅ Interfaz totalmente responsiva
+- ✅ PWA (Progressive Web App)
+- ✅ Notificaciones push
+- ✅ Sistema de calificaciones y reseñas
+- ✅ Sobre Nosotros y Contacto
+- ✅ Preguntas Frecuentes
 
-## 🚧 Próximas Funcionalidades
+## 🚧 Mejoras Futuras
 
-- [ ] Gestión de menús diarios
-- [ ] Sistema de pedidos
-- [ ] Perfil de vendedor
-- [ ] Notificaciones
-- [ ] Gestión de entregas/recolecciones
+- [ ] Integración de pagos en línea
+- [ ] Seguimiento en tiempo real de pedidos
+- [ ] Sistema de reportes avanzados
+- [ ] Modo oscuro
+- [ ] Multi-idioma
 
 ## 📚 Recursos
 
@@ -356,5 +404,5 @@ Este proyecto está en desarrollo activo como parte de un curso de Desarrollo We
 
 ---
 
-**Versión**: 1.0.0  
-**Última actualización**: 2024
+**Versión**: 4.0.0  
+**Última actualización**: Diciembre 2024

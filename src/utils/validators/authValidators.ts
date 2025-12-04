@@ -81,13 +81,13 @@ const vendedorSchema = z.object({
     .string()
     .regex(
       /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/,
-      "Formato de hora inválido (debe ser HH:mm)"
+      "Formato de hora inválido (debe ser HH:mm en formato 24 horas, ej: 14:30)"
     ),
   horarioFin: z
     .string()
     .regex(
       /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/,
-      "Formato de hora inválido (debe ser HH:mm)"
+      "Formato de hora inválido (debe ser HH:mm en formato 24 horas, ej: 20:00)"
     ),
   diasDescanso: z.array(z.string()).optional(),
 });

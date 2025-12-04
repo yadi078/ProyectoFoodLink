@@ -553,13 +553,15 @@ export default function SignupForm() {
                 >
                   Hora de Inicio
                 </label>
-                <input
+                  <input
                   id="horarioInicio"
                   type="time"
+                  step="60"
                   className={`form-input ${
                     errors.horarioInicio ? "form-input-error" : ""
                   }`}
                   {...register("horarioInicio")}
+                  // Formato 24 horas (HH:mm)
                 />
                 {errors.horarioInicio && (
                   <p className="form-error">{errors.horarioInicio.message}</p>
@@ -572,13 +574,15 @@ export default function SignupForm() {
                 >
                   Hora de Fin
                 </label>
-                <input
+                  <input
                   id="horarioFin"
                   type="time"
+                  step="60"
                   className={`form-input ${
                     errors.horarioFin ? "form-input-error" : ""
                   }`}
                   {...register("horarioFin")}
+                  // Formato 24 horas (HH:mm)
                 />
                 {errors.horarioFin && (
                   <p className="form-error">{errors.horarioFin.message}</p>

@@ -150,25 +150,9 @@ a:focus {
   box-shadow: 0 2px 8px rgba(255, 165, 82, 0.25);
 }
 
+/* btn-yellow es un alias de btn-secondary */
 .btn-yellow {
-  @apply font-display font-semibold text-sm px-4 py-2 sm:px-6 sm:py-2.5 md:py-3 text-white rounded-lg;
-  background: #ffa552;
-  border: none;
-  transition: all 200ms ease;
-  box-shadow: 0 2px 8px rgba(255, 165, 82, 0.25);
-}
-
-.btn-yellow:hover {
-  background: #719a0a;
-  color: #ffffff;
-  box-shadow: 0 4px 16px rgba(113, 154, 10, 0.35);
-  transform: translateY(-1px);
-}
-
-.btn-yellow:active {
-  color: #ffffff;
-  transform: translateY(0) scale(0.98);
-  box-shadow: 0 2px 8px rgba(113, 154, 10, 0.25);
+  @apply btn-secondary;
 }
 
 /* Section Header moderno */

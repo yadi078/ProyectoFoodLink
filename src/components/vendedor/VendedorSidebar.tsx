@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useResenasCount } from "@/hooks/useResenasCount";
+import { useMensajesNoLeidos } from "@/hooks/useMensajesNoLeidos";
 
 interface NavItem {
   name: string;
@@ -21,6 +22,10 @@ export default function VendedorSidebar({ onClose }: VendedorSidebarProps) {
   const pathname = usePathname();
   const { vendedor } = useAuth();
   const { count: resenasCount } = useResenasCount(vendedor?.uid);
+  const { totalNoLeidos: mensajesNoLeidos } = useMensajesNoLeidos(
+    vendedor?.uid,
+    "vendedor"
+  );
 
   const handleLinkClick = () => {
     if (onClose) {
@@ -104,6 +109,8 @@ export default function VendedorSidebar({ onClose }: VendedorSidebarProps) {
           />
         </svg>
       ),
+      badge: mensajesNoLeidos,
+      dynamicBadge: true,
     },
     {
       name: "Reseñas",

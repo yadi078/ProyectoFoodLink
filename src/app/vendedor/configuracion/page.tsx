@@ -248,6 +248,8 @@ export default function ConfiguracionPage() {
                   value={formData.horarioInicio}
                   onChange={handleChange}
                   className="form-input"
+                  step="60"
+                  // Formato 24 horas (HH:mm)
                 />
               </div>
               <div>
@@ -258,6 +260,8 @@ export default function ConfiguracionPage() {
                   value={formData.horarioFin}
                   onChange={handleChange}
                   className="form-input"
+                  step="60"
+                  // Formato 24 horas (HH:mm)
                 />
               </div>
             </div>

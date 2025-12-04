@@ -2,9 +2,10 @@
 
 import { usePathname } from "next/navigation";
 import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import BottomNav from "@/components/layout/BottomNav";
 import MainWrapper from "@/components/layout/MainWrapper";
 import CartSidebar from "@/components/cart/CartSidebar";
+import MensajesNotificacionWrapper from "@/components/chat/MensajesNotificacionWrapper";
 
 interface ClientLayoutWrapperProps {
   children: React.ReactNode;
@@ -18,9 +19,14 @@ export default function ClientLayoutWrapper({ children }: ClientLayoutWrapperPro
     !pathname.includes('/login') && 
     !pathname.includes('/signup');
   
-  // Si es el panel del vendedor, no mostrar Header, Footer ni CartSidebar
+  // Si es el panel del vendedor, no mostrar Header, BottomNav ni CartSidebar
   if (isVendedorPanel) {
-    return <>{children}</>;
+    return (
+      <>
+        {children}
+        <MensajesNotificacionWrapper />
+      </>
+    );
   }
   
   // Para todas las demás rutas (estudiantes, home, etc.)
@@ -28,8 +34,9 @@ export default function ClientLayoutWrapper({ children }: ClientLayoutWrapperPro
     <>
       <Header />
       <MainWrapper>{children}</MainWrapper>
-      <Footer />
+      <BottomNav />
       <CartSidebar />
+      <MensajesNotificacionWrapper />
     </>
   );
 }

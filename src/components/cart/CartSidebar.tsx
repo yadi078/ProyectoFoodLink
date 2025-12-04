@@ -70,9 +70,10 @@ export default function CartSidebar() {
         vendedoresUnicos.map(async (vendedorId) => {
           try {
             const vendedor = await getVendedor(vendedorId);
+            const horarioFinal = vendedor?.horario || { inicio: "10:00", fin: "15:00" };
             return {
               vendedorId,
-              horario: vendedor?.horario || { inicio: "10:00", fin: "15:00" },
+              horario: horarioFinal,
             };
           } catch (error) {
             console.error(
@@ -290,6 +291,11 @@ export default function CartSidebar() {
                     <h3 className="font-semibold text-gray-800 truncate mb-1 text-sm">
                       {item.platillo.nombre}
                     </h3>
+                    {item.platillo.nombreVendedor && (
+                      <p className="text-[10px] text-gray-500 truncate mb-0.5">
+                        👤 {item.platillo.nombreVendedor}
+                      </p>
+                    )}
                     <p className="text-xs text-gray-600 font-medium">
                       {formatPrice(item.platillo.precio)} c/u
                     </p>
@@ -380,6 +386,18 @@ export default function CartSidebar() {
         {/* Footer con total y botones */}
         {validItems.length > 0 && (
           <div className="border-t border-gray-200 p-3 sm:p-4 space-y-3 bg-gray-50 flex-shrink-0">
+            {/* Advertencia de múltiples vendedores */}
+            {vendedoresInfo.length > 1 && (
+              <div className="bg-amber-50 border border-amber-300 rounded-lg p-2 mb-2">
+                <p className="text-[10px] text-amber-800 font-semibold">
+                  ⚠️ Pedido de {vendedoresInfo.length} vendedores
+                </p>
+                <p className="text-[10px] text-amber-700">
+                  Deberás seleccionar una hora que funcione para todos.
+                </p>
+              </div>
+            )}
+            
             <div className="flex justify-between items-center">
               <span className="text-sm sm:text-base font-semibold text-gray-800">
                 Total:

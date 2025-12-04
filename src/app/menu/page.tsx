@@ -268,11 +268,11 @@ function MenuContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf8f5] py-3 sm:py-4 md:py-6">
-      <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-4 pt-2 sm:pt-3">
+    <div className="min-h-screen bg-[#faf8f5]">
+      <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-4">
         {/* Header */}
-        <div className="mb-3 sm:mb-4 md:mb-6">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-primary-500 mb-2 font-display flex items-center gap-2">
+        <div className="mb-3 sm:mb-4 text-center">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-primary-500 mb-2 font-display flex items-center justify-center gap-2">
             <span className="text-lg sm:text-xl">🍽️</span>
             <span>Menú Disponible</span>
           </h1>
@@ -306,7 +306,7 @@ function MenuContent() {
         <div className="bg-white rounded-lg shadow-soft p-4 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-6 border border-gray-200">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-4">
             <div>
-              <label className="block text-sm sm:text-sm font-semibold text-gray-800 mb-2">
+              <label className="block text-sm sm:text-sm font-semibold text-gray-800 mb-2 text-center sm:text-left">
                 🔍 Buscar por nombre
               </label>
               <input
@@ -318,7 +318,7 @@ function MenuContent() {
               />
             </div>
             <div>
-              <label className="block text-sm sm:text-sm font-semibold text-gray-800 mb-2">
+              <label className="block text-sm sm:text-sm font-semibold text-gray-800 mb-2 text-center sm:text-left">
                 📂 Categoría
               </label>
               <select
@@ -504,14 +504,14 @@ function MenuContent() {
                 <div className="text-3xl sm:text-4xl md:text-5xl mb-3 sm:mb-4">
                   🍽️
                 </div>
-                <p className="text-gray-800 text-lg sm:text-xl mb-2 sm:mb-3 font-display font-semibold">
+                <p className="text-gray-800 text-lg sm:text-xl mb-2 sm:mb-3 font-display font-semibold text-center">
                   No hay menús disponibles en este momento
                 </p>
-                <p className="text-gray-600 mb-3 sm:mb-4 text-sm">
+                <p className="text-gray-600 mb-3 sm:mb-4 text-sm text-center">
                   Los cocineros están preparando nuevos platillos. ¡Vuelve
                   pronto!
                 </p>
-                <p className="text-xs text-gray-500 mt-2 sm:mt-3">
+                <p className="text-xs text-gray-500 mt-2 sm:mt-3 text-center">
                   💡 Tip: Si eres vendedor, inicia sesión para agregar tus
                   platillos al menú.
                 </p>
@@ -519,18 +519,20 @@ function MenuContent() {
             ) : (
               <>
                 <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🔍</div>
-                <p className="text-gray-800 text-lg sm:text-xl mb-2 font-display font-semibold">
+                <p className="text-gray-800 text-lg sm:text-xl mb-2 font-display font-semibold text-center">
                   No se encontraron menús con los filtros seleccionados.
                 </p>
-                <button
-                  onClick={() => {
-                    setFiltro("");
-                    setCategoriaFiltro("todos");
-                  }}
-                  className="mt-4 btn-primary shadow-medium hover:shadow-large"
-                >
-                  Limpiar Filtros
-                </button>
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => {
+                      setFiltro("");
+                      setCategoriaFiltro("todos");
+                    }}
+                    className="mt-4 btn-primary shadow-medium hover:shadow-large"
+                  >
+                    Limpiar Filtros
+                  </button>
+                </div>
               </>
             )}
           </div>

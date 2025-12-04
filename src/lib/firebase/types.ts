@@ -23,8 +23,8 @@ export interface Vendedor {
 }
 
 export interface HorarioServicio {
-  inicio: string; // Formato HH:mm
-  fin: string; // Formato HH:mm
+  inicio: string; // Formato HH:mm (24 horas, ej: 06:00, 14:30, 18:00)
+  fin: string; // Formato HH:mm (24 horas, ej: 12:00, 20:00, 23:59)
 }
 
 export interface Estudiante {
@@ -82,7 +82,7 @@ export interface Pedido {
   codigoPromocional?: string; // Código promocional usado
   estado: "pendiente" | "en_camino" | "entregado" | "cancelado";
   tipoEntrega: "entrega" | "recoger"; // Entrega en UTNA o recoger en el lugar
-  horaEntrega: string; // Hora de entrega en formato HH:mm
+  horaEntrega: string; // Hora de entrega en formato HH:mm (24 horas, ej: 14:30, 18:00)
   fechaEntrega: Date; // Fecha del pedido (siempre el día actual)
   notas?: string;
   vendedorCalificado?: boolean; // Si ya se calificó al vendedor

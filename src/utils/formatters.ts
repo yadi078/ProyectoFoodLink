@@ -23,7 +23,7 @@ export const formatDate = (date: Date | string): string => {
 };
 
 /**
- * Formatea una fecha con hora
+ * Formatea una fecha con hora en formato 24 horas
  */
 export const formatDateTime = (date: Date | string): string => {
   const dateObj = typeof date === "string" ? new Date(date) : date;
@@ -33,6 +33,7 @@ export const formatDateTime = (date: Date | string): string => {
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    hour12: false, // Formato 24 horas
   });
 };
 
@@ -42,6 +43,30 @@ export const formatDateTime = (date: Date | string): string => {
 export const truncateText = (text: string, maxLength: number): string => {
   if (text.length <= maxLength) return text;
   return `${text.slice(0, maxLength)}...`;
+};
+
+/**
+ * Formatea una hora en formato 24 horas (HH:mm)
+ * @param date - Fecha u hora
+ * @returns Hora formateada en formato 24 horas (ej: 14:30, 18:00)
+ */
+export const formatTime24 = (date: Date | string): string => {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  return dateObj.toLocaleTimeString("es-ES", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false, // Formato 24 horas
+  });
+};
+
+/**
+ * Valida que una hora esté en formato HH:mm (24 horas)
+ * @param hora - Hora a validar (ej: "14:30", "18:00")
+ * @returns true si es válida, false si no
+ */
+export const isValidTime24 = (hora: string): boolean => {
+  const horaRegex = /^([0-1][0-9]|2[0-3]):([0-5][0-9])$/;
+  return horaRegex.test(hora);
 };
 
 /**
