@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sin Conexión - FoodLink</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #719a0a 0%, #5a7b08 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .button {
+            background: #719a0a;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background: #5a7b08;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(113, 154, 10, 0.3);
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .online {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .checking {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">
+            📡
+        </div>
+        <h1>Sin Conexión a Internet</h1>
+        <p>
+            No pudimos conectarnos a la red. Por favor, verifica tu conexión a Internet e intenta nuevamente.
+        </p>
+        
+        <button class="button" onclick="location.reload()">
+            Reintentar
+        </button>
+
+        <div class="status offline" id="status">
+            🔴 Sin conexión
+        </div>
+    </div>
+
+    <script>
+        // Verificar estado de la conexión
+        function updateStatus() {
+            const statusEl = document.getElementById('status');
+            
+            if (navigator.onLine) {
+                statusEl.className = 'status online';
+                statusEl.innerHTML = '🟢 Conectado - <span class="checking">Recargando...</span>';
+                
+                // Recargar automáticamente cuando vuelva la conexión
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                statusEl.className = 'status offline';
+                statusEl.innerHTML = '🔴 Sin conexión';
+            }
+        }
+
+        // Escuchar cambios en la conexión
+        window.addEventListener('online', updateStatus);
+        window.addEventListener('offline', updateStatus);
+
+        // Verificar cada 5 segundos
+        setInterval(updateStatus, 5000);
+
+        // Verificar al cargar
+        updateStatus();
+    </script>
+</body>
+</html>
+

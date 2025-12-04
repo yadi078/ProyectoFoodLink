@@ -494,3 +494,19 @@ a:focus {
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
 }
+
+/* Animación para banner de notificaciones */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s ease-out;
+}

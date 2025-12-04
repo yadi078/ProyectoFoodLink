@@ -45,6 +45,7 @@ export default function ProductoForm({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [imageValidationError, setImageValidationError] = useState<string | null>(null);
 
   useEffect(() => {
     if (producto) {
@@ -75,7 +76,51 @@ export default function ProductoForm({
     };
   }, [previewImage]);
 
-  const handleChange = (
+  // Validar imagen según los límites de FoodLink
+  const validateImage = async (file: File): Promise<string | null> => {
+    // Validar formato
+    const allowedFormats = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (!allowedFormats.includes(file.type.toLowerCase())) {
+      return "Formato no permitido. Solo se aceptan: JPG, JPEG, PNG, WebP";
+    }
+
+    // Validar tamaño del archivo (50 KB - 2 MB)
+    const minSize = 50 * 1024; // 50 KB
+    const maxSize = 2 * 1024 * 1024; // 2 MB
+    if (file.size < minSize) {
+      return `La imagen es muy pequeña. Mínimo: 50 KB (actual: ${Math.round(file.size / 1024)} KB)`;
+    }
+    if (file.size > maxSize) {
+      return `La imagen es muy grande. Máximo: 2 MB (actual: ${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
+    }
+
+    // Validar dimensiones (400x400px - 1920x1920px)
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const width = img.width;
+        const height = img.height;
+
+        if (width < 400 || height < 400) {
+          resolve(`Dimensiones muy pequeñas. Mínimo: 400x400px (actual: ${width}x${height}px)`);
+        } else if (width > 1920 || height > 1920) {
+          resolve(`Dimensiones muy grandes. Máximo: 1920x1920px (actual: ${width}x${height}px)`);
+        } else {
+          resolve(null); // Sin errores
+        }
+
+        URL.revokeObjectURL(img.src);
+      };
+
+      img.onerror = () => {
+        resolve("Error al cargar la imagen para validar dimensiones");
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handleChange = async (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
@@ -87,13 +132,29 @@ export default function ProductoForm({
       setFormData((prev) => ({ ...prev, [name]: checked }));
     } else if (type === "file") {
       const file = (e.target as HTMLInputElement).files?.[0] || null;
-      setImageFile(file);
+      
       if (file) {
+        // Validar imagen
+        const validationError = await validateImage(file);
+        if (validationError) {
+          setImageValidationError(validationError);
+          setImageFile(null);
+          setPreviewImage(producto?.imagen || null);
+          // Limpiar el input
+          (e.target as HTMLInputElement).value = "";
+          return;
+        }
+        
+        // Si la validación es exitosa
+        setImageValidationError(null);
+        setImageFile(file);
         // Crear preview de la imagen seleccionada
         const objectUrl = URL.createObjectURL(file);
         setPreviewImage(objectUrl);
       } else {
         // Si no hay archivo, volver a la imagen existente (si está editando)
+        setImageValidationError(null);
+        setImageFile(null);
         setPreviewImage(producto?.imagen || null);
       }
     } else if (name === "imagen") {
@@ -117,10 +178,14 @@ export default function ProductoForm({
 
     if (!formData.nombre.trim()) {
       newErrors.nombre = "El nombre es requerido";
+    } else if (formData.nombre.trim().length > 15) {
+      newErrors.nombre = "El nombre no puede tener más de 15 caracteres";
     }
 
     if (!formData.descripcion.trim()) {
       newErrors.descripcion = "La descripción es requerida";
+    } else if (formData.descripcion.trim().length > 50) {
+      newErrors.descripcion = "La descripción no puede tener más de 50 caracteres";
     }
 
     if (!formData.precio || parseFloat(formData.precio) <= 0) {
@@ -179,13 +244,27 @@ export default function ProductoForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Nombre */}
         <div className="md:col-span-2">
-          <label htmlFor="nombre" className="form-label">
-            Nombre del Producto *
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label htmlFor="nombre" className="form-label mb-0">
+              Nombre del Producto *
+            </label>
+            <span
+              className={`text-xs font-medium ${
+                formData.nombre.length > 15
+                  ? "text-error-500"
+                  : formData.nombre.length > 12
+                  ? "text-warning-500"
+                  : "text-gray-500"
+              }`}
+            >
+              {formData.nombre.length}/15
+            </span>
+          </div>
           <input
             id="nombre"
             name="nombre"
             type="text"
+            maxLength={15}
             value={formData.nombre}
             onChange={handleChange}
             className={`form-input ${errors.nombre ? "form-input-error" : ""}`}
@@ -196,12 +275,26 @@ export default function ProductoForm({
 
         {/* Descripción */}
         <div className="md:col-span-2">
-          <label htmlFor="descripcion" className="form-label">
-            Descripción Breve *
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label htmlFor="descripcion" className="form-label mb-0">
+              Descripción Breve *
+            </label>
+            <span
+              className={`text-xs font-medium ${
+                formData.descripcion.length > 50
+                  ? "text-error-500"
+                  : formData.descripcion.length > 45
+                  ? "text-warning-500"
+                  : "text-gray-500"
+              }`}
+            >
+              {formData.descripcion.length}/50
+            </span>
+          </div>
           <textarea
             id="descripcion"
             name="descripcion"
+            maxLength={50}
             value={formData.descripcion}
             onChange={handleChange}
             rows={3}
@@ -273,13 +366,22 @@ export default function ProductoForm({
             id="imagenFile"
             name="imagenFile"
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/jpg,image/png,image/webp"
             onChange={handleChange}
-            className="form-input"
+            className={`form-input ${imageValidationError ? "form-input-error" : ""}`}
           />
-          <p className="text-xs text-gray-500 mt-1">
-            Selecciona una imagen desde tu computadora o dispositivo móvil
-          </p>
+          {imageValidationError && (
+            <p className="form-error mt-2">{imageValidationError}</p>
+          )}
+          <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-xs font-semibold text-blue-900 mb-1">📋 Requisitos de Imagen FoodLink:</p>
+            <ul className="text-xs text-blue-800 space-y-0.5 ml-4">
+              <li>📏 <strong>Tamaño:</strong> 50 KB - 2 MB (óptimo: 200-500 KB)</li>
+              <li>📐 <strong>Dimensiones:</strong> 400x400px - 1920x1920px (óptimo: 800x800px)</li>
+              <li>📄 <strong>Formatos:</strong> JPG, JPEG, PNG, WebP</li>
+              <li>🎯 <strong>Calidad:</strong> Compresión JPEG 80-85%</li>
+            </ul>
+          </div>
         </div>
 
         {/* Imagen - URL alternativa (opcional) */}

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { useAlert } from "@/components/context/AlertContext";
@@ -14,7 +14,7 @@ import {
   crearCalificacionProducto,
   type CalificacionProducto,
 } from "@/services/platillos/calificacionService";
-import type { Platillo } from "@/lib/firebase/types";
+import type { Platillo, CategoriaPlatillo } from "@/lib/firebase/types";
 import type { Vendedor } from "@/lib/firebase/types";
 import { formatPrice, formatDate } from "@/utils/formatters";
 
@@ -23,13 +23,15 @@ interface PlatilloConVendedor extends Platillo {
   vendedorCalificacion?: number;
 }
 
-export default function MenuPage() {
+function MenuContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const { showAlert } = useAlert();
   const { addItem, openCart } = useCart();
   const [filtro, setFiltro] = useState("");
-  const [tipoComida, setTipoComida] = useState("todos");
+  const [categoriaFiltro, setCategoriaFiltro] = useState<string>("todos");
+  const [disponibilidadFiltro, setDisponibilidadFiltro] = useState("todos");
   const [platillos, setPlatillos] = useState<PlatilloConVendedor[]>([]);
   const [loading, setLoading] = useState(true);
   const [productoSeleccionado, setProductoSeleccionado] =
@@ -44,10 +46,19 @@ export default function MenuPage() {
   });
   const [mostrarFormularioResena, setMostrarFormularioResena] = useState(false);
   const [calificacionForm, setCalificacionForm] = useState({
-    calificacion: 5,
+    calificacion: 0,
     comentario: "",
   });
   const [cargandoResena, setCargandoResena] = useState(false);
+
+  // Leer parámetros de URL al cargar
+  useEffect(() => {
+    const categoria = searchParams.get("categoria");
+    console.log("📱 Parámetro de categoría recibido:", categoria);
+    if (categoria) {
+      setCategoriaFiltro(categoria);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const cargarPlatillos = async () => {
@@ -126,11 +137,13 @@ export default function MenuPage() {
     const coincideNombre = menu.nombre
       .toLowerCase()
       .includes(filtro.toLowerCase());
+    const coincideCategoria =
+      categoriaFiltro === "todos" || menu.categoria === categoriaFiltro;
     const coincideDisponible =
-      tipoComida === "todos" ||
-      (tipoComida === "disponible" && menu.disponible) ||
-      (tipoComida === "agotado" && !menu.disponible);
-    return coincideNombre && coincideDisponible;
+      disponibilidadFiltro === "todos" ||
+      (disponibilidadFiltro === "disponible" && menu.disponible) ||
+      (disponibilidadFiltro === "agotado" && !menu.disponible);
+    return coincideNombre && coincideCategoria && coincideDisponible;
   });
 
   const handlePedido = (platillo: Platillo, disponible: boolean) => {
@@ -197,7 +210,7 @@ export default function MenuPage() {
       calificacionForm.calificacion < 1 ||
       calificacionForm.calificacion > 5
     ) {
-      showAlert("La calificación debe estar entre 1 y 5", "warning");
+      showAlert("Por favor selecciona una calificación de 1 a 5 estrellas", "warning");
       return;
     }
 
@@ -270,7 +283,7 @@ export default function MenuPage() {
       setPromedioCalificacion(promedioData);
 
       setMostrarFormularioResena(false);
-      setCalificacionForm({ calificacion: 5, comentario: "" });
+      setCalificacionForm({ calificacion: 0, comentario: "" });
     } catch (error: any) {
       console.error("Error enviando reseña:", error);
       console.error("Detalles del error:", {
@@ -338,29 +351,48 @@ export default function MenuPage() {
           )}
         </div>
 
-        {/* Filtros */}
-        <div className="bg-white rounded-lg shadow-soft p-3 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-6 border border-gray-200">
-          <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+        {/* Filtros - Optimizados para móvil */}
+        <div className="bg-white rounded-lg shadow-soft p-4 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-6 border border-gray-200">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-4">
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-gray-800 mb-2">
-                Buscar por nombre
+              <label className="block text-sm sm:text-sm font-semibold text-gray-800 mb-2">
+                🔍 Buscar por nombre
               </label>
               <input
                 type="text"
                 placeholder="Buscar platillos..."
                 value={filtro}
                 onChange={(e) => setFiltro(e.target.value)}
-                className="form-input w-full"
+                className="form-input w-full text-base"
               />
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-gray-800 mb-2">
-                Filtrar por disponibilidad
+              <label className="block text-sm sm:text-sm font-semibold text-gray-800 mb-2">
+                📂 Categoría
               </label>
               <select
-                value={tipoComida}
-                onChange={(e) => setTipoComida(e.target.value)}
-                className="form-input w-full"
+                value={categoriaFiltro}
+                onChange={(e) => {
+                  console.log("📱 Categoría seleccionada:", e.target.value);
+                  setCategoriaFiltro(e.target.value);
+                }}
+                className="form-input w-full text-base"
+              >
+                <option value="todos">Todas las categorías</option>
+                <option value="Comida rápida">🍔 Comida rápida</option>
+                <option value="Comida casera">🏠 Comida casera</option>
+                <option value="Bebidas">🥤 Bebidas</option>
+                <option value="Postres">🍰 Postres</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm sm:text-sm font-semibold text-gray-800 mb-2">
+                ✅ Disponibilidad
+              </label>
+              <select
+                value={disponibilidadFiltro}
+                onChange={(e) => setDisponibilidadFiltro(e.target.value)}
+                className="form-input w-full text-base"
               >
                 <option value="todos">Todos</option>
                 <option value="disponible">Disponibles</option>
@@ -368,6 +400,48 @@ export default function MenuPage() {
               </select>
             </div>
           </div>
+          
+          {/* Indicador de filtros activos (móvil friendly) */}
+          {(categoriaFiltro !== "todos" || disponibilidadFiltro !== "todos" || filtro !== "") && (
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-xs text-gray-600 font-medium">Filtros activos:</span>
+                {categoriaFiltro !== "todos" && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">
+                    {categoriaFiltro}
+                    <button
+                      onClick={() => setCategoriaFiltro("todos")}
+                      className="hover:text-primary-900"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
+                {disponibilidadFiltro !== "todos" && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">
+                    {disponibilidadFiltro}
+                    <button
+                      onClick={() => setDisponibilidadFiltro("todos")}
+                      className="hover:text-primary-900"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
+                {filtro !== "" && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">
+                    "{filtro}"
+                    <button
+                      onClick={() => setFiltro("")}
+                      className="hover:text-primary-900"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Grid de Menús */}
@@ -528,7 +602,8 @@ export default function MenuPage() {
                 <button
                   onClick={() => {
                     setFiltro("");
-                    setTipoComida("todos");
+                    setCategoriaFiltro("todos");
+                    setDisponibilidadFiltro("todos");
                   }}
                   className="mt-4 btn-primary shadow-medium hover:shadow-large"
                 >
@@ -812,5 +887,24 @@ export default function MenuPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function MenuPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#faf8f5]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 border-b-2 border-primary-600 mx-auto"></div>
+            <p className="mt-3 sm:mt-4 text-gray-600 text-sm sm:text-base">
+              Cargando menús...
+            </p>
+          </div>
+        </div>
+      }
+    >
+      <MenuContent />
+    </Suspense>
   );
 }

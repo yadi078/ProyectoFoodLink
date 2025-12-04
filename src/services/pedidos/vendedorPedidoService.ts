@@ -74,6 +74,7 @@ export const updateEstadoPedido = async (
 ): Promise<void> => {
   try {
     const pedidoRef = doc(db, "pedidos", pedidoId);
+    
     await updateDoc(pedidoRef, {
       estado: nuevoEstado,
       updatedAt: serverTimestamp(),

@@ -38,14 +38,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Botones de acción */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-2">
-            <Link
-              href="/menu"
-              className="btn-primary text-center shadow-large hover:shadow-xl w-full sm:w-auto px-6 sm:px-8 py-3 text-sm sm:text-base"
-            >
-              Ver Menú
-            </Link>
+          {/* Botón de acción */}
+          <div className="flex justify-center items-center px-2">
             <Link
               href="/vendedor/login"
               className="btn-secondary text-center shadow-large hover:shadow-xl w-full sm:w-auto px-6 sm:px-8 py-3 text-sm sm:text-base"
@@ -186,53 +180,71 @@ export default function HomePage() {
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
-            {[
-              {
-                icon: "🍔",
-                title: "Platillos Principales",
-                description:
-                  "Disfruta de una gran variedad de platillos principales preparados con ingredientes frescos y de calidad",
-                link: "/menu",
-              },
-              {
-                icon: "🍰",
-                title: "Postres y Dulces",
-                description:
-                  "Endulza tu día con deliciosos postres caseros y dulces tradicionales preparados con amor",
-                link: "/menu",
-              },
-              {
-                icon: "🥤",
-                title: "Bebidas",
-                description:
-                  "Refréscate con bebidas naturales, jugos frescos y aguas de sabor preparadas artesanalmente",
-                link: "/menu",
-              },
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="food-item bg-white p-4 sm:p-4 md:p-6 text-center rounded-lg sm:rounded-xl shadow-soft hover:shadow-medium transition-all duration-200 border border-gray-200 hover:border-primary-500 hover:-translate-y-1"
-              >
-                <div className="text-4xl sm:text-4xl md:text-5xl mb-3 sm:mb-4 text-primary-500 transition-transform duration-200 group-hover:scale-110">
-                  {item.icon}
-                </div>
-                <h2 className="text-base sm:text-xl md:text-2xl font-bold font-display mb-2 sm:mb-3 text-gray-800">
-                  {item.title}
-                </h2>
-                <p className="text-xs sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
-                  {item.description}
-                </p>
-                <Link
-                  href={item.link}
-                  className="inline-flex items-center text-primary-500 hover:text-primary-600 font-semibold transition-colors duration-200 text-xs sm:text-base group"
-                >
-                  Ver Menú
-                  <span className="ml-1 sm:ml-2 group-hover:translate-x-1 transition-transform duration-200">
-                    →
-                  </span>
-                </Link>
+            {/* Platillos Principales */}
+            <div className="food-item bg-white p-4 sm:p-4 md:p-6 text-center rounded-lg sm:rounded-xl shadow-soft hover:shadow-medium transition-all duration-200 border border-gray-200 hover:border-primary-500 hover:-translate-y-1">
+              <div className="text-4xl sm:text-4xl md:text-5xl mb-3 sm:mb-4 text-primary-500 transition-transform duration-200 group-hover:scale-110">
+                🍔
               </div>
-            ))}
+              <h2 className="text-base sm:text-xl md:text-2xl font-bold font-display mb-2 sm:mb-3 text-gray-800">
+                Platillos Principales
+              </h2>
+              <p className="text-xs sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
+                Disfruta de una gran variedad de platillos principales preparados con ingredientes frescos y de calidad
+              </p>
+              <Link
+                href="/menu?categoria=Comida rápida"
+                className="inline-flex items-center text-primary-500 hover:text-primary-600 font-semibold transition-colors duration-200 text-xs sm:text-base group"
+              >
+                Ver Menú
+                <span className="ml-1 sm:ml-2 group-hover:translate-x-1 transition-transform duration-200">
+                  →
+                </span>
+              </Link>
+            </div>
+
+            {/* Postres y Dulces */}
+            <div className="food-item bg-white p-4 sm:p-4 md:p-6 text-center rounded-lg sm:rounded-xl shadow-soft hover:shadow-medium transition-all duration-200 border border-gray-200 hover:border-primary-500 hover:-translate-y-1">
+              <div className="text-4xl sm:text-4xl md:text-5xl mb-3 sm:mb-4 text-primary-500 transition-transform duration-200 group-hover:scale-110">
+                🍰
+              </div>
+              <h2 className="text-base sm:text-xl md:text-2xl font-bold font-display mb-2 sm:mb-3 text-gray-800">
+                Postres y Dulces
+              </h2>
+              <p className="text-xs sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
+                Endulza tu día con deliciosos postres caseros y dulces tradicionales preparados con amor
+              </p>
+              <Link
+                href="/menu?categoria=Postres"
+                className="inline-flex items-center text-primary-500 hover:text-primary-600 font-semibold transition-colors duration-200 text-xs sm:text-base group"
+              >
+                Ver Menú
+                <span className="ml-1 sm:ml-2 group-hover:translate-x-1 transition-transform duration-200">
+                  →
+                </span>
+              </Link>
+            </div>
+
+            {/* Bebidas */}
+            <div className="food-item bg-white p-4 sm:p-4 md:p-6 text-center rounded-lg sm:rounded-xl shadow-soft hover:shadow-medium transition-all duration-200 border border-gray-200 hover:border-primary-500 hover:-translate-y-1">
+              <div className="text-4xl sm:text-4xl md:text-5xl mb-3 sm:mb-4 text-primary-500 transition-transform duration-200 group-hover:scale-110">
+                🥤
+              </div>
+              <h2 className="text-base sm:text-xl md:text-2xl font-bold font-display mb-2 sm:mb-3 text-gray-800">
+                Bebidas
+              </h2>
+              <p className="text-xs sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
+                Refréscate con bebidas naturales, jugos frescos y aguas de sabor preparadas artesanalmente
+              </p>
+              <Link
+                href="/menu?categoria=Bebidas"
+                className="inline-flex items-center text-primary-500 hover:text-primary-600 font-semibold transition-colors duration-200 text-xs sm:text-base group"
+              >
+                Ver Menú
+                <span className="ml-1 sm:ml-2 group-hover:translate-x-1 transition-transform duration-200">
+                  →
+                </span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
