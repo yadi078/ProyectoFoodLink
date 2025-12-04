@@ -1,13 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import MainWrapper from "@/components/layout/MainWrapper";
 import { AlertProvider } from "@/components/context/AlertContext";
 import { CartProvider } from "@/components/context/CartContext";
-import CartSidebar from "@/components/cart/CartSidebar";
 import ServiceWorkerInit from "@/components/ServiceWorkerInit";
+import ClientLayoutWrapper from "@/components/layout/ClientLayoutWrapper";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -90,10 +87,9 @@ export default function RootLayout({
         
         <AlertProvider>
           <CartProvider>
-            <Header />
-            <MainWrapper>{children}</MainWrapper>
-            <Footer />
-            <CartSidebar />
+            <ClientLayoutWrapper>
+              {children}
+            </ClientLayoutWrapper>
           </CartProvider>
         </AlertProvider>
       </body>

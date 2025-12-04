@@ -45,7 +45,9 @@ export default function ProductoForm({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [imageValidationError, setImageValidationError] = useState<string | null>(null);
+  const [imageValidationError, setImageValidationError] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     if (producto) {
@@ -79,7 +81,12 @@ export default function ProductoForm({
   // Validar imagen según los límites de FoodLink
   const validateImage = async (file: File): Promise<string | null> => {
     // Validar formato
-    const allowedFormats = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    const allowedFormats = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+    ];
     if (!allowedFormats.includes(file.type.toLowerCase())) {
       return "Formato no permitido. Solo se aceptan: JPG, JPEG, PNG, WebP";
     }
@@ -88,10 +95,15 @@ export default function ProductoForm({
     const minSize = 50 * 1024; // 50 KB
     const maxSize = 2 * 1024 * 1024; // 2 MB
     if (file.size < minSize) {
-      return `La imagen es muy pequeña. Mínimo: 50 KB (actual: ${Math.round(file.size / 1024)} KB)`;
+      return `La imagen es muy pequeña. Mínimo: 50 KB (actual: ${Math.round(
+        file.size / 1024
+      )} KB)`;
     }
     if (file.size > maxSize) {
-      return `La imagen es muy grande. Máximo: 2 MB (actual: ${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
+      return `La imagen es muy grande. Máximo: 2 MB (actual: ${(
+        file.size /
+        (1024 * 1024)
+      ).toFixed(2)} MB)`;
     }
 
     // Validar dimensiones (400x400px - 1920x1920px)
@@ -102,9 +114,13 @@ export default function ProductoForm({
         const height = img.height;
 
         if (width < 400 || height < 400) {
-          resolve(`Dimensiones muy pequeñas. Mínimo: 400x400px (actual: ${width}x${height}px)`);
+          resolve(
+            `Dimensiones muy pequeñas. Mínimo: 400x400px (actual: ${width}x${height}px)`
+          );
         } else if (width > 1920 || height > 1920) {
-          resolve(`Dimensiones muy grandes. Máximo: 1920x1920px (actual: ${width}x${height}px)`);
+          resolve(
+            `Dimensiones muy grandes. Máximo: 1920x1920px (actual: ${width}x${height}px)`
+          );
         } else {
           resolve(null); // Sin errores
         }
@@ -132,7 +148,7 @@ export default function ProductoForm({
       setFormData((prev) => ({ ...prev, [name]: checked }));
     } else if (type === "file") {
       const file = (e.target as HTMLInputElement).files?.[0] || null;
-      
+
       if (file) {
         // Validar imagen
         const validationError = await validateImage(file);
@@ -144,7 +160,7 @@ export default function ProductoForm({
           (e.target as HTMLInputElement).value = "";
           return;
         }
-        
+
         // Si la validación es exitosa
         setImageValidationError(null);
         setImageFile(file);
@@ -178,14 +194,15 @@ export default function ProductoForm({
 
     if (!formData.nombre.trim()) {
       newErrors.nombre = "El nombre es requerido";
-    } else if (formData.nombre.trim().length > 15) {
-      newErrors.nombre = "El nombre no puede tener más de 15 caracteres";
+    } else if (formData.nombre.trim().length > 35) {
+      newErrors.nombre = "El nombre no puede tener más de 35 caracteres";
     }
 
     if (!formData.descripcion.trim()) {
       newErrors.descripcion = "La descripción es requerida";
-    } else if (formData.descripcion.trim().length > 50) {
-      newErrors.descripcion = "La descripción no puede tener más de 50 caracteres";
+    } else if (formData.descripcion.trim().length > 150) {
+      newErrors.descripcion =
+        "La descripción no puede tener más de 150 caracteres";
     }
 
     if (!formData.precio || parseFloat(formData.precio) <= 0) {
@@ -250,21 +267,21 @@ export default function ProductoForm({
             </label>
             <span
               className={`text-xs font-medium ${
-                formData.nombre.length > 15
+                formData.nombre.length > 35
                   ? "text-error-500"
-                  : formData.nombre.length > 12
+                  : formData.nombre.length > 30
                   ? "text-warning-500"
                   : "text-gray-500"
               }`}
             >
-              {formData.nombre.length}/15
+              {formData.nombre.length}/35
             </span>
           </div>
           <input
             id="nombre"
             name="nombre"
             type="text"
-            maxLength={15}
+            maxLength={35}
             value={formData.nombre}
             onChange={handleChange}
             className={`form-input ${errors.nombre ? "form-input-error" : ""}`}
@@ -281,20 +298,20 @@ export default function ProductoForm({
             </label>
             <span
               className={`text-xs font-medium ${
-                formData.descripcion.length > 50
+                formData.descripcion.length > 150
                   ? "text-error-500"
-                  : formData.descripcion.length > 45
+                  : formData.descripcion.length > 140
                   ? "text-warning-500"
                   : "text-gray-500"
               }`}
             >
-              {formData.descripcion.length}/50
+              {formData.descripcion.length}/150
             </span>
           </div>
           <textarea
             id="descripcion"
             name="descripcion"
-            maxLength={50}
+            maxLength={150}
             value={formData.descripcion}
             onChange={handleChange}
             rows={3}
@@ -368,18 +385,31 @@ export default function ProductoForm({
             type="file"
             accept="image/jpeg,image/jpg,image/png,image/webp"
             onChange={handleChange}
-            className={`form-input ${imageValidationError ? "form-input-error" : ""}`}
+            className={`form-input ${
+              imageValidationError ? "form-input-error" : ""
+            }`}
           />
           {imageValidationError && (
             <p className="form-error mt-2">{imageValidationError}</p>
           )}
           <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-xs font-semibold text-blue-900 mb-1">📋 Requisitos de Imagen FoodLink:</p>
+            <p className="text-xs font-semibold text-blue-900 mb-1">
+              📋 Requisitos de Imagen FoodLink:
+            </p>
             <ul className="text-xs text-blue-800 space-y-0.5 ml-4">
-              <li>📏 <strong>Tamaño:</strong> 50 KB - 2 MB (óptimo: 200-500 KB)</li>
-              <li>📐 <strong>Dimensiones:</strong> 400x400px - 1920x1920px (óptimo: 800x800px)</li>
-              <li>📄 <strong>Formatos:</strong> JPG, JPEG, PNG, WebP</li>
-              <li>🎯 <strong>Calidad:</strong> Compresión JPEG 80-85%</li>
+              <li>
+                📏 <strong>Tamaño:</strong> 50 KB - 2 MB (óptimo: 200-500 KB)
+              </li>
+              <li>
+                📐 <strong>Dimensiones:</strong> 400x400px - 1920x1920px
+                (óptimo: 800x800px)
+              </li>
+              <li>
+                📄 <strong>Formatos:</strong> JPG, JPEG, PNG, WebP
+              </li>
+              <li>
+                🎯 <strong>Calidad:</strong> Compresión JPEG 80-85%
+              </li>
             </ul>
           </div>
         </div>

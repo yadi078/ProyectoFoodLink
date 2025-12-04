@@ -3,7 +3,7 @@
  * Maneja las operaciones relacionadas con vendedores
  */
 
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import type { Vendedor } from '@/lib/firebase/types';
 
@@ -108,6 +108,37 @@ export const getVendedorConCalificacion = async (
   } catch (error) {
     console.error('Error obteniendo vendedor con calificación:', error);
     return null;
+  }
+};
+
+/**
+ * Actualizar información de un vendedor
+ * @param vendedorId ID del vendedor a actualizar
+ * @param data Datos parciales del vendedor a actualizar
+ */
+export const updateVendedor = async (
+  vendedorId: string,
+  data: Partial<Vendedor>
+): Promise<void> => {
+  try {
+    const vendedorRef = doc(db, 'vendedores', vendedorId);
+    
+    // Preparar los datos a actualizar
+    const updateData: any = {
+      ...data,
+      updatedAt: serverTimestamp(),
+    };
+
+    // Remover campos que no deben actualizarse
+    delete updateData.uid;
+    delete updateData.id;
+    delete updateData.email;
+    delete updateData.createdAt;
+
+    await updateDoc(vendedorRef, updateData);
+  } catch (error: any) {
+    console.error('Error actualizando vendedor:', error);
+    throw new Error('Error al actualizar la información del vendedor.');
   }
 };
 

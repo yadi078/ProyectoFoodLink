@@ -2,43 +2,34 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
-import { logoutVendedor } from "@/services/auth/authService";
+import VendedorLayout from "@/components/vendedor/VendedorLayout";
 import {
-  getPlatillosByVendedor,
-  createPlatillo,
-  updatePlatillo,
-  deletePlatillo,
-} from "@/services/platillos/platilloService";
-import type { Platillo, CategoriaPlatillo } from "@/lib/firebase/types";
-import ProductoCard from "@/components/vendedor/ProductoCard";
-import ProductoForm from "@/components/vendedor/ProductoForm";
+  getEstadisticasVendedor,
+  getPedidosByVendedor,
+  getEstudianteInfo,
+  type EstadisticasVendedor,
+} from "@/services/pedidos/vendedorPedidoService";
+import type { Pedido } from "@/lib/firebase/types";
+import { formatPrice } from "@/utils/formatters";
 
-type SortOption = "nombre" | "precio" | "categoria" | "fecha";
-type FilterOption =
-  | "todos"
-  | CategoriaPlatillo
-  | "disponible"
-  | "no-disponible";
+interface PedidoConCliente extends Pedido {
+  clienteNombre?: string;
+  clienteTelefono?: string;
+}
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, vendedor, loading: authLoading } = useAuth();
-  const [platillos, setPlatillos] = useState<Platillo[]>([]);
-  const [filteredPlatillos, setFilteredPlatillos] = useState<Platillo[]>([]);
+  const [estadisticas, setEstadisticas] = useState<EstadisticasVendedor | null>(
+    null
+  );
+  const [pedidosRecientes, setPedidosRecientes] = useState<PedidoConCliente[]>(
+    []
+  );
+  const [pedidosCompletadosHoy, setPedidosCompletadosHoy] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editingProducto, setEditingProducto] = useState<
-    Platillo | undefined
-  >();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
-  // Filtros y búsqueda
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState<FilterOption>("todos");
-  const [sortBy, setSortBy] = useState<SortOption>("fecha");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -47,175 +38,89 @@ export default function DashboardPage() {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user && vendedor) {
-      loadPlatillos();
+    if (vendedor) {
+      loadData();
     }
-  }, [user, vendedor]);
+  }, [vendedor]);
 
-  useEffect(() => {
-    applyFiltersAndSort();
-  }, [platillos, searchTerm, filter, sortBy]);
-
-  const loadPlatillos = async () => {
+  const loadData = async () => {
     if (!vendedor) return;
 
     try {
       setLoading(true);
-      const data = await getPlatillosByVendedor(vendedor.uid);
-      setPlatillos(data);
-    } catch (err: any) {
-      setError("Error al cargar los productos");
-      console.error(err);
+
+      // Cargar estadísticas
+      const stats = await getEstadisticasVendedor(vendedor.uid);
+      setEstadisticas(stats);
+
+      // Cargar todos los pedidos para calcular completados del día
+      const pedidos = await getPedidosByVendedor(vendedor.uid);
+
+      // Calcular pedidos completados del día
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      const pedidosCompletadosDelDia = pedidos.filter((p) => {
+        const fechaPedido = new Date(p.createdAt);
+        fechaPedido.setHours(0, 0, 0, 0);
+        return (
+          fechaPedido.getTime() === hoy.getTime() && p.estado === "entregado"
+        );
+      }).length;
+      setPedidosCompletadosHoy(pedidosCompletadosDelDia);
+
+      // Cargar últimos 5 pedidos
+      const ultimosCinco = pedidos.slice(0, 5);
+
+      // Obtener información de los clientes
+      const pedidosConCliente = await Promise.all(
+        ultimosCinco.map(async (pedido) => {
+          const clienteInfo = await getEstudianteInfo(pedido.estudianteId);
+          return {
+            ...pedido,
+            clienteNombre: clienteInfo.nombre,
+            clienteTelefono: clienteInfo.telefono,
+          };
+        })
+      );
+
+      setPedidosRecientes(pedidosConCliente);
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const applyFiltersAndSort = () => {
-    let filtered = [...platillos];
+  const getEstadoBadge = (estado: Pedido["estado"]) => {
+    const badges: Record<Pedido["estado"], string> = {
+      pendiente: "bg-[#FFF9E6] text-[#7A6A00] border border-[#FFE699]",
+      en_camino: "bg-[#E6F4FF] text-[#0056B3] border border-[#B3D9FF]",
+      entregado: "bg-success-100 text-success-700 border border-success-300",
+      cancelado: "bg-error-100 text-error-700 border border-error-300",
+    };
 
-    // Aplicar búsqueda
-    if (searchTerm) {
-      filtered = filtered.filter((p) =>
-        p.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+    const textos: Record<Pedido["estado"], string> = {
+      pendiente: "PENDIENTE",
+      en_camino: "EN PREPARACIÓN",
+      entregado: "ENTREGADO",
+      cancelado: "CANCELADO",
+    };
 
-    // Aplicar filtro
-    if (filter === "disponible") {
-      filtered = filtered.filter((p) => p.disponible);
-    } else if (filter === "no-disponible") {
-      filtered = filtered.filter((p) => !p.disponible);
-    } else if (filter !== "todos") {
-      filtered = filtered.filter((p) => p.categoria === filter);
-    }
-
-    // Aplicar ordenamiento
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "nombre":
-          return a.nombre.localeCompare(b.nombre);
-        case "precio":
-          return a.precio - b.precio;
-        case "categoria":
-          return a.categoria.localeCompare(b.categoria);
-        case "fecha":
-          const dateA = a.createdAt?.getTime() || 0;
-          const dateB = b.createdAt?.getTime() || 0;
-          return dateB - dateA; // Más recientes primero
-        default:
-          return 0;
-      }
-    });
-
-    setFilteredPlatillos(filtered);
+    return (
+      <span
+        className={`px-3 py-1.5 rounded-md text-xs font-bold uppercase ${badges[estado]}`}
+      >
+        {textos[estado]}
+      </span>
+    );
   };
-
-  const handleCreateProducto = async (
-    data: Omit<Platillo, "id" | "createdAt" | "updatedAt">,
-    imageFile?: File
-  ) => {
-    if (!vendedor) return;
-
-    try {
-      setIsSubmitting(true);
-      setError(null);
-      await createPlatillo(
-        {
-          ...data,
-          vendedorId: vendedor.uid,
-        },
-        imageFile
-      );
-      setSuccess("Producto agregado exitosamente");
-      setShowForm(false);
-      await loadPlatillos();
-    } catch (err: any) {
-      setError("Error al agregar el producto");
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleUpdateProducto = async (
-    data: Omit<Platillo, "id" | "createdAt" | "updatedAt">,
-    imageFile?: File
-  ) => {
-    if (!editingProducto) return;
-
-    try {
-      setIsSubmitting(true);
-      setError(null);
-      await updatePlatillo(editingProducto.id, data, imageFile);
-      setSuccess("Producto actualizado exitosamente");
-      setShowForm(false);
-      setEditingProducto(undefined);
-      await loadPlatillos();
-    } catch (err: any) {
-      setError("Error al actualizar el producto");
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleDeleteProducto = async (productoId: string) => {
-    if (!confirm("¿Estás seguro de que deseas eliminar este producto?")) {
-      return;
-    }
-
-    try {
-      setError(null);
-      await deletePlatillo(productoId);
-      setSuccess("Producto eliminado exitosamente");
-      await loadPlatillos();
-    } catch (err: any) {
-      setError("Error al eliminar el producto");
-      console.error(err);
-    }
-  };
-
-  const handleEdit = (producto: Platillo) => {
-    setEditingProducto(producto);
-    setShowForm(true);
-  };
-
-  const handleCancelForm = () => {
-    setShowForm(false);
-    setEditingProducto(undefined);
-  };
-
-  const handleLogout = async () => {
-    try {
-      await logoutVendedor();
-      router.push("/");
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error);
-    }
-  };
-
-  // Limpiar mensajes después de 5 segundos
-  useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => setSuccess(null), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [success]);
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => setError(null), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#F5F1EC]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#719A0A] mx-auto"></div>
+          <p className="mt-4 text-[#2E2E2E]">Cargando...</p>
         </div>
       </div>
     );
@@ -226,186 +131,279 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-16 lg:pt-20">
-      {/* Main Content */}
-      <main className="max-w-[450px] sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-4 pt-3 sm:pt-4 pb-8 sm:pb-12">
-        {/* Header del Dashboard - Parte del contenido normal */}
-        <div className="bg-white shadow-soft mb-4 sm:mb-6 rounded-lg sm:rounded-xl border border-gray-200">
-          <div className="px-4 sm:px-6 py-4 sm:py-5">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-800 font-display">
-                  🍲 {vendedor.nombreNegocio || "FoodLink"}
-                </h1>
-                <p className="text-xs sm:text-sm text-gray-600 mt-1">Panel de Vendedor</p>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 text-sm font-semibold text-white bg-error-500 hover:bg-error-600 hover:text-white rounded-lg transition-all duration-200 shadow-soft hover:shadow-medium"
+    <VendedorLayout title="Dashboard" subtitle="">
+      {/* Estadísticas - Grid 2x2 */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
+        {/* Pedidos del día */}
+        <div className="bg-white rounded-xl shadow-soft p-5 lg:p-6 border border-gray-200 hover:shadow-medium transition-shadow">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 lg:w-14 lg:h-14 bg-[#FFA552]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg
+                className="w-6 h-6 lg:w-7 lg:h-7 text-[#FFA552]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                Cerrar Sesión
-              </button>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-[#2E2E2E] font-semibold mb-1">
+                Pedidos del día
+              </p>
+              <p className="text-3xl lg:text-4xl font-bold text-[#2E2E2E]">
+                {estadisticas?.pedidosHoy || 0}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Pedidos del día</p>
             </div>
           </div>
         </div>
-        {/* Mensajes de éxito/error */}
-        {success && (
-          <div className="mb-6 bg-success-50 border border-success-200 text-success-700 px-5 py-4 rounded-xl shadow-soft">
-            {success}
-          </div>
-        )}
-        {error && (
-          <div className="mb-6 bg-error-50 border border-error-200 text-error-700 px-5 py-4 rounded-xl shadow-soft">
-            {error}
-          </div>
-        )}
 
-        {/* Bienvenida */}
-        <div className="mb-4 sm:mb-6">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 font-display mb-2">
-            ¡Bienvenido, {vendedor.nombre}!
-          </h2>
-          <p className="text-sm sm:text-base text-gray-600">
-            Administra tus productos desde aquí
-          </p>
+        {/* Ingresos del día */}
+        <div className="bg-white rounded-xl shadow-soft p-5 lg:p-6 border border-gray-200 hover:shadow-medium transition-shadow">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 lg:w-14 lg:h-14 bg-success-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg
+                className="w-6 h-6 lg:w-7 lg:h-7 text-success-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-[#2E2E2E] font-semibold mb-1">
+                Ingresos del día
+              </p>
+              <p className="text-3xl lg:text-4xl font-bold text-[#2E2E2E]">
+                {formatPrice(estadisticas?.ingresosHoy || 0)}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Ingresos del día</p>
+            </div>
+          </div>
         </div>
 
-        {!showForm ? (
-          <>
-            {/* Herramientas de Administración */}
-            <div className="bg-white rounded-lg sm:rounded-xl shadow-soft p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-200">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4 mb-4 sm:mb-5">
-                {/* Búsqueda */}
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    placeholder="Buscar productos por nombre..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="form-input w-full"
-                  />
-                </div>
-
-                {/* Filtros y Ordenamiento */}
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                  <select
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value as FilterOption)}
-                    className="form-input"
-                  >
-                    <option value="todos">Todas las categorías</option>
-                    <option value="Comida rápida">Comida rápida</option>
-                    <option value="Comida casera">Comida casera</option>
-                    <option value="Bebidas">Bebidas</option>
-                    <option value="Postres">Postres</option>
-                    <option value="disponible">Solo disponibles</option>
-                    <option value="no-disponible">Solo no disponibles</option>
-                  </select>
-
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as SortOption)}
-                    className="form-input"
-                  >
-                    <option value="fecha">Más recientes</option>
-                    <option value="nombre">Por nombre</option>
-                    <option value="precio">Por precio</option>
-                    <option value="categoria">Por categoría</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Botón Agregar Producto */}
-              <button
-                onClick={() => setShowForm(true)}
-                className="btn-primary w-full md:w-auto shadow-medium hover:shadow-large"
+        {/* Pedidos Completados */}
+        <div className="bg-white rounded-xl shadow-soft p-5 lg:p-6 border border-gray-200 hover:shadow-medium transition-shadow">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 lg:w-14 lg:h-14 bg-success-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg
+                className="w-6 h-6 lg:w-7 lg:h-7 text-success-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                ➕ Agregar Nuevo Producto
-              </button>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
             </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-[#2E2E2E] font-semibold mb-1">
+                Pedidos Completados
+              </p>
+              <p className="text-3xl lg:text-4xl font-bold text-[#2E2E2E]">
+                {pedidosCompletadosHoy}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Pedidos entregados</p>
+            </div>
+          </div>
+        </div>
 
-            {/* Lista de Productos */}
-            {filteredPlatillos.length === 0 ? (
-              <div className="bg-white rounded-lg sm:rounded-xl shadow-soft p-6 sm:p-8 text-center border border-gray-200">
-                <p className="text-gray-600 text-base sm:text-lg font-medium">
-                  {platillos.length === 0
-                    ? "No tienes productos aún. ¡Agrega tu primer producto!"
-                    : "No se encontraron productos con los filtros aplicados."}
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-                {filteredPlatillos.map((producto) => (
-                  <ProductoCard
-                    key={producto.id}
-                    producto={producto}
-                    onEdit={handleEdit}
-                    onDelete={handleDeleteProducto}
-                  />
-                ))}
-              </div>
-            )}
+        {/* Pendientes */}
+        <div className="bg-white rounded-xl shadow-soft p-5 lg:p-6 border border-gray-200 hover:shadow-medium transition-shadow">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 lg:w-14 lg:h-14 bg-error-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg
+                className="w-6 h-6 lg:w-7 lg:h-7 text-error-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-[#2E2E2E] font-semibold mb-1">
+                Pendientes
+              </p>
+              <p className="text-3xl lg:text-4xl font-bold text-[#2E2E2E]">
+                {estadisticas?.pedidosPendientes || 0}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Órdenes pendientes</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            {/* Estadísticas */}
-            {platillos.length > 0 && (
-              <div className="mt-4 sm:mt-6 bg-white rounded-lg sm:rounded-xl shadow-soft p-4 sm:p-6 border border-gray-200">
-                <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4 sm:mb-5 font-display">
-                  Resumen
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-                  <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg sm:rounded-xl">
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1.5 sm:mb-2 font-medium">
-                      Total Productos
-                    </p>
-                    <p className="text-2xl sm:text-3xl font-bold text-gray-800">
-                      {platillos.length}
-                    </p>
-                  </div>
-                  <div className="text-center p-3 sm:p-4 bg-success-50 rounded-lg sm:rounded-xl">
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1.5 sm:mb-2 font-medium">
-                      Disponibles
-                    </p>
-                    <p className="text-2xl sm:text-3xl font-bold text-success-600">
-                      {platillos.filter((p) => p.disponible).length}
-                    </p>
-                  </div>
-                  <div className="text-center p-3 sm:p-4 bg-error-50 rounded-lg sm:rounded-xl">
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1.5 sm:mb-2 font-medium">
-                      No Disponibles
-                    </p>
-                    <p className="text-2xl sm:text-3xl font-bold text-error-600">
-                      {platillos.filter((p) => !p.disponible).length}
-                    </p>
-                  </div>
-                  <div className="text-center p-3 sm:p-4 bg-primary-50 rounded-lg sm:rounded-xl">
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1.5 sm:mb-2 font-medium">
-                      Categorías
-                    </p>
-                    <p className="text-2xl sm:text-3xl font-bold text-primary-600">
-                      {new Set(platillos.map((p) => p.categoria)).size}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </>
-        ) : (
-          /* Formulario de Agregar/Editar */
-          <div className="bg-white rounded-lg sm:rounded-xl shadow-soft p-4 sm:p-6 border border-gray-200">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-5 font-display">
-              {editingProducto ? "Editar Producto" : "Agregar Nuevo Producto"}
-            </h2>
-            <ProductoForm
-              producto={editingProducto}
-              onSubmit={
-                editingProducto ? handleUpdateProducto : handleCreateProducto
-              }
-              onCancel={handleCancelForm}
-              isLoading={isSubmitting}
+      {/* Botones de Gestión */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4 mb-6 lg:mb-8">
+        <Link
+          href="/vendedor/ordenes"
+          className="bg-white rounded-xl shadow-soft p-4 lg:p-5 border-2 border-gray-200 hover:border-[#FFA552] hover:shadow-medium transition-all group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#FFA552]/10 rounded-lg flex items-center justify-center group-hover:bg-[#FFA552] transition-colors flex-shrink-0">
+              <svg
+                className="w-5 h-5 text-[#FFA552] group-hover:text-white transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+            </div>
+            <span className="font-bold text-[#2E2E2E] text-sm lg:text-base group-hover:text-[#FFA552] transition-colors">
+              Gestionar Órdenes
+            </span>
+          </div>
+        </Link>
+
+        <Link
+          href="/vendedor/menu"
+          className="bg-white rounded-xl shadow-soft p-4 lg:p-5 border-2 border-gray-200 hover:border-[#FFA552] hover:shadow-medium transition-all group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#FFA552]/10 rounded-lg flex items-center justify-center group-hover:bg-[#FFA552] transition-colors flex-shrink-0">
+              <svg
+                className="w-5 h-5 text-[#FFA552] group-hover:text-white transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                />
+              </svg>
+            </div>
+            <span className="font-bold text-[#2E2E2E] text-sm lg:text-base group-hover:text-[#FFA552] transition-colors">
+              Gestionar Menú
+            </span>
+          </div>
+        </Link>
+      </div>
+
+      {/* Órdenes Recientes */}
+      <div className="bg-white rounded-xl shadow-soft border border-gray-200">
+        <div className="px-4 lg:px-6 py-4 border-b border-gray-200 flex items-center gap-3">
+          <svg
+            className="w-5 h-5 text-[#FFA552] flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
             />
-          </div>
-        )}
-      </main>
-    </div>
+          </svg>
+          <h2 className="text-base lg:text-lg font-bold text-[#2E2E2E] font-display">
+            Órdenes Recientes
+          </h2>
+        </div>
+        <div className="p-4 lg:p-6">
+          {pedidosRecientes.length === 0 ? (
+            <p className="text-center text-gray-500 py-8">
+              No hay órdenes recientes
+            </p>
+          ) : (
+            <div className="space-y-3 lg:space-y-4">
+              {pedidosRecientes.map((pedido, index) => (
+                <div
+                  key={pedido.id}
+                  className="border-2 border-gray-200 rounded-lg p-3 lg:p-4 hover:shadow-soft hover:border-[#FFA552]/30 transition-all"
+                >
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-[#FFA552] text-sm lg:text-base mb-1">
+                        Orden #{pedidosRecientes.length - index}
+                      </h3>
+                      <p className="text-xs lg:text-sm text-gray-600 mb-0.5">
+                        {pedido.clienteNombre || "Cliente"}
+                      </p>
+                      <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
+                        <svg
+                          className="w-3.5 h-3.5 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                          />
+                        </svg>
+                        <span>{pedido.clienteTelefono || "Sin teléfono"}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                        <svg
+                          className="w-3.5 h-3.5 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        <span>
+                          {new Date(pedido.createdAt).toLocaleString("es-MX", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end gap-2 lg:gap-1.5">
+                      {getEstadoBadge(pedido.estado)}
+                      <p className="text-xl lg:text-2xl font-bold text-[#2E2E2E] whitespace-nowrap">
+                        Total: {formatPrice(pedido.precioTotal)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </VendedorLayout>
   );
 }
