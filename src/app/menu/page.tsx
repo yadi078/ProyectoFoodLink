@@ -54,7 +54,6 @@ function MenuContent() {
   // Leer parámetros de URL al cargar
   useEffect(() => {
     const categoria = searchParams.get("categoria");
-    console.log("📱 Parámetro de categoría recibido:", categoria);
     if (categoria) {
       setCategoriaFiltro(categoria);
     }
@@ -64,19 +63,15 @@ function MenuContent() {
     const cargarPlatillos = async () => {
       setLoading(true);
       try {
-        console.log("Iniciando carga de platillos...");
         const platillosData = await getPlatillosDisponibles();
-        console.log("Platillos obtenidos:", platillosData.length);
 
         if (platillosData.length === 0) {
-          console.log("No se encontraron platillos disponibles");
           setPlatillos([]);
           setLoading(false);
           return;
         }
 
         // Obtener información de vendedores para cada platillo (no crítico, puede fallar)
-        console.log("Obteniendo información de vendedores...");
         const platillosConVendedor = await Promise.all(
           platillosData.map(async (platillo) => {
             try {
@@ -91,10 +86,6 @@ function MenuContent() {
               };
             } catch (error) {
               // Si falla (por falta de autenticación u otro error), usar valores por defecto
-              console.log(
-                "No se pudo obtener info del vendedor para:",
-                platillo.id
-              );
               return {
                 ...platillo,
                 vendedorNombre: "Vendedor",
@@ -104,10 +95,6 @@ function MenuContent() {
           })
         );
 
-        console.log(
-          "Platillos con información de vendedores:",
-          platillosConVendedor.length
-        );
         setPlatillos(platillosConVendedor);
       } catch (error: any) {
         console.error("Error cargando platillos:", error);
@@ -126,7 +113,6 @@ function MenuContent() {
         }
       } finally {
         setLoading(false);
-        console.log("Carga de platillos finalizada");
       }
     };
 
@@ -159,11 +145,6 @@ function MenuContent() {
   };
 
   const abrirModalDetalles = async (platillo: PlatilloConVendedor) => {
-    console.log(
-      "🔍 Abriendo modal para platillo:",
-      platillo.id,
-      platillo.nombre
-    );
     setProductoSeleccionado(platillo);
     setMostrarModal(true);
     setMostrarFormularioResena(false);
@@ -172,13 +153,10 @@ function MenuContent() {
 
     // Cargar calificaciones
     try {
-      console.log("📥 Cargando calificaciones para platillo:", platillo.id);
       const [calificacionesData, promedioData] = await Promise.all([
         getCalificacionesByPlatillo(platillo.id),
         getPromedioCalificacion(platillo.id),
       ]);
-      console.log("✅ Calificaciones cargadas:", calificacionesData.length);
-      console.log("✅ Promedio calculado:", promedioData);
       setCalificaciones(calificacionesData);
       setPromedioCalificacion(promedioData);
     } catch (error: any) {
@@ -233,22 +211,9 @@ function MenuContent() {
             user.displayName || user.email?.split("@")[0] || "Usuario";
         }
       } catch (error) {
-        console.log(
-          "No se pudo obtener nombre del estudiante, usando email:",
-          error
-        );
         nombreEstudiante =
           user.displayName || user.email?.split("@")[0] || "Usuario";
       }
-
-      console.log("Enviando reseña con datos:", {
-        estudianteId: user.uid,
-        platilloId: productoSeleccionado.id,
-        vendedorId: productoSeleccionado.vendedorId,
-        calificacion: calificacionForm.calificacion,
-        comentario: calificacionForm.comentario.trim(),
-        estudianteNombre: nombreEstudiante,
-      });
 
       const calificacionId = await crearCalificacionProducto({
         estudianteId: user.uid,
@@ -259,25 +224,16 @@ function MenuContent() {
         estudianteNombre: nombreEstudiante,
       });
 
-      console.log("✅ Reseña creada con ID:", calificacionId);
-
       showAlert("¡Reseña enviada exitosamente!", "success");
 
       // Esperar un momento antes de recargar para asegurar que Firestore haya actualizado
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Recargar calificaciones
-      console.log(
-        "Recargando calificaciones para platillo:",
-        productoSeleccionado.id
-      );
       const [calificacionesData, promedioData] = await Promise.all([
         getCalificacionesByPlatillo(productoSeleccionado.id),
         getPromedioCalificacion(productoSeleccionado.id),
       ]);
-
-      console.log("Calificaciones recargadas:", calificacionesData.length);
-      console.log("Promedio:", promedioData);
 
       setCalificaciones(calificacionesData);
       setPromedioCalificacion(promedioData);
@@ -372,10 +328,7 @@ function MenuContent() {
               </label>
               <select
                 value={categoriaFiltro}
-                onChange={(e) => {
-                  console.log("📱 Categoría seleccionada:", e.target.value);
-                  setCategoriaFiltro(e.target.value);
-                }}
+                onChange={(e) => setCategoriaFiltro(e.target.value)}
                 className="form-input w-full text-base"
               >
                 <option value="todos">Todas las categorías</option>
@@ -731,14 +684,7 @@ function MenuContent() {
 
                     {user ? (
                       <button
-                        onClick={() => {
-                          console.log(
-                            "👤 Usuario autenticado:",
-                            user.uid,
-                            user.email
-                          );
-                          setMostrarFormularioResena(!mostrarFormularioResena);
-                        }}
+                        onClick={() => setMostrarFormularioResena(!mostrarFormularioResena)}
                         className="w-full py-2 px-3 rounded-lg font-semibold text-sm bg-error-500 hover:bg-error-600 text-white hover:text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft hover:shadow-medium hover:-translate-y-0.5"
                       >
                         <svg

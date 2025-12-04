@@ -11,6 +11,8 @@ import {
 import type { Pedido } from "@/lib/firebase/types";
 import { formatPrice } from "@/utils/formatters";
 import Link from "next/link";
+import CalificarVendedorModal from "@/components/calificaciones/CalificarVendedorModal";
+import { crearCalificacionVendedor } from "@/services/calificaciones/calificacionVendedorService";
 
 interface PedidoConVendedor extends Pedido {
   vendedorNombre?: string;
@@ -24,6 +26,8 @@ export default function MisPedidosPage() {
   const [pedidos, setPedidos] = useState<PedidoConVendedor[]>([]);
   const [loading, setLoading] = useState(true);
   const [pedidoSeleccionado, setPedidoSeleccionado] =
+    useState<PedidoConVendedor | null>(null);
+  const [pedidoParaCalificar, setPedidoParaCalificar] =
     useState<PedidoConVendedor | null>(null);
 
   useEffect(() => {
@@ -99,6 +103,35 @@ export default function MisPedidosPage() {
       cancelado: "❌",
     };
     return iconos[estado];
+  };
+
+  const handleCalificarVendedor = async (
+    calificacion: number,
+    comentario?: string
+  ) => {
+    if (!user || !pedidoParaCalificar) return;
+
+    try {
+      const estudianteNombre =
+        user.displayName || user.email?.split("@")[0] || "Usuario";
+
+      await crearCalificacionVendedor({
+        vendedorId: pedidoParaCalificar.vendedorId,
+        estudianteId: user.uid,
+        pedidoId: pedidoParaCalificar.id,
+        calificacion,
+        comentario,
+        estudianteNombre,
+      });
+
+      showAlert("¡Gracias por tu calificación!", "success");
+      setPedidoParaCalificar(null);
+      // Recargar pedidos
+      loadPedidos();
+    } catch (error: any) {
+      console.error("Error al calificar:", error);
+      showAlert(error.message || "Error al enviar la calificación", "error");
+    }
   };
 
   if (authLoading || loading) {
@@ -297,19 +330,42 @@ export default function MisPedidosPage() {
                     )}
                   </div>
 
-                  {/* Botón de detalles */}
-                  <button
-                    onClick={() => setPedidoSeleccionado(pedido)}
-                    className="w-full sm:w-auto px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg transition-colors"
-                  >
-                    Ver Detalles Completos
-                  </button>
+                  {/* Botones de acción */}
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <button
+                      onClick={() => setPedidoSeleccionado(pedido)}
+                      className="flex-1 sm:flex-none px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg transition-colors text-sm"
+                    >
+                      Ver Detalles
+                    </button>
+                    {pedido.estado === "entregado" &&
+                      !pedido.vendedorCalificado && (
+                        <button
+                          onClick={() => setPedidoParaCalificar(pedido)}
+                          className="flex-1 sm:flex-none px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+                        >
+                          <span>⭐</span>
+                          <span>Calificar Servicio</span>
+                        </button>
+                      )}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Modal de Calificación */}
+      {pedidoParaCalificar && (
+        <CalificarVendedorModal
+          isOpen={true}
+          onClose={() => setPedidoParaCalificar(null)}
+          onSubmit={handleCalificarVendedor}
+          vendedorNombre={pedidoParaCalificar.vendedorNombre || "Vendedor"}
+          pedidoId={pedidoParaCalificar.id}
+        />
+      )}
 
       {/* Modal de Detalles */}
       {pedidoSeleccionado && (
@@ -427,4 +483,3 @@ export default function MisPedidosPage() {
     </div>
   );
 }
-

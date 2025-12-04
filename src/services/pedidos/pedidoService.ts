@@ -12,12 +12,16 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import type { CartItem } from "@/components/context/CartContext";
+import { registrarUsoPromocion } from "@/services/promociones/promocionService";
 
 export interface CrearPedidoParams {
   estudianteId: string;
   items: CartItem[];
-  tipoEntrega: "entrega"; // Siempre entrega en puerta principal de UTNA
+  tipoEntrega: "entrega" | "recoger";
   notas?: string;
+  descuentoAplicado?: number;
+  codigoPromocional?: string;
+  promocionId?: string;
 }
 
 export interface PedidoCreado {
@@ -39,7 +43,15 @@ export interface PedidoCreado {
 export const crearPedido = async (
   params: CrearPedidoParams
 ): Promise<PedidoCreado[]> => {
-  const { estudianteId, items, tipoEntrega, notas } = params;
+  const {
+    estudianteId,
+    items,
+    tipoEntrega,
+    notas,
+    descuentoAplicado,
+    codigoPromocional,
+    promocionId,
+  } = params;
 
   if (!estudianteId) {
     throw new Error("El ID del estudiante es requerido");
@@ -53,12 +65,12 @@ export const crearPedido = async (
   try {
     // Primero buscar en vendedores
     let userDoc = await getDoc(doc(db, "vendedores", estudianteId));
-    
+
     // Si no existe en vendedores, buscar en estudiantes
     if (!userDoc.exists()) {
       userDoc = await getDoc(doc(db, "estudiantes", estudianteId));
     }
-    
+
     // Si no existe en ninguna colección, error
     if (!userDoc.exists()) {
       throw new Error("Usuario no encontrado");
@@ -78,18 +90,29 @@ export const crearPedido = async (
     return acc;
   }, {} as Record<string, CartItem[]>);
 
-  console.log("📦 Items agrupados por vendedor:", itemsPorVendedor);
-
   // Crear un pedido por cada vendedor
   const pedidosCreados: PedidoCreado[] = [];
+  const vendedoresArray = Object.entries(itemsPorVendedor);
+  let descuentoYaAplicado = false;
 
-  for (const [vendedorId, itemsVendedor] of Object.entries(itemsPorVendedor)) {
+  for (let i = 0; i < vendedoresArray.length; i++) {
+    const [vendedorId, itemsVendedor] = vendedoresArray[i];
     try {
       // Calcular el precio total de este vendedor
-      const precioTotal = itemsVendedor.reduce(
+      let precioTotal = itemsVendedor.reduce(
         (total, item) => total + item.platillo.precio * item.cantidad,
         0
       );
+
+      const precioOriginal = precioTotal;
+
+      // Aplicar descuento SOLO al primer vendedor
+      let descuentoVendedor = 0;
+      if (descuentoAplicado && descuentoAplicado > 0 && !descuentoYaAplicado) {
+        descuentoVendedor = Math.min(descuentoAplicado, precioTotal);
+        precioTotal = Math.max(0, precioTotal - descuentoVendedor);
+        descuentoYaAplicado = true;
+      }
 
       // Preparar los items para guardar
       const itemsParaGuardar = itemsVendedor.map((item) => ({
@@ -105,19 +128,35 @@ export const crearPedido = async (
         vendedorId,
         items: itemsParaGuardar,
         precioTotal,
+        precioOriginal: descuentoVendedor > 0 ? precioOriginal : undefined,
+        descuentoAplicado:
+          descuentoVendedor > 0 ? descuentoVendedor : undefined,
+        codigoPromocional: codigoPromocional || undefined,
         estado: "pendiente",
-        tipoEntrega: "entrega", // Siempre entrega en puerta principal de UTNA
+        tipoEntrega,
         notas: notas || null,
+        vendedorCalificado: false,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       };
 
-      console.log("💾 Guardando pedido:", pedidoData);
-
       // Guardar en Firestore
       const docRef = await addDoc(collection(db, "pedidos"), pedidoData);
 
-      console.log("✅ Pedido creado con ID:", docRef.id);
+      // Registrar uso de promoción si aplica
+      if (promocionId && descuentoVendedor > 0) {
+        try {
+          await registrarUsoPromocion(
+            promocionId,
+            estudianteId,
+            docRef.id,
+            descuentoVendedor
+          );
+        } catch (error) {
+          console.error("Error registrando uso de promoción:", error);
+          // No fallar el pedido por esto
+        }
+      }
 
       pedidosCreados.push({
         id: docRef.id,
@@ -126,7 +165,10 @@ export const crearPedido = async (
         precioTotal,
       });
     } catch (error) {
-      console.error(`Error al crear pedido para vendedor ${vendedorId}:`, error);
+      console.error(
+        `Error al crear pedido para vendedor ${vendedorId}:`,
+        error
+      );
       throw new Error(
         `No se pudo crear el pedido para el vendedor ${vendedorId}`
       );
@@ -183,4 +225,3 @@ export const validarDisponibilidadPlatillos = async (
     };
   }
 };
-

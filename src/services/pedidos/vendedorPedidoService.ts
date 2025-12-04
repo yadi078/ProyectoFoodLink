@@ -12,10 +12,10 @@ import {
   updateDoc,
   serverTimestamp,
   orderBy,
-  Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import type { Pedido } from "@/lib/firebase/types";
+import { timestampToDate } from "@/utils/formatters";
 
 /**
  * Obtener pedidos del vendedor
@@ -53,8 +53,8 @@ export const getPedidosByVendedor = async (
       pedidos.push({
         id: doc.id,
         ...data,
-        createdAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
-        updatedAt: (data.updatedAt as Timestamp)?.toDate() || new Date(),
+        createdAt: timestampToDate(data.createdAt),
+        updatedAt: timestampToDate(data.updatedAt),
       } as Pedido);
     });
 
@@ -161,12 +161,10 @@ export const getEstadisticasVendedor = async (
 export const getEstudianteInfo = async (estudianteId: string) => {
   try {
     // Primero buscar en vendedores
-    let userDoc = await getDocs(
-      query(collection(db, "vendedores"), where("__name__", "==", estudianteId))
-    );
+    let userDoc = await getDoc(doc(db, "vendedores", estudianteId));
 
-    if (!userDoc.empty) {
-      const data = userDoc.docs[0].data();
+    if (userDoc.exists()) {
+      const data = userDoc.data();
       return {
         nombre: data.nombre || "Usuario",
         telefono: data.telefono || "No disponible",
@@ -174,15 +172,10 @@ export const getEstudianteInfo = async (estudianteId: string) => {
     }
 
     // Si no existe en vendedores, buscar en estudiantes
-    userDoc = await getDocs(
-      query(
-        collection(db, "estudiantes"),
-        where("__name__", "==", estudianteId)
-      )
-    );
+    userDoc = await getDoc(doc(db, "estudiantes", estudianteId));
 
-    if (!userDoc.empty) {
-      const data = userDoc.docs[0].data();
+    if (userDoc.exists()) {
+      const data = userDoc.data();
       return {
         nombre: data.nombre || "Usuario",
         telefono: data.telefono || "No disponible",

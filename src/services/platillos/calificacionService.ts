@@ -13,6 +13,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
+import { timestampToDate } from "@/utils/formatters";
 
 export interface CalificacionProducto {
   id?: string;
@@ -33,7 +34,7 @@ export const getCalificacionesByPlatillo = async (
 ): Promise<CalificacionProducto[]> => {
   try {
     const calificacionesRef = collection(db, "calificaciones");
-    
+
     // Intentar consulta con ordenamiento primero
     let querySnapshot;
     try {
@@ -46,7 +47,6 @@ export const getCalificacionesByPlatillo = async (
     } catch (indexError: any) {
       // Si falla por falta de índice, usar consulta simple sin ordenamiento
       if (indexError.code === "failed-precondition") {
-        console.log("Índice no disponible, usando consulta simple...");
         const qSimple = query(
           calificacionesRef,
           where("platilloId", "==", platilloId)
@@ -69,7 +69,7 @@ export const getCalificacionesByPlatillo = async (
         calificacion: data.calificacion || 0,
         comentario: data.comentario,
         estudianteNombre: data.estudianteNombre,
-        createdAt: data.createdAt?.toDate(),
+        createdAt: timestampToDate(data.createdAt),
       });
     });
 
@@ -80,7 +80,6 @@ export const getCalificacionesByPlatillo = async (
       return dateB - dateA; // Más recientes primero
     });
 
-    console.log(`✅ Calificaciones encontradas para platillo ${platilloId}:`, calificaciones.length);
     return calificaciones;
   } catch (error: any) {
     console.error("Error obteniendo calificaciones:", error);
@@ -100,15 +99,12 @@ export const getPromedioCalificacion = async (
 ): Promise<{ promedio: number; total: number }> => {
   try {
     const calificaciones = await getCalificacionesByPlatillo(platilloId);
-    
+
     if (calificaciones.length === 0) {
       return { promedio: 0, total: 0 };
     }
 
-    const suma = calificaciones.reduce(
-      (acc, cal) => acc + cal.calificacion,
-      0
-    );
+    const suma = calificaciones.reduce((acc, cal) => acc + cal.calificacion, 0);
     const promedio = suma / calificaciones.length;
 
     return { promedio, total: calificaciones.length };
@@ -126,7 +122,7 @@ export const getCalificacionesByVendedor = async (
 ): Promise<CalificacionProducto[]> => {
   try {
     const calificacionesRef = collection(db, "calificaciones");
-    
+
     // Intentar consulta con ordenamiento primero
     let querySnapshot;
     try {
@@ -139,7 +135,6 @@ export const getCalificacionesByVendedor = async (
     } catch (indexError: any) {
       // Si falla por falta de índice, usar consulta simple sin ordenamiento
       if (indexError.code === "failed-precondition") {
-        console.log("Índice no disponible, usando consulta simple...");
         const qSimple = query(
           calificacionesRef,
           where("vendedorId", "==", vendedorId)
@@ -162,7 +157,7 @@ export const getCalificacionesByVendedor = async (
         calificacion: data.calificacion || 0,
         comentario: data.comentario,
         estudianteNombre: data.estudianteNombre,
-        createdAt: data.createdAt?.toDate(),
+        createdAt: timestampToDate(data.createdAt),
       });
     });
 
@@ -173,7 +168,6 @@ export const getCalificacionesByVendedor = async (
       return dateB - dateA; // Más recientes primero
     });
 
-    console.log(`✅ Calificaciones encontradas para vendedor ${vendedorId}:`, calificaciones.length);
     return calificaciones;
   } catch (error: any) {
     console.error("Error obteniendo calificaciones del vendedor:", error);
@@ -197,7 +191,7 @@ export const getEstadisticasCalificacionesVendedor = async (
 }> => {
   try {
     const calificaciones = await getCalificacionesByVendedor(vendedorId);
-    
+
     if (calificaciones.length === 0) {
       return {
         promedioGeneral: 0,
@@ -206,10 +200,7 @@ export const getEstadisticasCalificacionesVendedor = async (
       };
     }
 
-    const suma = calificaciones.reduce(
-      (acc, cal) => acc + cal.calificacion,
-      0
-    );
+    const suma = calificaciones.reduce((acc, cal) => acc + cal.calificacion, 0);
     const promedioGeneral = suma / calificaciones.length;
 
     // Calcular distribución de calificaciones
@@ -242,10 +233,8 @@ export const crearCalificacionProducto = async (
   calificacion: Omit<CalificacionProducto, "id" | "createdAt">
 ): Promise<string> => {
   try {
-    console.log("📝 Creando calificación con datos:", calificacion);
-    
     const calificacionesRef = collection(db, "calificaciones");
-    
+
     const data = {
       estudianteId: calificacion.estudianteId,
       platilloId: calificacion.platilloId,
@@ -256,12 +245,8 @@ export const crearCalificacionProducto = async (
       createdAt: Timestamp.now(),
     };
 
-    console.log("📤 Datos a guardar en Firestore:", data);
-
     const docRef = await addDoc(calificacionesRef, data);
-    
-    console.log("✅ Calificación creada exitosamente con ID:", docRef.id);
-    
+
     return docRef.id;
   } catch (error: any) {
     console.error("❌ Error creando calificación:", error);
@@ -270,7 +255,8 @@ export const crearCalificacionProducto = async (
       message: error.message,
       stack: error.stack,
     });
-    throw new Error(`Error al crear la calificación: ${error.message || "Error desconocido"}`);
+    throw new Error(
+      `Error al crear la calificación: ${error.message || "Error desconocido"}`
+    );
   }
 };
-

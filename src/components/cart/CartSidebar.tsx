@@ -12,6 +12,7 @@ import {
   crearPedido,
   validarDisponibilidadPlatillos,
 } from "@/services/pedidos/pedidoService";
+import { validarPromocion } from "@/services/promociones/promocionService";
 
 export default function CartSidebar() {
   const router = useRouter();
@@ -28,6 +29,8 @@ export default function CartSidebar() {
     clearCart,
   } = useCart();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [descuentoAplicado, setDescuentoAplicado] = useState(0);
+  const [promocionActual, setPromocionActual] = useState<any>(null);
 
   // Filtrar items con cantidad > 0 para mostrar solo los que realmente están en el carrito
   const validItems = items.filter((item) => {
@@ -53,7 +56,11 @@ export default function CartSidebar() {
     setIsModalOpen(true);
   };
 
-  const handleConfirmarPedido = async (notas?: string) => {
+  const handleConfirmarPedido = async (data: {
+    notas?: string;
+    tipoEntrega: "entrega" | "recoger";
+    codigoPromocional?: string;
+  }) => {
     if (!user) {
       showAlert("Debes iniciar sesión para continuar", "error");
       return;
@@ -72,25 +79,59 @@ export default function CartSidebar() {
         return;
       }
 
-      // 2. Crear el pedido (siempre entrega en UTNA)
+      let descuento = 0;
+      let promocionId: string | undefined;
+
+      // 2. Validar código promocional si existe
+      if (data.codigoPromocional) {
+        const resultadoPromo = await validarPromocion(
+          data.codigoPromocional,
+          user.uid,
+          getTotalPrice()
+        );
+
+        if (resultadoPromo.valido && resultadoPromo.descuento) {
+          descuento = resultadoPromo.descuento;
+          promocionId = resultadoPromo.promocion?.id;
+          showAlert(resultadoPromo.mensaje, "success");
+        } else {
+          showAlert(resultadoPromo.mensaje, "warning");
+        }
+      }
+
+      // 3. Crear el pedido
       const pedidosCreados = await crearPedido({
         estudianteId: user.uid,
         items: validItems,
-        tipoEntrega: "entrega",
-        notas,
+        tipoEntrega: data.tipoEntrega,
+        notas: data.notas,
+        descuentoAplicado: descuento,
+        codigoPromocional: data.codigoPromocional,
+        promocionId,
       });
 
-      // 3. Mostrar mensaje de éxito
+      // 4. Mostrar mensaje de éxito
       const cantidadVendedores = pedidosCreados.length;
+      const lugarEntrega =
+        data.tipoEntrega === "entrega"
+          ? "en la puerta principal de la UTNA"
+          : "directamente con el vendedor";
+
       const mensaje =
         cantidadVendedores === 1
-          ? "¡Pedido confirmado exitosamente! Recógelo en la puerta principal de la UTNA."
-          : `¡Pedidos confirmados exitosamente! Se crearon ${cantidadVendedores} pedidos. Recógelos en la puerta principal de la UTNA.`;
+          ? `¡Pedido confirmado exitosamente! ${
+              data.tipoEntrega === "entrega" ? "Recógelo" : "Coordina"
+            } ${lugarEntrega}.`
+          : `¡Pedidos confirmados exitosamente! Se crearon ${cantidadVendedores} pedidos. ${
+              data.tipoEntrega === "entrega" ? "Recógelos" : "Coordina"
+            } ${lugarEntrega}.`;
 
       showAlert(mensaje, "success");
 
-      // 4. Limpiar carrito y cerrar todo
+      // 5. Limpiar carrito y cerrar todo
       clearCart();
+      setDescuentoAplicado(0);
+      setPromocionActual(null);
       setIsModalOpen(false);
       closeCart();
     } catch (error) {
@@ -327,7 +368,8 @@ export default function CartSidebar() {
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirmarPedido}
         totalItems={getTotalItems()}
-        totalPrice={formatPrice(getTotalPrice())}
+        totalPrice={formatPrice(getTotalPrice() - descuentoAplicado)}
+        descuentoAplicado={descuentoAplicado}
       />
     </>
   );

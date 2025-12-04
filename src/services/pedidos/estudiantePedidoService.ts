@@ -8,11 +8,13 @@ import {
   query,
   where,
   getDocs,
+  getDoc,
+  doc,
   orderBy,
-  Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import type { Pedido } from "@/lib/firebase/types";
+import { timestampToDate } from "@/utils/formatters";
 
 /**
  * Obtener pedidos del estudiante
@@ -36,8 +38,8 @@ export const getPedidosByEstudiante = async (
       pedidos.push({
         id: doc.id,
         ...data,
-        createdAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
-        updatedAt: (data.updatedAt as Timestamp)?.toDate() || new Date(),
+        createdAt: timestampToDate(data.createdAt),
+        updatedAt: timestampToDate(data.updatedAt),
       } as Pedido);
     });
 
@@ -53,12 +55,10 @@ export const getPedidosByEstudiante = async (
  */
 export const getVendedorInfo = async (vendedorId: string) => {
   try {
-    const vendedorDoc = await getDocs(
-      query(collection(db, "vendedores"), where("__name__", "==", vendedorId))
-    );
+    const vendedorDoc = await getDoc(doc(db, "vendedores", vendedorId));
 
-    if (!vendedorDoc.empty) {
-      const data = vendedorDoc.docs[0].data();
+    if (vendedorDoc.exists()) {
+      const data = vendedorDoc.data();
       return {
         nombre: data.nombre || "Vendedor",
         nombreNegocio: data.nombreNegocio || "Negocio",
@@ -80,4 +80,3 @@ export const getVendedorInfo = async (vendedorId: string) => {
     };
   }
 };
-

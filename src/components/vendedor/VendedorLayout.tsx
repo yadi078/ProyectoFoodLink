@@ -8,7 +8,7 @@ import VendedorSidebar from "./VendedorSidebar";
 
 interface VendedorLayoutProps {
   children: ReactNode;
-  title: string;
+  title?: string;
   subtitle?: string;
 }
 

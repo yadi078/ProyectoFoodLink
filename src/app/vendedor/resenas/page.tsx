@@ -22,7 +22,11 @@ export default function ResenasPage() {
   const router = useRouter();
   const { user, vendedor, loading: authLoading } = useAuth();
   const [calificaciones, setCalificaciones] = useState<CalificacionConPlatillo[]>([]);
-  const [estadisticas, setEstadisticas] = useState({
+  const [estadisticas, setEstadisticas] = useState<{
+    promedioGeneral: number;
+    totalResenas: number;
+    distribucion: { [key: number]: number };
+  }>({
     promedioGeneral: 0,
     totalResenas: 0,
     distribucion: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },

@@ -21,15 +21,12 @@ import type { Platillo } from "@/lib/firebase/types";
  */
 export const getPlatillosDisponibles = async (): Promise<Platillo[]> => {
   try {
-    console.log("🔍 Iniciando carga de platillos...");
-
     // Verificar que db esté inicializado
     if (!db) {
       console.error("❌ Firestore no está inicializado");
       return [];
     }
 
-    console.log("📦 Obteniendo platillos de Firestore...");
     const platillosRef = collection(db, "platillos");
 
     // Usar el índice compuesto: disponible (asc) + createdAt (desc)
@@ -42,12 +39,7 @@ export const getPlatillosDisponibles = async (): Promise<Platillo[]> => {
         where("disponible", "==", true),
         orderBy("createdAt", "desc")
       );
-      console.log("✅ Intentando consulta optimizada con índice compuesto...");
       querySnapshot = await getDocs(qOptimized);
-      console.log(
-        "✅ Consulta exitosa con índice, documentos encontrados:",
-        querySnapshot.size
-      );
     } catch (optimizedError: any) {
       console.warn(
         "⚠️ Error en consulta optimizada:",
@@ -57,14 +49,9 @@ export const getPlatillosDisponibles = async (): Promise<Platillo[]> => {
 
       // Si el índice aún está compilando, intentar consulta simple sin ordenamiento
       if (optimizedError.code === "failed-precondition") {
-        console.log("⏳ Índice aún no está listo, usando consulta simple...");
         try {
           const qSimple = query(platillosRef, where("disponible", "==", true));
           querySnapshot = await getDocs(qSimple);
-          console.log(
-            "✅ Consulta simple exitosa, documentos encontrados:",
-            querySnapshot.size
-          );
         } catch (simpleError: any) {
           console.warn(
             "⚠️ Error en consulta simple:",
@@ -73,9 +60,7 @@ export const getPlatillosDisponibles = async (): Promise<Platillo[]> => {
           );
           // Último recurso: obtener todos sin filtro
           try {
-            console.log("📥 Obteniendo todos los platillos sin filtro...");
             querySnapshot = await getDocs(platillosRef);
-            console.log("✅ Documentos obtenidos:", querySnapshot.size);
           } catch (fallbackError: any) {
             console.error(
               "❌ Error crítico obteniendo platillos:",
@@ -89,10 +74,6 @@ export const getPlatillosDisponibles = async (): Promise<Platillo[]> => {
         try {
           const qSimple = query(platillosRef, where("disponible", "==", true));
           querySnapshot = await getDocs(qSimple);
-          console.log(
-            "✅ Consulta simple exitosa, documentos encontrados:",
-            querySnapshot.size
-          );
         } catch (fallbackError: any) {
           console.error(
             "❌ Error crítico obteniendo platillos:",
@@ -130,8 +111,6 @@ export const getPlatillosDisponibles = async (): Promise<Platillo[]> => {
       }
     });
 
-    console.log("📊 Platillos filtrados:", platillos.length);
-
     // Si usamos la consulta optimizada con orderBy, ya vienen ordenados desde Firestore
     // Solo ordenar manualmente si usamos consulta simple o fallback
     if (platillos.length > 1) {
@@ -144,18 +123,14 @@ export const getPlatillosDisponibles = async (): Promise<Platillo[]> => {
         lastPlatillo.createdAt &&
         firstPlatillo.createdAt.getTime() < lastPlatillo.createdAt.getTime()
       ) {
-        console.log("📋 Ordenando platillos manualmente...");
         platillos.sort((a, b) => {
           const dateA = a.createdAt?.getTime() || 0;
           const dateB = b.createdAt?.getTime() || 0;
           return dateB - dateA; // Más recientes primero
         });
-      } else {
-        console.log("✅ Platillos ya ordenados por índice de Firestore");
       }
     }
 
-    console.log("✅ Platillos procesados exitosamente:", platillos.length);
     return platillos;
   } catch (error: any) {
     console.error("❌ Error obteniendo platillos:", error);
@@ -219,46 +194,3 @@ export const getPlatilloById = async (
   }
 };
 
-/**
- * Obtener platillos de un vendedor específico
- */
-export const getPlatillosByVendedor = async (
-  vendedorId: string
-): Promise<Platillo[]> => {
-  try {
-    const platillosRef = collection(db, "platillos");
-
-    const q = query(
-      platillosRef,
-      where("vendedorId", "==", vendedorId),
-      orderBy("createdAt", "desc")
-    );
-
-    const querySnapshot = await getDocs(q);
-
-    const platillos: Platillo[] = [];
-
-    querySnapshot.forEach((docSnapshot) => {
-      const data = docSnapshot.data();
-      platillos.push({
-        id: docSnapshot.id,
-        nombre: data.nombre || "",
-        descripcion: data.descripcion || "",
-        precio: data.precio || 0,
-        disponible: data.disponible ?? true,
-        vendedorId: data.vendedorId || "",
-        imagen: data.imagen,
-        categoria: data.categoria || "Comida casera",
-        createdAt: data.createdAt?.toDate(),
-        updatedAt: data.updatedAt?.toDate(),
-      });
-    });
-
-    return platillos;
-  } catch (error: any) {
-    console.error("Error obteniendo platillos del vendedor:", error);
-    throw new Error(
-      "Error al cargar los platillos. Por favor, intenta de nuevo."
-    );
-  }
-};
