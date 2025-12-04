@@ -162,7 +162,9 @@ export async function sendMessageToServiceWorker(message: any): Promise<any> {
       }
     };
 
-    navigator.serviceWorker.controller.postMessage(message, [messageChannel.port2]);
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage(message, [messageChannel.port2]);
+    }
   });
 }
 

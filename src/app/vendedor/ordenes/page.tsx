@@ -25,10 +25,13 @@ export default function OrdenesPage() {
   const { user, vendedor, loading: authLoading } = useAuth();
   const { showAlert } = useAlert();
   const [pedidos, setPedidos] = useState<PedidoConCliente[]>([]);
-  const [filteredPedidos, setFilteredPedidos] = useState<PedidoConCliente[]>([]);
+  const [filteredPedidos, setFilteredPedidos] = useState<PedidoConCliente[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState<FiltroEstado>("todos");
-  const [pedidoSeleccionado, setPedidoSeleccionado] = useState<PedidoConCliente | null>(null);
+  const [pedidoSeleccionado, setPedidoSeleccionado] =
+    useState<PedidoConCliente | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -100,18 +103,14 @@ export default function OrdenesPage() {
   const getEstadoBadge = (estado: Pedido["estado"]) => {
     const badges = {
       pendiente: "bg-warning-100 text-warning-700 border-warning-300",
-      confirmado: "bg-info-100 text-info-700 border-info-300",
-      en_preparacion: "bg-info-100 text-info-700 border-info-300",
-      listo: "bg-success-100 text-success-700 border-success-300",
-      entregado: "bg-gray-100 text-gray-700 border-gray-300",
+      en_camino: "bg-info-100 text-info-700 border-info-300",
+      entregado: "bg-success-100 text-success-700 border-success-300",
       cancelado: "bg-error-100 text-error-700 border-error-300",
     };
 
     const textos = {
-      pendiente: "PENDIENTE",
-      confirmado: "CONFIRMADO",
-      en_preparacion: "EN PREPARACIÓN",
-      listo: "LISTO",
+      pendiente: "PREPARANDO",
+      en_camino: "LISTO PARA ENTREGAR",
       entregado: "ENTREGADO",
       cancelado: "CANCELADO",
     };
@@ -123,18 +122,6 @@ export default function OrdenesPage() {
         {textos[estado]}
       </span>
     );
-  };
-
-  const getSiguienteEstado = (estadoActual: Pedido["estado"]): Pedido["estado"] | null => {
-    const flujo: Record<Pedido["estado"], Pedido["estado"] | null> = {
-      pendiente: "confirmado",
-      confirmado: "en_preparacion",
-      en_preparacion: "listo",
-      listo: "entregado",
-      entregado: null,
-      cancelado: null,
-    };
-    return flujo[estadoActual];
   };
 
   if (authLoading || loading) {
@@ -185,10 +172,8 @@ export default function OrdenesPage() {
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
           >
             <option value="todos">Todas las órdenes</option>
-            <option value="pendiente">Pendientes</option>
-            <option value="confirmado">Confirmadas</option>
-            <option value="en_preparacion">En preparación</option>
-            <option value="listo">Listas</option>
+            <option value="pendiente">Preparando</option>
+            <option value="en_camino">Listas para entregar</option>
             <option value="entregado">Entregadas</option>
             <option value="cancelado">Canceladas</option>
           </select>
@@ -243,18 +228,9 @@ export default function OrdenesPage() {
                         {pedido.clienteTelefono || "No disponible"}
                       </p>
                       <p className="text-gray-700">
-                        <span className="font-semibold">Tipo:</span>{" "}
-                        {pedido.tipoEntrega === "recoger"
-                          ? "Para Recoger"
-                          : "Entrega en Institución"}
+                        <span className="font-semibold">Entrega:</span> Puerta
+                        principal de la UTNA
                       </p>
-                      {pedido.tipoEntrega === "entrega" &&
-                        pedido.direccionEntrega && (
-                          <p className="text-gray-700">
-                            <span className="font-semibold">Institución:</span>{" "}
-                            {pedido.direccionEntrega}
-                          </p>
-                        )}
                       <p className="text-gray-600">
                         <span className="font-semibold">Fecha:</span>{" "}
                         {new Date(pedido.createdAt).toLocaleString("es-MX", {
@@ -306,47 +282,89 @@ export default function OrdenesPage() {
                 {/* Acciones */}
                 <div className="flex gap-3">
                   {pedido.estado === "pendiente" && (
+                    <>
+                      <button
+                        onClick={() =>
+                          handleCambiarEstado(pedido.id, "en_camino")
+                        }
+                        className="flex-1 px-4 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                      >
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                        Marcar Listo
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleCambiarEstado(pedido.id, "cancelado")
+                        }
+                        className="px-4 py-3 bg-error-500 hover:bg-error-600 text-white font-semibold rounded-lg transition-colors"
+                      >
+                        Cancelar
+                      </button>
+                    </>
+                  )}
+                  {pedido.estado === "en_camino" && (
                     <button
                       onClick={() =>
-                        handleCambiarEstado(pedido.id, "confirmado")
+                        handleCambiarEstado(pedido.id, "entregado")
                       }
-                      className="flex-1 px-4 py-2 bg-warning-500 hover:bg-warning-600 text-white font-semibold rounded-lg transition-colors"
+                      className="flex-1 px-4 py-3 bg-success-500 hover:bg-success-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
                     >
-                      Comenzar
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      Entregar
                     </button>
                   )}
-                  {getSiguienteEstado(pedido.estado) && pedido.estado !== "pendiente" && (
+                  {pedido.estado === "entregado" && (
+                    <div className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg flex items-center justify-center gap-2">
+                      <svg
+                        className="w-5 h-5 text-success-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-success-700 font-bold">
+                        Entregado
+                      </span>
+                    </div>
+                  )}
+                  {pedido.estado !== "entregado" && (
                     <button
-                      onClick={() =>
-                        handleCambiarEstado(
-                          pedido.id,
-                          getSiguienteEstado(pedido.estado)!
-                        )
-                      }
-                      className="flex-1 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg transition-colors"
+                      onClick={() => setPedidoSeleccionado(pedido)}
+                      className="px-4 py-3 bg-info-500 hover:bg-info-600 text-white font-semibold rounded-lg transition-colors"
                     >
-                      {pedido.estado === "confirmado" && "Preparar"}
-                      {pedido.estado === "en_preparacion" && "Marcar Listo"}
-                      {pedido.estado === "listo" && "Marcar Entregado"}
+                      Detalles
                     </button>
                   )}
-                  {(pedido.estado === "pendiente" ||
-                    pedido.estado === "confirmado") && (
-                    <button
-                      onClick={() =>
-                        handleCambiarEstado(pedido.id, "cancelado")
-                      }
-                      className="px-4 py-2 bg-error-500 hover:bg-error-600 text-white font-semibold rounded-lg transition-colors"
-                    >
-                      Cancelar
-                    </button>
-                  )}
-                  <button
-                    onClick={() => setPedidoSeleccionado(pedido)}
-                    className="px-4 py-2 bg-info-500 hover:bg-info-600 text-white font-semibold rounded-lg transition-colors"
-                  >
-                    Ver Detalles
-                  </button>
                 </div>
               </div>
             </div>
@@ -446,4 +464,3 @@ export default function OrdenesPage() {
     </VendedorLayout>
   );
 }
-

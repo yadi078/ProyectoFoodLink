@@ -18,7 +18,7 @@ import type {
   Vendedor,
   Estudiante,
   HorarioServicio,
-  Zona,
+  InstitucionEducativa,
 } from "@/lib/firebase/types";
 
 /**
@@ -30,9 +30,8 @@ export const registerUser = async (
   email: string,
   password: string,
   nombre: string,
-  zona: Zona,
   telefono?: string,
-  institucionEducativa?: string,
+  institucionEducativa?: InstitucionEducativa,
   nombreNegocio?: string,
   tipoComida?: string[],
   horario?: HorarioServicio,
@@ -59,7 +58,6 @@ export const registerUser = async (
         email,
         nombre,
         telefono,
-        zona,
         nombreNegocio,
         tipoComida,
         horario,
@@ -73,8 +71,7 @@ export const registerUser = async (
         email,
         nombre,
         telefono,
-        zona,
-        institucionEducativa,
+        institucionEducativa: institucionEducativa!,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

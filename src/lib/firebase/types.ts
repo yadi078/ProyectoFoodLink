@@ -2,7 +2,7 @@
  * Tipos y interfaces para Firebase y la aplicación
  */
 
-export type Zona = "Zona Norte" | "Zona Centro" | "Zona Sur";
+export type InstitucionEducativa = "Universidad Tecnológica del Norte de Aguascalientes (UTNA)" | "No pertenezco a esta institución";
 
 export interface Vendedor {
   uid: string;
@@ -11,7 +11,6 @@ export interface Vendedor {
   nombreNegocio?: string; // Nombre del negocio del vendedor
   telefono?: string;
   direccion?: string;
-  zona: Zona; // Zona de Rincón de Romos
   tipoComida?: string[]; // ['Comida rápida', 'Comida casera', 'Bebidas', 'Postres']
   horario?: HorarioServicio;
   diasDescanso?: string[]; // ['Lunes', 'Martes', etc.]
@@ -29,8 +28,7 @@ export interface Estudiante {
   email: string;
   nombre: string;
   telefono?: string;
-  zona: Zona; // Zona de Rincón de Romos
-  institucionEducativa?: string; // Nombre de la escuela/universidad
+  institucionEducativa: InstitucionEducativa; // Solo UTNA permitido
   createdAt: Date;
   updatedAt: Date;
 }
@@ -80,13 +78,10 @@ export interface Pedido {
   precioTotal: number;
   estado:
     | "pendiente"
-    | "confirmado"
-    | "en_preparacion"
-    | "listo"
+    | "en_camino"
     | "entregado"
     | "cancelado";
-  tipoEntrega: "recoger" | "entrega"; // 'recoger' en punto de venta, 'entrega' en puerta de institución
-  direccionEntrega?: string; // Nombre de la institución educativa cuando tipoEntrega es 'entrega'
+  tipoEntrega: "entrega"; // Siempre entrega en la puerta principal de UTNA
   notas?: string;
   createdAt: Date;
   updatedAt: Date;

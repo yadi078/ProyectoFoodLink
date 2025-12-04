@@ -74,7 +74,7 @@ export const updateEstadoPedido = async (
 ): Promise<void> => {
   try {
     const pedidoRef = doc(db, "pedidos", pedidoId);
-    
+
     await updateDoc(pedidoRef, {
       estado: nuevoEstado,
       updatedAt: serverTimestamp(),
@@ -95,9 +95,7 @@ export interface EstadisticasVendedor {
   totalPedidos: number;
   pedidosPorEstado: {
     pendiente: number;
-    confirmado: number;
-    en_preparacion: number;
-    listo: number;
+    en_camino: number;
     entregado: number;
     cancelado: number;
   };
@@ -108,7 +106,7 @@ export const getEstadisticasVendedor = async (
 ): Promise<EstadisticasVendedor> => {
   try {
     const pedidos = await getPedidosByVendedor(vendedorId);
-    
+
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
@@ -123,15 +121,12 @@ export const getEstadisticasVendedor = async (
       .reduce((total, p) => total + p.precioTotal, 0);
 
     const pedidosPendientes = pedidos.filter(
-      (p) => p.estado === "pendiente" || p.estado === "confirmado"
+      (p) => p.estado === "pendiente" || p.estado === "en_camino"
     ).length;
 
     const pedidosPorEstado = {
       pendiente: pedidos.filter((p) => p.estado === "pendiente").length,
-      confirmado: pedidos.filter((p) => p.estado === "confirmado").length,
-      en_preparacion: pedidos.filter((p) => p.estado === "en_preparacion")
-        .length,
-      listo: pedidos.filter((p) => p.estado === "listo").length,
+      en_camino: pedidos.filter((p) => p.estado === "en_camino").length,
       entregado: pedidos.filter((p) => p.estado === "entregado").length,
       cancelado: pedidos.filter((p) => p.estado === "cancelado").length,
     };
@@ -152,9 +147,7 @@ export const getEstadisticasVendedor = async (
       totalPedidos: 0,
       pedidosPorEstado: {
         pendiente: 0,
-        confirmado: 0,
-        en_preparacion: 0,
-        listo: 0,
+        en_camino: 0,
         entregado: 0,
         cancelado: 0,
       },
@@ -182,7 +175,10 @@ export const getEstudianteInfo = async (estudianteId: string) => {
 
     // Si no existe en vendedores, buscar en estudiantes
     userDoc = await getDocs(
-      query(collection(db, "estudiantes"), where("__name__", "==", estudianteId))
+      query(
+        collection(db, "estudiantes"),
+        where("__name__", "==", estudianteId)
+      )
     );
 
     if (!userDoc.empty) {
@@ -205,4 +201,3 @@ export const getEstudianteInfo = async (estudianteId: string) => {
     };
   }
 };
-

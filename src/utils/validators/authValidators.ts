@@ -49,14 +49,16 @@ const baseRegisterSchema = {
     .max(20, "El teléfono es demasiado largo")
     .optional()
     .or(z.literal("")),
-  zona: z.enum(["Zona Norte", "Zona Centro", "Zona Sur"], {
-    required_error: "Debes seleccionar una zona",
-  }),
   institucionEducativa: z
-    .string()
-    .min(2, "El nombre de la institución debe tener al menos 2 caracteres")
-    .max(200, "El nombre de la institución es demasiado largo")
-    .trim()
+    .enum(
+      [
+        "Universidad Tecnológica del Norte de Aguascalientes (UTNA)",
+        "No pertenezco a esta institución",
+      ],
+      {
+        required_error: "Debes seleccionar una institución",
+      }
+    )
     .optional(),
 };
 
@@ -116,7 +118,18 @@ export const registerSchema = z
       ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "El nombre de la institución educativa es requerido",
+          message: "Debes seleccionar una institución educativa",
+          path: ["institucionEducativa"],
+        });
+      }
+      // Bloquear registro si no es de UTNA
+      if (
+        data.institucionEducativa === "No pertenezco a esta institución"
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            "No puedes formar parte de FoodLink. La plataforma es exclusiva para estudiantes y maestros de la Universidad Tecnológica del Norte de Aguascalientes.",
           path: ["institucionEducativa"],
         });
       }

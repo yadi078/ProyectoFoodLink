@@ -25,9 +25,9 @@ export default function DashboardNuevoPage() {
   const [estadisticas, setEstadisticas] = useState<EstadisticasVendedor | null>(
     null
   );
-  const [pedidosRecientes, setPedidosRecientes] = useState<
-    PedidoConCliente[]
-  >([]);
+  const [pedidosRecientes, setPedidosRecientes] = useState<PedidoConCliente[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function DashboardNuevoPage() {
 
     try {
       setLoading(true);
-      
+
       // Cargar estadísticas
       const stats = await getEstadisticasVendedor(vendedor.uid);
       setEstadisticas(stats);
@@ -77,20 +77,16 @@ export default function DashboardNuevoPage() {
   };
 
   const getEstadoBadge = (estado: Pedido["estado"]) => {
-    const badges = {
+    const badges: Record<Pedido["estado"], string> = {
       pendiente: "bg-warning-100 text-warning-700 border-warning-300",
-      confirmado: "bg-info-100 text-info-700 border-info-300",
-      en_preparacion: "bg-info-100 text-info-700 border-info-300",
-      listo: "bg-success-100 text-success-700 border-success-300",
-      entregado: "bg-gray-100 text-gray-700 border-gray-300",
+      en_camino: "bg-info-100 text-info-700 border-info-300",
+      entregado: "bg-success-100 text-success-700 border-success-300",
       cancelado: "bg-error-100 text-error-700 border-error-300",
     };
 
-    const textos = {
-      pendiente: "PENDIENTE",
-      confirmado: "CONFIRMADO",
-      en_preparacion: "EN PREPARACIÓN",
-      listo: "LISTO",
+    const textos: Record<Pedido["estado"], string> = {
+      pendiente: "PREPARANDO",
+      en_camino: "LISTO PARA ENTREGAR",
       entregado: "ENTREGADO",
       cancelado: "CANCELADO",
     };
@@ -226,9 +222,7 @@ export default function DashboardNuevoPage() {
               </svg>
             </div>
             <div>
-              <p className="text-sm text-gray-600 font-medium">
-                Total Órdenes
-              </p>
+              <p className="text-sm text-gray-600 font-medium">Total Órdenes</p>
               <p className="text-3xl font-bold text-gray-800">
                 {estadisticas?.totalPedidos || 0}
               </p>
@@ -357,4 +351,3 @@ export default function DashboardNuevoPage() {
     </VendedorLayout>
   );
 }
-

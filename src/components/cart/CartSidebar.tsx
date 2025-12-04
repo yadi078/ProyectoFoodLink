@@ -53,11 +53,7 @@ export default function CartSidebar() {
     setIsModalOpen(true);
   };
 
-  const handleConfirmarPedido = async (
-    tipoEntrega: "recoger" | "entrega",
-    direccion?: string,
-    notas?: string
-  ) => {
+  const handleConfirmarPedido = async (notas?: string) => {
     if (!user) {
       showAlert("Debes iniciar sesión para continuar", "error");
       return;
@@ -76,12 +72,11 @@ export default function CartSidebar() {
         return;
       }
 
-      // 2. Crear el pedido
+      // 2. Crear el pedido (siempre entrega en UTNA)
       const pedidosCreados = await crearPedido({
         estudianteId: user.uid,
         items: validItems,
-        tipoEntrega,
-        direccionEntrega: direccion,
+        tipoEntrega: "entrega",
         notas,
       });
 
@@ -89,8 +84,8 @@ export default function CartSidebar() {
       const cantidadVendedores = pedidosCreados.length;
       const mensaje =
         cantidadVendedores === 1
-          ? "¡Pedido confirmado exitosamente! El vendedor fue notificado."
-          : `¡Pedidos confirmados exitosamente! Se crearon ${cantidadVendedores} pedidos (uno por vendedor).`;
+          ? "¡Pedido confirmado exitosamente! Recógelo en la puerta principal de la UTNA."
+          : `¡Pedidos confirmados exitosamente! Se crearon ${cantidadVendedores} pedidos. Recógelos en la puerta principal de la UTNA.`;
 
       showAlert(mensaje, "success");
 

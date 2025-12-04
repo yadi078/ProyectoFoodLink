@@ -29,7 +29,6 @@ export default function ConfiguracionPage() {
   const [formData, setFormData] = useState({
     nombre: "",
     telefono: "",
-    zona: "",
     institucionEducativa: "",
   });
 
@@ -54,7 +53,6 @@ export default function ConfiguracionPage() {
           setFormData({
             nombre: data.nombre || "",
             telefono: data.telefono || "",
-            zona: data.zona || "",
             institucionEducativa: data.institucionEducativa || "",
           });
         }
@@ -89,14 +87,14 @@ export default function ConfiguracionPage() {
       await updateDoc(doc(db, "estudiantes", user.uid), {
         nombre: formData.nombre,
         telefono: formData.telefono,
-        zona: formData.zona,
-        institucionEducativa: formData.institucionEducativa,
-        fechaActualizacion: new Date(),
+        updatedAt: new Date(),
       });
 
       setEstudiante({
         ...estudiante,
-        ...formData,
+        nombre: formData.nombre,
+        telefono: formData.telefono,
+        updatedAt: new Date(),
       });
 
       setModoEdicion(false);
@@ -122,7 +120,6 @@ export default function ConfiguracionPage() {
       setFormData({
         nombre: estudiante.nombre || "",
         telefono: estudiante.telefono || "",
-        zona: estudiante.zona || "",
         institucionEducativa: estudiante.institucionEducativa || "",
       });
     }
@@ -312,51 +309,17 @@ export default function ConfiguracionPage() {
                 )}
               </div>
 
-              {/* Zona */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Zona de Residencia
-                </label>
-                {modoEdicion ? (
-                  <select
-                    name="zona"
-                    value={formData.zona}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-                  >
-                    <option value="">Selecciona una zona</option>
-                    <option value="Zona Norte">Zona Norte</option>
-                    <option value="Zona Sur">Zona Sur</option>
-                    <option value="Zona Centro">Zona Centro</option>
-                    <option value="Zona Este">Zona Este</option>
-                    <option value="Zona Oeste">Zona Oeste</option>
-                  </select>
-                ) : (
-                  <p className="text-gray-900 font-medium px-4 py-2 bg-gray-50 rounded-lg">
-                    {estudiante.zona}
-                  </p>
-                )}
-              </div>
-
               {/* Institución Educativa */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Institución Educativa
                 </label>
-                {modoEdicion ? (
-                  <input
-                    type="text"
-                    name="institucionEducativa"
-                    value={formData.institucionEducativa}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-                    placeholder="Tu universidad o institución"
-                  />
-                ) : (
-                  <p className="text-gray-900 font-medium px-4 py-2 bg-gray-50 rounded-lg">
-                    {estudiante.institucionEducativa || "No especificado"}
-                  </p>
-                )}
+                <p className="text-gray-900 font-medium px-4 py-2 bg-gray-50 rounded-lg">
+                  {estudiante.institucionEducativa || "No especificado"}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  La institución no se puede modificar
+                </p>
               </div>
             </div>
 

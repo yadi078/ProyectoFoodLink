@@ -5,7 +5,7 @@ import { useState } from "react";
 interface ConfirmarPedidoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (tipoEntrega: "recoger" | "entrega", direccion?: string, notas?: string) => void;
+  onConfirm: (notas?: string) => void;
   totalItems: number;
   totalPrice: string;
 }
@@ -17,25 +17,13 @@ export default function ConfirmarPedidoModal({
   totalItems,
   totalPrice,
 }: ConfirmarPedidoModalProps) {
-  const [tipoEntrega, setTipoEntrega] = useState<"recoger" | "entrega">("recoger");
-  const [direccion, setDireccion] = useState("");
   const [notas, setNotas] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleConfirmar = async () => {
-    // Validar nombre de institución si es entrega
-    if (tipoEntrega === "entrega" && !direccion.trim()) {
-      alert("Por favor ingresa el nombre de tu institución educativa");
-      return;
-    }
-
     setLoading(true);
     try {
-      await onConfirm(
-        tipoEntrega,
-        tipoEntrega === "entrega" ? direccion : undefined,
-        notas.trim() || undefined
-      );
+      await onConfirm(notas.trim() || undefined);
     } finally {
       setLoading(false);
     }
@@ -104,65 +92,31 @@ export default function ConfirmarPedidoModal({
             </div>
           </div>
 
-          {/* Tipo de entrega */}
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-700">
-              ¿Cómo deseas recibir tu pedido? <span className="text-error-500">*</span>
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setTipoEntrega("recoger")}
-                className={`p-4 rounded-lg border-2 transition-all duration-200 ${
-                  tipoEntrega === "recoger"
-                    ? "border-primary-500 bg-primary-50 text-primary-700"
-                    : "border-gray-300 hover:border-gray-400 text-gray-700"
-                }`}
-                disabled={loading}
-              >
-                <div className="text-2xl mb-1">🚶</div>
-                <div className="font-semibold text-sm">Recoger</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => setTipoEntrega("entrega")}
-                className={`p-4 rounded-lg border-2 transition-all duration-200 ${
-                  tipoEntrega === "entrega"
-                    ? "border-primary-500 bg-primary-50 text-primary-700"
-                    : "border-gray-300 hover:border-gray-400 text-gray-700"
-                }`}
-                disabled={loading}
-              >
-                <div className="text-2xl mb-1">🏫</div>
-                <div className="font-semibold text-sm leading-tight">
-                  Entrega en puerta
-                  <br />
-                  de la institución
+          {/* Información de entrega */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex gap-3">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white text-xl">
+                  📍
                 </div>
-              </button>
+              </div>
+              <div>
+                <h3 className="font-semibold text-blue-900 mb-2">
+                  Entrega en la puerta principal de la UTNA
+                </h3>
+                <div className="text-sm text-blue-800 space-y-1">
+                  <p>
+                    ✓ Todos los productos se entregan en un solo punto de
+                    encuentro
+                  </p>
+                  <p>✓ Pago únicamente en efectivo</p>
+                  <p className="mt-2 font-medium">
+                    🕐 Horario de entrega: Durante el horario escolar
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-
-          {/* Nombre de la institución (solo si selecciona entrega) */}
-          {tipoEntrega === "entrega" && (
-            <div className="space-y-2 animate-fade-in">
-              <label
-                htmlFor="direccion"
-                className="block text-sm font-semibold text-gray-700"
-              >
-                Nombre de tu institución educativa <span className="text-error-500">*</span>
-              </label>
-              <input
-                type="text"
-                id="direccion"
-                value={direccion}
-                onChange={(e) => setDireccion(e.target.value)}
-                placeholder="Ej: Universidad Tecnológica, Preparatoria Regional..."
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-                disabled={loading}
-              />
-            </div>
-          )}
 
           {/* Notas adicionales */}
           <div className="space-y-2">

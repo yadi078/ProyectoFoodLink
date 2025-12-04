@@ -16,8 +16,7 @@ import type { CartItem } from "@/components/context/CartContext";
 export interface CrearPedidoParams {
   estudianteId: string;
   items: CartItem[];
-  tipoEntrega: "recoger" | "entrega"; // 'recoger' en punto de venta, 'entrega' en puerta de institución
-  direccionEntrega?: string; // Nombre de la institución educativa
+  tipoEntrega: "entrega"; // Siempre entrega en puerta principal de UTNA
   notas?: string;
 }
 
@@ -40,7 +39,7 @@ export interface PedidoCreado {
 export const crearPedido = async (
   params: CrearPedidoParams
 ): Promise<PedidoCreado[]> => {
-  const { estudianteId, items, tipoEntrega, direccionEntrega, notas } = params;
+  const { estudianteId, items, tipoEntrega, notas } = params;
 
   if (!estudianteId) {
     throw new Error("El ID del estudiante es requerido");
@@ -107,8 +106,7 @@ export const crearPedido = async (
         items: itemsParaGuardar,
         precioTotal,
         estado: "pendiente",
-        tipoEntrega,
-        direccionEntrega: tipoEntrega === "entrega" ? direccionEntrega : null,
+        tipoEntrega: "entrega", // Siempre entrega en puerta principal de UTNA
         notas: notas || null,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),

@@ -207,7 +207,7 @@ export const getPlatilloById = async (
       disponible: data.disponible ?? true,
       vendedorId: data.vendedorId || "",
       imagen: data.imagen,
-      tipo: data.tipo,
+      categoria: data.categoria || "Comida casera",
       createdAt: data.createdAt?.toDate(),
       updatedAt: data.updatedAt?.toDate(),
     };
@@ -248,7 +248,7 @@ export const getPlatillosByVendedor = async (
         disponible: data.disponible ?? true,
         vendedorId: data.vendedorId || "",
         imagen: data.imagen,
-        tipo: data.tipo,
+        categoria: data.categoria || "Comida casera",
         createdAt: data.createdAt?.toDate(),
         updatedAt: data.updatedAt?.toDate(),
       });
