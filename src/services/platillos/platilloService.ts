@@ -189,9 +189,7 @@ export const createPlatillo = async (
     const notas = cleanOptionalField(platilloData.notasAdicionales);
     if (notas) cleanData.notasAdicionales = notas.trim();
 
-    console.log("📦 Datos a guardar en Firebase:", cleanData);
     const docRef = await addDoc(platillosRef, cleanData);
-    console.log("✅ Producto creado con ID:", docRef.id);
     return docRef.id;
   } catch (error: any) {
     console.error("Error creando platillo:", error);

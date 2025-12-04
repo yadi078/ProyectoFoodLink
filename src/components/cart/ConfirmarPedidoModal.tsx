@@ -1,18 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ConfirmarPedidoModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (data: {
     notas?: string;
-    tipoEntrega: "entrega" | "recoger";
+    horaEntrega: string;
     codigoPromocional?: string;
   }) => void;
   totalItems: number;
   totalPrice: string;
   descuentoAplicado?: number;
+  vendedoresInfo?: Array<{
+    vendedorId: string;
+    horario?: { inicio: string; fin: string };
+  }>;
 }
 
 export default function ConfirmarPedidoModal({
@@ -22,26 +26,119 @@ export default function ConfirmarPedidoModal({
   totalItems,
   totalPrice,
   descuentoAplicado = 0,
+  vendedoresInfo = [],
 }: ConfirmarPedidoModalProps) {
   const [notas, setNotas] = useState("");
-  const [tipoEntrega, setTipoEntrega] = useState<"entrega" | "recoger">(
-    "entrega"
-  );
+  const [horaEntrega, setHoraEntrega] = useState("");
   const [codigoPromocional, setCodigoPromocional] = useState("");
+  const [codigoTemporal, setCodigoTemporal] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorHora, setErrorHora] = useState("");
+  const [mensajeDescuento, setMensajeDescuento] = useState("");
+  const [aplicandoCodigo, setAplicandoCodigo] = useState(false);
+
+  // Obtener el horario del primer vendedor (simplificado)
+  const obtenerHorario = () => {
+    if (vendedoresInfo.length === 0 || !vendedoresInfo[0]?.horario) {
+      return { inicio: "10:00", fin: "15:00" }; // Horario por defecto
+    }
+    return vendedoresInfo[0].horario;
+  };
+
+  const horarioLaboral = obtenerHorario();
+
+  // Validar hora seleccionada
+  const validarHora = (hora: string): boolean => {
+    if (!hora) {
+      setErrorHora("Por favor selecciona una hora de entrega");
+      return false;
+    }
+
+    // Validar que sea posterior a la hora actual
+    const ahora = new Date();
+    const horaActual = `${ahora.getHours().toString().padStart(2, "0")}:${ahora
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
+
+    if (hora <= horaActual) {
+      setErrorHora("Selecciona una hora posterior a la hora actual.");
+      return false;
+    }
+
+    // Validar que esté dentro del horario laboral
+    const horaCruzaMedianoche = horarioLaboral.fin < horarioLaboral.inicio;
+    
+    if (horaCruzaMedianoche) {
+      // Si el horario cruza medianoche (ej: 17:00 a 02:00)
+      if (hora < horarioLaboral.inicio && hora > horarioLaboral.fin) {
+        setErrorHora(
+          `La hora seleccionada está fuera del horario laboral del cocinero (${horarioLaboral.inicio} — ${horarioLaboral.fin}).`
+        );
+        return false;
+      }
+    } else {
+      // Horario normal (ej: 10:00 a 15:00)
+      if (hora < horarioLaboral.inicio || hora > horarioLaboral.fin) {
+        setErrorHora(
+          `La hora seleccionada está fuera del horario laboral del cocinero (${horarioLaboral.inicio} — ${horarioLaboral.fin}).`
+        );
+        return false;
+      }
+    }
+
+    setErrorHora("");
+    return true;
+  };
+
+  const handleAplicarCodigo = async () => {
+    if (!codigoTemporal.trim()) {
+      setMensajeDescuento("");
+      return;
+    }
+
+    setAplicandoCodigo(true);
+    setMensajeDescuento("");
+
+    try {
+      // El código se validará en CartSidebar cuando se confirme el pedido
+      setCodigoPromocional(codigoTemporal.trim());
+      setMensajeDescuento(
+        "Código ingresado. Se validará al confirmar el pedido."
+      );
+    } finally {
+      setAplicandoCodigo(false);
+    }
+  };
 
   const handleConfirmar = async () => {
+    if (!validarHora(horaEntrega)) {
+      return;
+    }
+
     setLoading(true);
     try {
       await onConfirm({
         notas: notas.trim() || undefined,
-        tipoEntrega,
+        horaEntrega,
         codigoPromocional: codigoPromocional.trim() || undefined,
       });
     } finally {
       setLoading(false);
     }
   };
+
+  // Limpiar formulario cuando se cierra
+  useEffect(() => {
+    if (!isOpen) {
+      setNotas("");
+      setHoraEntrega("");
+      setCodigoPromocional("");
+      setCodigoTemporal("");
+      setErrorHora("");
+      setMensajeDescuento("");
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -120,111 +217,73 @@ export default function ConfirmarPedidoModal({
             </div>
           </div>
 
-          {/* Método de entrega - Mobile First */}
+          {/* Método de entrega - FIJO */}
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700">
-              🚚 Método de entrega
+              📍 Método de entrega
             </label>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => setTipoEntrega("entrega")}
-                disabled={loading}
-                className={`p-3 rounded-lg border-2 transition-all duration-200 ${
-                  tipoEntrega === "entrega"
-                    ? "border-primary-500 bg-primary-50"
-                    : "border-gray-200 hover:border-primary-300"
-                }`}
-              >
-                <div className="text-center">
-                  <div className="text-2xl mb-1">📍</div>
-                  <div className="text-xs font-semibold text-gray-800">
-                    Entrega
-                  </div>
-                  <div className="text-[10px] text-gray-600 mt-1">
-                    Puerta UTNA
+            <div className="rounded-lg p-3 border-2 border-primary-200 bg-primary-50">
+              <div className="flex gap-2">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-base bg-primary-600">
+                    📍
                   </div>
                 </div>
-              </button>
-              <button
-                type="button"
-                onClick={() => setTipoEntrega("recoger")}
-                disabled={loading}
-                className={`p-3 rounded-lg border-2 transition-all duration-200 ${
-                  tipoEntrega === "recoger"
-                    ? "border-primary-500 bg-primary-50"
-                    : "border-gray-200 hover:border-primary-300"
-                }`}
-              >
-                <div className="text-center">
-                  <div className="text-2xl mb-1">🏃</div>
-                  <div className="text-xs font-semibold text-gray-800">
-                    Recoger
+                <div className="flex-1">
+                  <h3 className="font-semibold text-sm mb-1 text-primary-900">
+                    Recoger en la puerta principal de la Universidad Tecnológica del Norte de Aguascalientes (UTNA).
+                  </h3>
+                  <div className="mt-2 px-2 py-1 bg-primary-600 text-white text-xs rounded-md inline-block">
+                    Entrega únicamente en la puerta principal de la UTNA. Los pagos son solo en efectivo.
                   </div>
-                  <div className="text-[10px] text-gray-600 mt-1">
-                    En el lugar
-                  </div>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          {/* Información según método */}
-          <div
-            className={`rounded-lg p-3 border ${
-              tipoEntrega === "entrega"
-                ? "bg-blue-50 border-blue-200"
-                : "bg-green-50 border-green-200"
-            }`}
-          >
-            <div className="flex gap-2">
-              <div className="flex-shrink-0">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-base ${
-                    tipoEntrega === "entrega" ? "bg-blue-600" : "bg-green-600"
-                  }`}
-                >
-                  {tipoEntrega === "entrega" ? "📍" : "🏃"}
-                </div>
-              </div>
-              <div className="flex-1">
-                <h3
-                  className={`font-semibold text-sm mb-1 ${
-                    tipoEntrega === "entrega"
-                      ? "text-blue-900"
-                      : "text-green-900"
-                  }`}
-                >
-                  {tipoEntrega === "entrega"
-                    ? "Entrega en la puerta principal de la UTNA"
-                    : "Recoger en el lugar del vendedor"}
-                </h3>
-                <div
-                  className={`text-xs space-y-1 ${
-                    tipoEntrega === "entrega"
-                      ? "text-blue-800"
-                      : "text-green-800"
-                  }`}
-                >
-                  {tipoEntrega === "entrega" ? (
-                    <>
-                      <p>✓ Punto de encuentro único</p>
-                      <p>✓ Pago en efectivo</p>
-                      <p>✓ Horario escolar</p>
-                    </>
-                  ) : (
-                    <>
-                      <p>✓ Recoge directamente con el vendedor</p>
-                      <p>✓ Pago en efectivo</p>
-                      <p>✓ Coordina horario con el vendedor</p>
-                    </>
-                  )}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Código promocional */}
+          {/* Selección de hora */}
+          <div className="space-y-2">
+            <label
+              htmlFor="hora"
+              className="block text-sm font-semibold text-gray-700"
+            >
+              🕐 Hora de entrega
+            </label>
+            <input
+              id="hora"
+              type="time"
+              value={horaEntrega}
+              step="60"
+              onChange={(e) => {
+                setHoraEntrega(e.target.value);
+                if (errorHora) {
+                  validarHora(e.target.value);
+                }
+              }}
+              onBlur={(e) => validarHora(e.target.value)}
+              className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-primary-500 transition-all duration-200 ${
+                errorHora
+                  ? "border-red-500 focus:border-red-500"
+                  : "border-gray-300 focus:border-primary-500"
+              }`}
+              disabled={loading}
+              required
+            />
+            {errorHora && (
+              <p className="text-xs text-red-600 flex items-start gap-1">
+                <span className="text-sm">⚠️</span>
+                <span>{errorHora}</span>
+              </p>
+            )}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
+              <p className="text-xs text-blue-800">
+                <strong>Horario del cocinero:</strong> {horarioLaboral.inicio}{" "}
+                — {horarioLaboral.fin}
+              </p>
+            </div>
+          </div>
+
+          {/* Código promocional con botón Aplicar */}
           <div className="space-y-2">
             <label
               htmlFor="codigo"
@@ -232,19 +291,38 @@ export default function ConfirmarPedidoModal({
             >
               🎁 Código promocional (opcional)
             </label>
-            <input
-              id="codigo"
-              type="text"
-              value={codigoPromocional}
-              onChange={(e) =>
-                setCodigoPromocional(e.target.value.toUpperCase())
-              }
-              placeholder="Ej: PROMO10"
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 uppercase"
-              disabled={loading}
-            />
+            <div className="flex gap-2">
+              <input
+                id="codigo"
+                type="text"
+                value={codigoTemporal}
+                onChange={(e) => {
+                  setCodigoTemporal(e.target.value.toUpperCase());
+                  setMensajeDescuento("");
+                }}
+                placeholder="Ej: PROMO10"
+                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 uppercase"
+                disabled={loading || aplicandoCodigo}
+              />
+              <button
+                type="button"
+                onClick={handleAplicarCodigo}
+                disabled={
+                  loading || aplicandoCodigo || !codigoTemporal.trim()
+                }
+                className="px-4 py-2 text-sm font-semibold bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {aplicandoCodigo ? "..." : "Aplicar"}
+              </button>
+            </div>
+            {mensajeDescuento && (
+              <p className="text-xs text-green-600 flex items-center gap-1">
+                <span>✓</span>
+                <span>{mensajeDescuento}</span>
+              </p>
+            )}
             <p className="text-[10px] text-gray-500">
-              Si tienes un código, ingrésalo para obtener descuento
+              Si tienes un código, ingrésalo y haz clic en "Aplicar"
             </p>
           </div>
 
@@ -279,7 +357,7 @@ export default function ConfirmarPedidoModal({
           </button>
           <button
             onClick={handleConfirmar}
-            disabled={loading}
+            disabled={loading || !horaEntrega}
             className="flex-1 btn-primary text-sm text-center shadow-medium hover:shadow-large disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (

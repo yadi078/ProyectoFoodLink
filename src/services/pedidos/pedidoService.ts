@@ -18,6 +18,7 @@ export interface CrearPedidoParams {
   estudianteId: string;
   items: CartItem[];
   tipoEntrega: "entrega" | "recoger";
+  horaEntrega: string; // Formato HH:mm
   notas?: string;
   descuentoAplicado?: number;
   codigoPromocional?: string;
@@ -47,6 +48,7 @@ export const crearPedido = async (
     estudianteId,
     items,
     tipoEntrega,
+    horaEntrega,
     notas,
     descuentoAplicado,
     codigoPromocional,
@@ -59,6 +61,16 @@ export const crearPedido = async (
 
   if (!items || items.length === 0) {
     throw new Error("El carrito está vacío");
+  }
+
+  if (!horaEntrega) {
+    throw new Error("La hora de entrega es requerida");
+  }
+
+  // Validar formato de hora (HH:mm)
+  const horaRegex = /^([0-1][0-9]|2[0-3]):([0-5][0-9])$/;
+  if (!horaRegex.test(horaEntrega)) {
+    throw new Error("Formato de hora inválido. Use HH:mm");
   }
 
   // Validar que el usuario exista en vendedores o estudiantes
@@ -78,6 +90,61 @@ export const crearPedido = async (
   } catch (error) {
     console.error("Error al validar usuario:", error);
     throw new Error("No se pudo validar el usuario");
+  }
+
+  // Validar hora de entrega (debe ser posterior a la hora actual del servidor)
+  const ahora = new Date();
+  const horaActual = `${ahora.getHours().toString().padStart(2, "0")}:${ahora
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}`;
+
+  if (horaEntrega <= horaActual) {
+    throw new Error("Selecciona una hora posterior a la hora actual.");
+  }
+
+  // La fecha del pedido siempre es el día actual
+  const fechaEntrega = new Date();
+  fechaEntrega.setHours(0, 0, 0, 0); // Resetear a medianoche del día actual
+
+  // Validar horario laboral de los vendedores
+  const vendedoresUnicos = Array.from(
+    new Set(items.map((item) => item.platillo.vendedorId))
+  );
+
+  for (const vendedorId of vendedoresUnicos) {
+    try {
+      const vendedorDoc = await getDoc(doc(db, "vendedores", vendedorId));
+      if (vendedorDoc.exists()) {
+        const vendedorData = vendedorDoc.data();
+        const horario = vendedorData.horario || { inicio: "10:00", fin: "15:00" };
+        
+        // Validar que la hora esté dentro del horario del vendedor
+        const horaCruzaMedianoche = horario.fin < horario.inicio;
+        
+        if (horaCruzaMedianoche) {
+          // Si el horario cruza medianoche (ej: 17:00 a 02:00)
+          if (horaEntrega < horario.inicio && horaEntrega > horario.fin) {
+            throw new Error(
+              `La hora seleccionada está fuera del horario laboral del cocinero (${horario.inicio} — ${horario.fin}).`
+            );
+          }
+        } else {
+          // Horario normal (ej: 10:00 a 15:00)
+          if (horaEntrega < horario.inicio || horaEntrega > horario.fin) {
+            throw new Error(
+              `La hora seleccionada está fuera del horario laboral del cocinero (${horario.inicio} — ${horario.fin}).`
+            );
+          }
+        }
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("horario laboral")) {
+        throw error; // Re-lanzar error de validación de horario
+      }
+      // Si no se puede obtener el vendedor, continuar con horario por defecto
+      console.warn(`No se pudo validar horario del vendedor ${vendedorId}`);
+    }
   }
 
   // Agrupar items por vendedor
@@ -134,6 +201,8 @@ export const crearPedido = async (
         codigoPromocional: codigoPromocional || undefined,
         estado: "pendiente",
         tipoEntrega,
+        horaEntrega, // Guardar la hora de entrega
+        fechaEntrega, // Guardar la fecha (siempre el día actual)
         notas: notas || null,
         vendedorCalificado: false,
         createdAt: serverTimestamp(),

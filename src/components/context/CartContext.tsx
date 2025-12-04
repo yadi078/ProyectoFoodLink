@@ -119,12 +119,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = (platillo: Platillo, cantidad: number = 1) => {
     if (!platillo || !platillo.id) {
-      console.error("Error: Platillo inválido");
       return;
     }
 
     if (cantidad <= 0) {
-      console.error("Error: Cantidad inválida");
       return;
     }
 

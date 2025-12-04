@@ -10,7 +10,6 @@ import {
   getDocs,
   getDoc,
   doc,
-  orderBy,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import type { Pedido } from "@/lib/firebase/types";
@@ -26,8 +25,7 @@ export const getPedidosByEstudiante = async (
     const pedidosRef = collection(db, "pedidos");
     const q = query(
       pedidosRef,
-      where("estudianteId", "==", estudianteId),
-      orderBy("createdAt", "desc")
+      where("estudianteId", "==", estudianteId)
     );
 
     const querySnapshot = await getDocs(q);
@@ -40,7 +38,14 @@ export const getPedidosByEstudiante = async (
         ...data,
         createdAt: timestampToDate(data.createdAt),
         updatedAt: timestampToDate(data.updatedAt),
+        fechaEntrega: data.fechaEntrega ? timestampToDate(data.fechaEntrega) : undefined,
       } as Pedido);
+    });
+
+    // Ordenar en el cliente por fecha de creación (más reciente primero)
+    pedidos.sort((a, b) => {
+      if (!a.createdAt || !b.createdAt) return 0;
+      return b.createdAt.getTime() - a.createdAt.getTime();
     });
 
     return pedidos;

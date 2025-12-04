@@ -134,6 +134,55 @@ service cloud.firestore {
     }
 
     // ============================================
+    // COLECCIÓN: conversaciones
+    // ============================================
+    match /conversaciones/{conversacionId} {
+      // Permitir lectura: solo estudiante o vendedor involucrado, o admin
+      allow read: if isAuthenticated() &&
+                     (resource.data.estudianteId == request.auth.uid ||
+                      resource.data.vendedorId == request.auth.uid ||
+                      isAdmin());
+
+      // Permitir crear: solo estudiante o vendedor autenticado
+      allow create: if isAuthenticated() &&
+                       (request.resource.data.estudianteId == request.auth.uid ||
+                        request.resource.data.vendedorId == request.auth.uid);
+
+      // Permitir actualizar: solo estudiante o vendedor involucrado
+      allow update: if isAuthenticated() &&
+                       (resource.data.estudianteId == request.auth.uid ||
+                        resource.data.vendedorId == request.auth.uid ||
+                        isAdmin());
+
+      // Permitir eliminar: solo admin
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // COLECCIÓN: mensajes
+    // ============================================
+    match /mensajes/{mensajeId} {
+      // Función auxiliar: verificar si el usuario está en la conversación
+      function isInConversacion(conversacionId) {
+        let conversacion = get(/databases/$(database)/documents/conversaciones/$(conversacionId)).data;
+        return conversacion.estudianteId == request.auth.uid ||
+               conversacion.vendedorId == request.auth.uid;
+      }
+
+      // Permitir lectura: solo si está en la conversación
+      allow read: if isAuthenticated() &&
+                     isInConversacion(resource.data.conversacionId);
+
+      // Permitir crear: solo si está en la conversación y es el remitente
+      allow create: if isAuthenticated() &&
+                       request.resource.data.remitenteId == request.auth.uid &&
+                       isInConversacion(request.resource.data.conversacionId);
+
+      // No permitir actualizar ni eliminar mensajes (inmutables)
+      allow update, delete: if isAdmin();
+    }
+
+    // ============================================
     // COLECCIÓN: admins (solo lectura por admin)
     // ============================================
     match /admins/{adminId} {

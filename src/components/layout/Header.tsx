@@ -91,25 +91,83 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* Botón mobile menu */}
-          <button
-            className="lg:hidden focus:outline-none transition-colors text-[#666666] hover:text-[#FFA552]"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {/* Botones móviles (mensajes + carrito + menú) */}
+          <div className="flex items-center gap-2 lg:hidden">
+            {/* Botón de mensajes (móvil) */}
+            {user && !isVendedor && (
+              <Link
+                href="/mensajes"
+                className={`relative p-2 rounded-lg transition-all duration-200 ${
+                  isActive("/mensajes")
+                    ? "bg-primary-100 text-primary-600"
+                    : "hover:bg-gray-100 text-gray-700"
+                }`}
+                aria-label="Mensajes"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  />
+                </svg>
+              </Link>
+            )}
+
+            {/* Botón del carrito (móvil) */}
+            {(!user || !isVendedor) && (
+              <button
+                onClick={toggleCart}
+                className="relative p-2 rounded-lg transition-all duration-200 hover:bg-gray-100"
+                aria-label="Carrito de compras"
+              >
+                <svg
+                  className="w-6 h-6 text-gray-700"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-medium">
+                    {totalItems > 9 ? "9+" : totalItems}
+                  </span>
+                )}
+              </button>
+            )}
+
+            {/* Botón menú hamburguesa */}
+            <button
+              className="focus:outline-none transition-colors text-[#666666] hover:text-[#FFA552]"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          </button>
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+          </div>
 
           {/* Navegación Desktop */}
           <div className="hidden lg:flex items-center space-x-2">
@@ -153,6 +211,33 @@ export default function Header() {
             >
               Contacto
             </Link>
+
+            {/* Mensajes */}
+            {user && !isVendedor && (
+              <Link
+                href="/mensajes"
+                className={`relative px-2 py-2 rounded-lg transition-all duration-200 hover:bg-gray-100 ${
+                  isActive("/mensajes") ? "bg-primary-50" : ""
+                }`}
+                aria-label="Mensajes"
+              >
+                <svg
+                  className={`w-5 h-5 transition-colors ${
+                    isActive("/mensajes") ? "text-primary-500" : "text-gray-700"
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  />
+                </svg>
+              </Link>
+            )}
 
             {/* Carrito */}
             {(!user || !isVendedor) && (

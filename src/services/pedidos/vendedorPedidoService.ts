@@ -11,7 +11,6 @@ import {
   doc,
   updateDoc,
   serverTimestamp,
-  orderBy,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import type { Pedido } from "@/lib/firebase/types";
@@ -33,16 +32,11 @@ export const getPedidosByVendedor = async (
       q = query(
         pedidosRef,
         where("vendedorId", "==", vendedorId),
-        where("estado", "==", estado),
-        orderBy("createdAt", "desc")
+        where("estado", "==", estado)
       );
     } else {
       // Solo filtrar por vendedor
-      q = query(
-        pedidosRef,
-        where("vendedorId", "==", vendedorId),
-        orderBy("createdAt", "desc")
-      );
+      q = query(pedidosRef, where("vendedorId", "==", vendedorId));
     }
 
     const querySnapshot = await getDocs(q);
@@ -55,7 +49,16 @@ export const getPedidosByVendedor = async (
         ...data,
         createdAt: timestampToDate(data.createdAt),
         updatedAt: timestampToDate(data.updatedAt),
+        fechaEntrega: data.fechaEntrega
+          ? timestampToDate(data.fechaEntrega)
+          : undefined,
       } as Pedido);
+    });
+
+    // Ordenar en el cliente por fecha de creación (más reciente primero)
+    pedidos.sort((a, b) => {
+      if (!a.createdAt || !b.createdAt) return 0;
+      return b.createdAt.getTime() - a.createdAt.getTime();
     });
 
     return pedidos;

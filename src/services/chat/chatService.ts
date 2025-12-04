@@ -159,14 +159,15 @@ const getConversaciones = async (
     const conversacionesRef = collection(db, "conversaciones");
     const campoFiltro = tipo === "estudiante" ? "estudianteId" : "vendedorId";
 
+    // Consulta simplificada sin orderBy para evitar índices compuestos
     const q = query(
       conversacionesRef,
-      where(campoFiltro, "==", userId),
-      orderBy("ultimoMensajeFecha", "desc")
+      where(campoFiltro, "==", userId)
     );
     const snapshot = await getDocs(q);
 
-    return snapshot.docs.map((doc) => {
+    // Ordenar en el cliente después de obtener los datos
+    const conversaciones = snapshot.docs.map((doc) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -175,6 +176,13 @@ const getConversaciones = async (
         createdAt: timestampToDate(data.createdAt),
         updatedAt: timestampToDate(data.updatedAt),
       } as Conversacion;
+    });
+
+    // Ordenar por fecha más reciente primero
+    return conversaciones.sort((a, b) => {
+      const fechaA = a.ultimoMensajeFecha?.getTime() || 0;
+      const fechaB = b.ultimoMensajeFecha?.getTime() || 0;
+      return fechaB - fechaA;
     });
   } catch (error) {
     console.error(`Error obteniendo conversaciones de ${tipo}:`, error);

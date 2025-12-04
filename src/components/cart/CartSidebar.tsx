@@ -13,6 +13,7 @@ import {
   validarDisponibilidadPlatillos,
 } from "@/services/pedidos/pedidoService";
 import { validarPromocion } from "@/services/promociones/promocionService";
+import { getVendedor } from "@/services/vendedores/vendedorService";
 
 export default function CartSidebar() {
   const router = useRouter();
@@ -31,6 +32,12 @@ export default function CartSidebar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [descuentoAplicado, setDescuentoAplicado] = useState(0);
   const [promocionActual, setPromocionActual] = useState<any>(null);
+  const [vendedoresInfo, setVendedoresInfo] = useState<
+    Array<{
+      vendedorId: string;
+      horario?: { inicio: string; fin: string };
+    }>
+  >([]);
 
   // Filtrar items con cantidad > 0 para mostrar solo los que realmente están en el carrito
   const validItems = items.filter((item) => {
@@ -45,20 +52,60 @@ export default function CartSidebar() {
     );
   });
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!user) {
       showAlert("Debes iniciar sesión para continuar con el pedido", "info");
       closeCart();
       router.push("/vendedor/login");
       return;
     }
+
+    // Cargar información de vendedores con sus horarios
+    try {
+      const vendedoresUnicos = Array.from(
+        new Set(validItems.map((item) => item.platillo.vendedorId))
+      );
+
+      const vendedoresData = await Promise.all(
+        vendedoresUnicos.map(async (vendedorId) => {
+          try {
+            const vendedor = await getVendedor(vendedorId);
+            return {
+              vendedorId,
+              horario: vendedor?.horario || { inicio: "10:00", fin: "15:00" },
+            };
+          } catch (error) {
+            console.error(
+              `Error obteniendo info del vendedor ${vendedorId}:`,
+              error
+            );
+            return {
+              vendedorId,
+              horario: { inicio: "10:00", fin: "15:00" },
+            };
+          }
+        })
+      );
+
+      setVendedoresInfo(vendedoresData);
+    } catch (error) {
+      console.error("Error cargando información de vendedores:", error);
+      // Usar horario por defecto si falla
+      setVendedoresInfo([
+        {
+          vendedorId: "default",
+          horario: { inicio: "10:00", fin: "15:00" },
+        },
+      ]);
+    }
+
     // Abrir el modal de confirmación
     setIsModalOpen(true);
   };
 
   const handleConfirmarPedido = async (data: {
     notas?: string;
-    tipoEntrega: "entrega" | "recoger";
+    horaEntrega: string;
     codigoPromocional?: string;
   }) => {
     if (!user) {
@@ -93,17 +140,22 @@ export default function CartSidebar() {
         if (resultadoPromo.valido && resultadoPromo.descuento) {
           descuento = resultadoPromo.descuento;
           promocionId = resultadoPromo.promocion?.id;
-          showAlert(resultadoPromo.mensaje, "success");
+          const descuentoTexto =
+            resultadoPromo.promocion?.tipo === "porcentaje"
+              ? `${resultadoPromo.promocion.valor}%`
+              : `$${resultadoPromo.promocion?.valor}`;
+          showAlert(`Código aplicado — Descuento del ${descuentoTexto}.`, "success");
         } else {
-          showAlert(resultadoPromo.mensaje, "warning");
+          showAlert("Código no válido o expirado.", "warning");
         }
       }
 
-      // 3. Crear el pedido
+      // 3. Crear el pedido (siempre con tipoEntrega "entrega" fijo)
       const pedidosCreados = await crearPedido({
         estudianteId: user.uid,
         items: validItems,
-        tipoEntrega: data.tipoEntrega,
+        tipoEntrega: "entrega", // Siempre fijo en "entrega"
+        horaEntrega: data.horaEntrega,
         notas: data.notas,
         descuentoAplicado: descuento,
         codigoPromocional: data.codigoPromocional,
@@ -112,19 +164,11 @@ export default function CartSidebar() {
 
       // 4. Mostrar mensaje de éxito
       const cantidadVendedores = pedidosCreados.length;
-      const lugarEntrega =
-        data.tipoEntrega === "entrega"
-          ? "en la puerta principal de la UTNA"
-          : "directamente con el vendedor";
 
       const mensaje =
         cantidadVendedores === 1
-          ? `¡Pedido confirmado exitosamente! ${
-              data.tipoEntrega === "entrega" ? "Recógelo" : "Coordina"
-            } ${lugarEntrega}.`
-          : `¡Pedidos confirmados exitosamente! Se crearon ${cantidadVendedores} pedidos. ${
-              data.tipoEntrega === "entrega" ? "Recógelos" : "Coordina"
-            } ${lugarEntrega}.`;
+          ? `¡Pedido confirmado exitosamente! Recógelo en la puerta principal de la UTNA a las ${data.horaEntrega}.`
+          : `¡Pedidos confirmados exitosamente! Se crearon ${cantidadVendedores} pedidos. Recógelos en la puerta principal de la UTNA a las ${data.horaEntrega}.`;
 
       showAlert(mensaje, "success");
 
@@ -370,6 +414,7 @@ export default function CartSidebar() {
         totalItems={getTotalItems()}
         totalPrice={formatPrice(getTotalPrice() - descuentoAplicado)}
         descuentoAplicado={descuentoAplicado}
+        vendedoresInfo={vendedoresInfo}
       />
     </>
   );

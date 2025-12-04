@@ -31,7 +31,6 @@ function MenuContent() {
   const { addItem, openCart } = useCart();
   const [filtro, setFiltro] = useState("");
   const [categoriaFiltro, setCategoriaFiltro] = useState<string>("todos");
-  const [disponibilidadFiltro, setDisponibilidadFiltro] = useState("todos");
   const [platillos, setPlatillos] = useState<PlatilloConVendedor[]>([]);
   const [loading, setLoading] = useState(true);
   const [productoSeleccionado, setProductoSeleccionado] =
@@ -125,11 +124,7 @@ function MenuContent() {
       .includes(filtro.toLowerCase());
     const coincideCategoria =
       categoriaFiltro === "todos" || menu.categoria === categoriaFiltro;
-    const coincideDisponible =
-      disponibilidadFiltro === "todos" ||
-      (disponibilidadFiltro === "disponible" && menu.disponible) ||
-      (disponibilidadFiltro === "agotado" && !menu.disponible);
-    return coincideNombre && coincideCategoria && coincideDisponible;
+    return coincideNombre && coincideCategoria;
   });
 
   const handlePedido = (platillo: Platillo, disponible: boolean) => {
@@ -309,7 +304,7 @@ function MenuContent() {
 
         {/* Filtros - Optimizados para móvil */}
         <div className="bg-white rounded-lg shadow-soft p-4 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-6 border border-gray-200">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-4">
             <div>
               <label className="block text-sm sm:text-sm font-semibold text-gray-800 mb-2">
                 🔍 Buscar por nombre
@@ -338,24 +333,10 @@ function MenuContent() {
                 <option value="Postres">🍰 Postres</option>
               </select>
             </div>
-            <div>
-              <label className="block text-sm sm:text-sm font-semibold text-gray-800 mb-2">
-                ✅ Disponibilidad
-              </label>
-              <select
-                value={disponibilidadFiltro}
-                onChange={(e) => setDisponibilidadFiltro(e.target.value)}
-                className="form-input w-full text-base"
-              >
-                <option value="todos">Todos</option>
-                <option value="disponible">Disponibles</option>
-                <option value="agotado">Agotados</option>
-              </select>
-            </div>
           </div>
           
           {/* Indicador de filtros activos (móvil friendly) */}
-          {(categoriaFiltro !== "todos" || disponibilidadFiltro !== "todos" || filtro !== "") && (
+          {(categoriaFiltro !== "todos" || filtro !== "") && (
             <div className="mt-3 pt-3 border-t border-gray-200">
               <div className="flex flex-wrap gap-2 items-center">
                 <span className="text-xs text-gray-600 font-medium">Filtros activos:</span>
@@ -364,17 +345,6 @@ function MenuContent() {
                     {categoriaFiltro}
                     <button
                       onClick={() => setCategoriaFiltro("todos")}
-                      className="hover:text-primary-900"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-                {disponibilidadFiltro !== "todos" && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">
-                    {disponibilidadFiltro}
-                    <button
-                      onClick={() => setDisponibilidadFiltro("todos")}
                       className="hover:text-primary-900"
                     >
                       ×
@@ -556,7 +526,6 @@ function MenuContent() {
                   onClick={() => {
                     setFiltro("");
                     setCategoriaFiltro("todos");
-                    setDisponibilidadFiltro("todos");
                   }}
                   className="mt-4 btn-primary shadow-medium hover:shadow-large"
                 >

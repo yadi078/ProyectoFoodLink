@@ -82,6 +82,8 @@ export interface Pedido {
   codigoPromocional?: string; // Código promocional usado
   estado: "pendiente" | "en_camino" | "entregado" | "cancelado";
   tipoEntrega: "entrega" | "recoger"; // Entrega en UTNA o recoger en el lugar
+  horaEntrega: string; // Hora de entrega en formato HH:mm
+  fechaEntrega: Date; // Fecha del pedido (siempre el día actual)
   notas?: string;
   vendedorCalificado?: boolean; // Si ya se calificó al vendedor
   createdAt: Date;

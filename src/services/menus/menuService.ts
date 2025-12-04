@@ -29,60 +29,10 @@ export const getPlatillosDisponibles = async (): Promise<Platillo[]> => {
 
     const platillosRef = collection(db, "platillos");
 
-    // Usar el índice compuesto: disponible (asc) + createdAt (desc)
-    let querySnapshot;
-
-    try {
-      // Intentar consulta optimizada con índice compuesto
-      const qOptimized = query(
-        platillosRef,
-        where("disponible", "==", true),
-        orderBy("createdAt", "desc")
-      );
-      querySnapshot = await getDocs(qOptimized);
-    } catch (optimizedError: any) {
-      console.warn(
-        "⚠️ Error en consulta optimizada:",
-        optimizedError.code,
-        optimizedError.message
-      );
-
-      // Si el índice aún está compilando, intentar consulta simple sin ordenamiento
-      if (optimizedError.code === "failed-precondition") {
-        try {
-          const qSimple = query(platillosRef, where("disponible", "==", true));
-          querySnapshot = await getDocs(qSimple);
-        } catch (simpleError: any) {
-          console.warn(
-            "⚠️ Error en consulta simple:",
-            simpleError.code,
-            simpleError.message
-          );
-          // Último recurso: obtener todos sin filtro
-          try {
-            querySnapshot = await getDocs(platillosRef);
-          } catch (fallbackError: any) {
-            console.error(
-              "❌ Error crítico obteniendo platillos:",
-              fallbackError
-            );
-            return [];
-          }
-        }
-      } else {
-        // Otro tipo de error, intentar consulta simple
-        try {
-          const qSimple = query(platillosRef, where("disponible", "==", true));
-          querySnapshot = await getDocs(qSimple);
-        } catch (fallbackError: any) {
-          console.error(
-            "❌ Error crítico obteniendo platillos:",
-            fallbackError
-          );
-          return [];
-        }
-      }
-    }
+    // Consulta simplificada sin orderBy para evitar índices compuestos
+    // El ordenamiento se hará en el cliente
+    const q = query(platillosRef, where("disponible", "==", true));
+    const querySnapshot = await getDocs(q);
 
     const platillos: Platillo[] = [];
 
@@ -111,25 +61,12 @@ export const getPlatillosDisponibles = async (): Promise<Platillo[]> => {
       }
     });
 
-    // Si usamos la consulta optimizada con orderBy, ya vienen ordenados desde Firestore
-    // Solo ordenar manualmente si usamos consulta simple o fallback
-    if (platillos.length > 1) {
-      const firstPlatillo = platillos[0];
-      const lastPlatillo = platillos[platillos.length - 1];
-
-      // Verificar si necesitan ordenamiento (si el primero es más antiguo que el último)
-      if (
-        firstPlatillo.createdAt &&
-        lastPlatillo.createdAt &&
-        firstPlatillo.createdAt.getTime() < lastPlatillo.createdAt.getTime()
-      ) {
-        platillos.sort((a, b) => {
-          const dateA = a.createdAt?.getTime() || 0;
-          const dateB = b.createdAt?.getTime() || 0;
-          return dateB - dateA; // Más recientes primero
-        });
-      }
-    }
+    // Ordenar en el cliente por fecha de creación (más recientes primero)
+    platillos.sort((a, b) => {
+      const dateA = a.createdAt?.getTime() || 0;
+      const dateB = b.createdAt?.getTime() || 0;
+      return dateB - dateA; // Más recientes primero
+    });
 
     return platillos;
   } catch (error: any) {
