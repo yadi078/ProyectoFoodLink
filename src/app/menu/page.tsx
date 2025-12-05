@@ -628,43 +628,64 @@ function MenuContent() {
             onClick={cerrarModal}
           >
             <div
-              className="bg-white rounded-lg max-w-[450px] sm:max-w-2xl md:max-w-4xl w-full my-auto max-h-[90vh] flex flex-col shadow-large border border-gray-200"
+              className="bg-[#f5f1ec] rounded-lg max-w-[450px] sm:max-w-xl w-full my-auto max-h-[85vh] flex flex-col shadow-large border border-gray-200"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Botón de cerrar - Ahora fuera del scroll */}
+              <div className="relative">
+                <button
+                  onClick={cerrarModal}
+                  className="absolute top-3 right-3 z-10 w-10 h-10 bg-white hover:bg-gray-100 text-gray-700 hover:text-gray-900 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 border-2 border-gray-300 hover:border-gray-400"
+                  aria-label="Cerrar"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2.5}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
               {/* Contenedor scrollable */}
-              <div className="overflow-y-auto flex-1">
-                <div className="flex flex-col md:flex-row min-h-0">
-                  {/* Imagen del producto */}
-                  <div className="md:w-1/2 h-48 sm:h-56 md:h-auto md:min-h-[400px] bg-gray-200 overflow-hidden md:sticky md:top-0">
-                    {productoSeleccionado.imagen &&
-                    productoSeleccionado.imagen.trim() &&
-                    (productoSeleccionado.imagen.startsWith("http://") ||
-                      productoSeleccionado.imagen.startsWith("https://")) ? (
-                      <Image
-                        src={productoSeleccionado.imagen}
-                        alt={productoSeleccionado.nombre}
-                        fill
-                        className="w-full h-full object-cover object-center"
-                        style={{ objectFit: "cover", objectPosition: "center" }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        <span className="text-3xl sm:text-4xl md:text-6xl">
-                          🍽️
-                        </span>
-                      </div>
-                    )}
+              <div className="overflow-y-auto flex-1 overscroll-contain">
+                <div className="flex flex-col">
+                  {/* Imagen del producto en recuadro arriba */}
+                  <div className="w-full p-4">
+                    <div className="w-full h-56 sm:h-64 md:h-72 bg-white rounded-lg overflow-hidden shadow-md border border-gray-200">
+                      {productoSeleccionado.imagen &&
+                      productoSeleccionado.imagen.trim() &&
+                      (productoSeleccionado.imagen.startsWith("http://") ||
+                        productoSeleccionado.imagen.startsWith("https://")) ? (
+                        <div className="relative w-full h-full">
+                          <Image
+                            src={productoSeleccionado.imagen}
+                            alt={productoSeleccionado.nombre}
+                            fill
+                            className="object-cover object-center"
+                            style={{
+                              objectFit: "cover",
+                              objectPosition: "center",
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <span className="text-5xl sm:text-6xl">🍽️</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Información del producto */}
-                  <div className="md:w-1/2 p-3 sm:p-4 md:p-6 relative">
-                    <button
-                      onClick={cerrarModal}
-                      className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-all duration-200"
-                    >
-                      ×
-                    </button>
-
+                  <div className="p-4 sm:p-5 pb-20">
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-3">
                       {productoSeleccionado.nombre}
                     </h2>
@@ -732,6 +753,7 @@ function MenuContent() {
 
                     {/* Botones de acción */}
                     <div className="flex flex-col gap-2 sm:gap-3 mb-3 sm:mb-4">
+                      {/* Botón Agregar al Carrito */}
                       <button
                         onClick={() =>
                           handlePedido(
@@ -745,17 +767,17 @@ function MenuContent() {
                             undefined &&
                             productoSeleccionado.cantidadDisponible <= 0)
                         }
-                        className={`w-full py-2 px-3 rounded-lg font-semibold text-sm text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft ${
+                        className={`w-full py-3 px-4 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-soft ${
                           productoSeleccionado.disponible &&
                           (productoSeleccionado.cantidadDisponible ===
                             undefined ||
                             productoSeleccionado.cantidadDisponible > 0)
-                            ? "bg-primary-500 hover:bg-primary-600 hover:text-white hover:shadow-medium hover:-translate-y-0.5"
-                            : "bg-gray-400 cursor-not-allowed"
+                            ? "bg-primary-600 hover:bg-primary-700 text-white hover:shadow-medium"
+                            : "bg-gray-400 text-white cursor-not-allowed"
                         }`}
                       >
                         <svg
-                          className="w-4 h-4"
+                          className="w-5 h-5"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -776,15 +798,19 @@ function MenuContent() {
                           : "Agregar al Carrito"}
                       </button>
 
-                      {user ? (
+                      {/* Botón Agregar a Favoritos */}
+                      {user && (
                         <button
                           onClick={() =>
-                            setMostrarFormularioResena(!mostrarFormularioResena)
+                            showAlert(
+                              "Función de favoritos próximamente",
+                              "info"
+                            )
                           }
-                          className="w-full py-2 px-3 rounded-lg font-semibold text-sm bg-error-500 hover:bg-error-600 text-white hover:text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft hover:shadow-medium hover:-translate-y-0.5"
+                          className="w-full py-3 px-4 rounded-lg font-semibold text-sm bg-pink-100 hover:bg-pink-200 text-pink-700 transition-all duration-200 flex items-center justify-center gap-2 shadow-soft hover:shadow-medium"
                         >
                           <svg
-                            className="w-4 h-4"
+                            className="w-5 h-5"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -793,7 +819,32 @@ function MenuContent() {
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth={2}
-                              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                            />
+                          </svg>
+                          Agregar a favoritos
+                        </button>
+                      )}
+
+                      {/* Botón Dejar Reseña */}
+                      {user ? (
+                        <button
+                          onClick={() =>
+                            setMostrarFormularioResena(!mostrarFormularioResena)
+                          }
+                          className="w-full py-3 px-4 rounded-lg font-semibold text-sm bg-amber-50 hover:bg-amber-100 text-amber-800 transition-all duration-200 flex items-center justify-center gap-2 shadow-soft hover:shadow-medium"
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                             />
                           </svg>
                           {mostrarFormularioResena
@@ -801,7 +852,7 @@ function MenuContent() {
                             : "Dejar Reseña"}
                         </button>
                       ) : (
-                        <div className="w-full py-2 px-3 rounded-lg bg-gray-100 text-gray-600 text-center text-xs border border-gray-200">
+                        <div className="w-full py-3 px-4 rounded-lg bg-gray-100 text-gray-600 text-center text-sm border border-gray-200">
                           Inicia sesión para dejar una reseña
                         </div>
                       )}

@@ -119,7 +119,7 @@ export default function HomePage() {
                   "Sistema eficiente de entrega o recolección cerca de tu universidad",
               },
               {
-                icon: "💳",
+                icon: "💵",
                 title: "Pagos Seguros",
                 description:
                   "Pagos en efectivo de forma segura y confiable al recibir tu pedido",
