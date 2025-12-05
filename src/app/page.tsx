@@ -52,33 +52,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Registration CTA Section */}
-      <section className="relative w-full py-8 sm:py-8 md:py-12 lg:py-16 bg-[#f5f1ec]">
-        <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl mx-auto px-4">
-          <div className="text-center">
-            <h2 className="text-lg sm:text-2xl md:text-3xl font-bold font-display text-gray-800 mb-4 sm:mb-4 md:mb-5">
-              ¿Quieres ser parte de nuestra comunidad?
-            </h2>
-            <Link
-              href="/vendedor/signup"
-              className="btn-primary inline-block shadow-medium hover:shadow-large text-sm sm:text-base"
-            >
-              Registrarse como Vendedor
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* About Section - Resumido */}
       <section className="relative w-full py-8 sm:py-8 md:py-12 lg:py-16 bg-white/50">
         <div className="max-w-[450px] sm:max-w-2xl md:max-w-3xl mx-auto px-4">
           <div className="text-center">
             <div className="mb-3 sm:mb-4 md:mb-5">
-              <p className="text-primary-500 text-xs sm:text-sm mb-1 sm:mb-2 font-semibold uppercase tracking-wide">
+              <h2 className="text-primary-500 text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold font-display uppercase tracking-wide">
                 Sobre Nosotros
-              </p>
-              <h2 className="text-primary-500 text-lg sm:text-2xl md:text-3xl font-bold font-display">
-                Conectando Comunidades Desde 2020
               </h2>
             </div>
             <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 md:mb-5 leading-relaxed px-2">
@@ -142,7 +122,7 @@ export default function HomePage() {
                 icon: "💳",
                 title: "Pagos Seguros",
                 description:
-                  "Plataforma segura con múltiples métodos de pago disponibles",
+                  "Pagos en efectivo de forma segura y confiable al recibir tu pedido",
               },
               {
                 icon: "❤️",

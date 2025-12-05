@@ -199,10 +199,10 @@ export default function ChatEstudiante() {
                         <p className="font-bold text-base text-gray-900 truncate pr-2">
                           {conv.vendedorNombre}
                         </p>
-                        {conv.ultimaActualizacion && (
+                        {conv.ultimoMensajeFecha && (
                           <span className="text-xs text-gray-500 flex-shrink-0">
                             {new Date(
-                              conv.ultimaActualizacion
+                              conv.ultimoMensajeFecha
                             ).toLocaleDateString("es-MX", {
                               day: "numeric",
                               month: "short",
