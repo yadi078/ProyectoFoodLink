@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -30,9 +31,10 @@ export default function HomePage() {
           {/* Imagen principal - tamaño reducido */}
           <div className="relative w-full max-w-5xl mx-auto rounded-lg sm:rounded-2xl overflow-hidden shadow-xl mb-4 sm:mb-8">
             <div className="relative w-full h-[200px] sm:h-[300px] md:h-[350px] lg:h-[400px]">
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=2000"
                 alt="Cocinero preparando comida casera"
+                fill
                 className="w-full h-full object-cover"
               />
             </div>
@@ -189,7 +191,8 @@ export default function HomePage() {
                 Platillos Principales
               </h2>
               <p className="text-xs sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
-                Disfruta de una gran variedad de platillos principales preparados con ingredientes frescos y de calidad
+                Disfruta de una gran variedad de platillos principales
+                preparados con ingredientes frescos y de calidad
               </p>
               <Link
                 href="/menu?categoria=Comida rápida"
@@ -211,7 +214,8 @@ export default function HomePage() {
                 Postres y Dulces
               </h2>
               <p className="text-xs sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
-                Endulza tu día con deliciosos postres caseros y dulces tradicionales preparados con amor
+                Endulza tu día con deliciosos postres caseros y dulces
+                tradicionales preparados con amor
               </p>
               <Link
                 href="/menu?categoria=Postres"
@@ -233,7 +237,8 @@ export default function HomePage() {
                 Bebidas
               </h2>
               <p className="text-xs sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
-                Refréscate con bebidas naturales, jugos frescos y aguas de sabor preparadas artesanalmente
+                Refréscate con bebidas naturales, jugos frescos y aguas de sabor
+                preparadas artesanalmente
               </p>
               <Link
                 href="/menu?categoria=Bebidas"

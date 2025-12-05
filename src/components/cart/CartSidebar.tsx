@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useAlert } from "@/components/context/AlertContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { formatPrice } from "@/utils/formatters";
 import ConfirmarPedidoModal from "./ConfirmarPedidoModal";
 import {
@@ -258,9 +259,11 @@ export default function CartSidebar() {
                   <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
                     {item.platillo.imagen &&
                     item.platillo.imagen.startsWith("http") ? (
-                      <img
+                      <Image
                         src={item.platillo.imagen}
                         alt={item.platillo.nombre}
+                        width={64}
+                        height={64}
                         className="w-full h-full object-cover object-center"
                         style={{ objectFit: "cover", objectPosition: "center" }}
                       />

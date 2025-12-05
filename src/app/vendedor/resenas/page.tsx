@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 import VendedorLayout from "@/components/vendedor/VendedorLayout";
 import {
@@ -21,7 +22,9 @@ interface CalificacionConPlatillo extends CalificacionProducto {
 export default function ResenasPage() {
   const router = useRouter();
   const { user, vendedor, loading: authLoading } = useAuth();
-  const [calificaciones, setCalificaciones] = useState<CalificacionConPlatillo[]>([]);
+  const [calificaciones, setCalificaciones] = useState<
+    CalificacionConPlatillo[]
+  >([]);
   const [estadisticas, setEstadisticas] = useState<{
     promedioGeneral: number;
     totalResenas: number;
@@ -32,7 +35,9 @@ export default function ResenasPage() {
     distribucion: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
   });
   const [loading, setLoading] = useState(true);
-  const [filtroCalificacion, setFiltroCalificacion] = useState<number | "todos">("todos");
+  const [filtroCalificacion, setFiltroCalificacion] = useState<
+    number | "todos"
+  >("todos");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -47,11 +52,12 @@ export default function ResenasPage() {
       setLoading(true);
 
       // Cargar calificaciones y estadísticas
-      const [calificacionesData, estadisticasData, platillos] = await Promise.all([
-        getCalificacionesByVendedor(vendedor.uid),
-        getEstadisticasCalificacionesVendedor(vendedor.uid),
-        getPlatillosByVendedor(vendedor.uid),
-      ]);
+      const [calificacionesData, estadisticasData, platillos] =
+        await Promise.all([
+          getCalificacionesByVendedor(vendedor.uid),
+          getEstadisticasCalificacionesVendedor(vendedor.uid),
+          getPlatillosByVendedor(vendedor.uid),
+        ]);
 
       // Enriquecer calificaciones con información del platillo
       const calificacionesEnriquecidas = calificacionesData.map((cal) => {
@@ -183,7 +189,10 @@ export default function ResenasPage() {
           </h3>
           <div className="space-y-2">
             {[5, 4, 3, 2, 1].map((rating) => {
-              const count = estadisticas.distribucion[rating as keyof typeof estadisticas.distribucion] || 0;
+              const count =
+                estadisticas.distribucion[
+                  rating as keyof typeof estadisticas.distribucion
+                ] || 0;
               const percentage =
                 estadisticas.totalResenas > 0
                   ? (count / estadisticas.totalResenas) * 100
@@ -297,9 +306,11 @@ export default function ResenasPage() {
                   {/* Imagen del platillo */}
                   <div className="w-full sm:w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                     {calificacion.platilloImagen ? (
-                      <img
+                      <Image
                         src={calificacion.platilloImagen}
                         alt={calificacion.platilloNombre}
+                        width={96}
+                        height={96}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -361,4 +372,3 @@ export default function ResenasPage() {
     </VendedorLayout>
   );
 }
-

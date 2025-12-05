@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
+import Image from "next/image";
 import { useAlert } from "@/components/context/AlertContext";
 import { useCart } from "@/components/context/CartContext";
 import { getPlatillosDisponibles } from "@/services/menus/menuService";
@@ -134,7 +135,10 @@ function MenuContent() {
     }
 
     // Verificar si hay inventario disponible
-    if (platillo.cantidadDisponible !== undefined && platillo.cantidadDisponible <= 0) {
+    if (
+      platillo.cantidadDisponible !== undefined &&
+      platillo.cantidadDisponible <= 0
+    ) {
       showAlert("Este producto está agotado", "warning");
       return;
     }
@@ -207,7 +211,10 @@ function MenuContent() {
       calificacionForm.calificacion < 1 ||
       calificacionForm.calificacion > 5
     ) {
-      showAlert("Por favor selecciona una calificación de 1 a 5 estrellas", "warning");
+      showAlert(
+        "Por favor selecciona una calificación de 1 a 5 estrellas",
+        "warning"
+      );
       return;
     }
 
@@ -358,12 +365,14 @@ function MenuContent() {
               </select>
             </div>
           </div>
-          
+
           {/* Indicador de filtros activos (móvil friendly) */}
           {(categoriaFiltro !== "todos" || filtro !== "") && (
             <div className="mt-3 pt-3 border-t border-gray-200">
               <div className="flex flex-wrap gap-2 items-center">
-                <span className="text-xs text-gray-600 font-medium">Filtros activos:</span>
+                <span className="text-xs text-gray-600 font-medium">
+                  Filtros activos:
+                </span>
                 {categoriaFiltro !== "todos" && (
                   <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">
                     {categoriaFiltro}
@@ -407,9 +416,11 @@ function MenuContent() {
                     menu.imagen.startsWith("https://")) &&
                   menu.imagen.length > 10 ? (
                     <>
-                      <img
+                      <Image
                         src={menu.imagen}
                         alt={menu.nombre}
+                        width={400}
+                        height={300}
                         className="card-image"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
@@ -425,7 +436,10 @@ function MenuContent() {
                           }
                         }}
                       />
-                      <div className="image-fallback hidden w-full h-full absolute inset-0 flex items-center justify-center text-gray-400">
+                      <div
+                        className="image-fallback w-full h-full absolute inset-0 items-center justify-center text-gray-400"
+                        style={{ display: "none" }}
+                      >
                         <span className="text-6xl">🍽️</span>
                       </div>
                     </>
@@ -606,9 +620,10 @@ function MenuContent() {
                   productoSeleccionado.imagen.trim() &&
                   (productoSeleccionado.imagen.startsWith("http://") ||
                     productoSeleccionado.imagen.startsWith("https://")) ? (
-                    <img
+                    <Image
                       src={productoSeleccionado.imagen}
                       alt={productoSeleccionado.nombre}
+                      fill
                       className="w-full h-full object-cover object-center"
                       style={{ objectFit: "cover", objectPosition: "center" }}
                     />
@@ -701,12 +716,14 @@ function MenuContent() {
                       }
                       disabled={
                         !productoSeleccionado.disponible ||
-                        (productoSeleccionado.cantidadDisponible !== undefined &&
+                        (productoSeleccionado.cantidadDisponible !==
+                          undefined &&
                           productoSeleccionado.cantidadDisponible <= 0)
                       }
                       className={`w-full py-2 px-3 rounded-lg font-semibold text-sm text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft ${
                         productoSeleccionado.disponible &&
-                        (productoSeleccionado.cantidadDisponible === undefined ||
+                        (productoSeleccionado.cantidadDisponible ===
+                          undefined ||
                           productoSeleccionado.cantidadDisponible > 0)
                           ? "bg-primary-500 hover:bg-primary-600 hover:text-white hover:shadow-medium hover:-translate-y-0.5"
                           : "bg-gray-400 cursor-not-allowed"
@@ -727,7 +744,8 @@ function MenuContent() {
                       </svg>
                       {!productoSeleccionado.disponible
                         ? "No disponible"
-                        : productoSeleccionado.cantidadDisponible !== undefined &&
+                        : productoSeleccionado.cantidadDisponible !==
+                            undefined &&
                           productoSeleccionado.cantidadDisponible <= 0
                         ? "Agotado"
                         : "Agregar al Carrito"}
@@ -735,7 +753,9 @@ function MenuContent() {
 
                     {user ? (
                       <button
-                        onClick={() => setMostrarFormularioResena(!mostrarFormularioResena)}
+                        onClick={() =>
+                          setMostrarFormularioResena(!mostrarFormularioResena)
+                        }
                         className="w-full py-2 px-3 rounded-lg font-semibold text-sm bg-error-500 hover:bg-error-600 text-white hover:text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft hover:shadow-medium hover:-translate-y-0.5"
                       >
                         <svg

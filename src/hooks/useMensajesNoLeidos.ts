@@ -73,13 +73,19 @@ export const useMensajesNoLeidos = (
         setConversacionesConMensajes(conMensajes);
 
         // Detectar nuevo mensaje
-        if (total > totalAnterior && totalAnterior > 0 && conMensajes.length > 0) {
+        if (
+          total > totalAnterior &&
+          totalAnterior > 0 &&
+          conMensajes.length > 0
+        ) {
           // Encontrar la conversación con el mensaje más reciente
-          const conversacionMasReciente = conMensajes.reduce((prev, current) => {
-            const prevFecha = prev.ultimoMensajeFecha?.getTime() || 0;
-            const currentFecha = current.ultimoMensajeFecha?.getTime() || 0;
-            return currentFecha > prevFecha ? current : prev;
-          });
+          const conversacionMasReciente = conMensajes.reduce(
+            (prev, current) => {
+              const prevFecha = prev.ultimoMensajeFecha?.getTime() || 0;
+              const currentFecha = current.ultimoMensajeFecha?.getTime() || 0;
+              return currentFecha > prevFecha ? current : prev;
+            }
+          );
 
           const nombreRemitente =
             tipo === "estudiante"
@@ -111,8 +117,12 @@ export const useMensajesNoLeidos = (
     // Actualizar cada 10 segundos
     const interval = setInterval(cargarDatos, 10000);
     return () => clearInterval(interval);
-  }, [userId, tipo]);
+  }, [userId, tipo, totalAnterior]);
 
-  return { totalNoLeidos, conversacionesConMensajes, ultimoMensajeNuevo, loading };
+  return {
+    totalNoLeidos,
+    conversacionesConMensajes,
+    ultimoMensajeNuevo,
+    loading,
+  };
 };
-

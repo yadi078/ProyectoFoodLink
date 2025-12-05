@@ -6,6 +6,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import type { Platillo, CategoriaPlatillo } from "@/lib/firebase/types";
 
 const CATEGORIAS: CategoriaPlatillo[] = [
@@ -441,9 +442,10 @@ export default function ProductoForm({
           <div className="md:col-span-2">
             <label className="form-label">Vista Previa</label>
             <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-gray-200">
-              <img
+              <Image
                 src={previewImage}
                 alt="Vista previa"
+                fill
                 className="w-full h-full object-cover object-center"
                 style={{ objectFit: "cover", objectPosition: "center" }}
                 onError={() => setPreviewImage(null)}

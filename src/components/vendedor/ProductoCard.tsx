@@ -6,6 +6,8 @@
 "use client";
 
 import type { Platillo } from "@/lib/firebase/types";
+import Image from "next/image";
+import { formatPrice } from "@/utils/formatters";
 
 interface ProductoCardProps {
   producto: Platillo;
@@ -23,9 +25,11 @@ export default function ProductoCard({
       {/* Imagen del Producto */}
       <div className="relative h-32 sm:h-40 md:h-48 bg-gray-100 overflow-hidden">
         {producto.imagen ? (
-          <img
+          <Image
             src={producto.imagen}
             alt={producto.nombre}
+            width={400}
+            height={300}
             className="w-full h-full object-cover object-center"
             style={{ objectFit: "cover", objectPosition: "center" }}
             onError={(e) => {
