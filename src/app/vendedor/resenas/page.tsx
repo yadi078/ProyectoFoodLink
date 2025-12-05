@@ -308,7 +308,7 @@ export default function ResenasPage() {
                     {calificacion.platilloImagen ? (
                       <Image
                         src={calificacion.platilloImagen}
-                        alt={calificacion.platilloNombre}
+                        alt={calificacion.platilloNombre || "Platillo"}
                         width={96}
                         height={96}
                         className="w-full h-full object-cover"
