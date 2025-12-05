@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import StarRating from "@/components/common/StarRating";
 
 interface CalificarVendedorModalProps {
   isOpen: boolean;
@@ -20,7 +21,6 @@ export default function CalificarVendedorModal({
   const [calificacion, setCalificacion] = useState(0);
   const [comentario, setComentario] = useState("");
   const [loading, setLoading] = useState(false);
-  const [hoveredStar, setHoveredStar] = useState(0);
 
   const handleSubmit = async () => {
     if (calificacion < 1) {
@@ -108,31 +108,13 @@ export default function CalificarVendedorModal({
             <label className="block text-sm font-semibold text-gray-700 text-center">
               Tu calificación
             </label>
-            <div className="flex justify-center gap-2 sm:gap-3">
-              {[1, 2, 3, 4, 5].map((star) => {
-                const shouldHighlight = hoveredStar > 0 ? star <= hoveredStar : star <= calificacion;
-                return (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setCalificacion(star)}
-                    onMouseEnter={() => setHoveredStar(star)}
-                    onMouseLeave={() => setHoveredStar(0)}
-                    className="transition-transform hover:scale-110 active:scale-95"
-                    disabled={loading}
-                  >
-                    <span
-                      className={`text-3xl sm:text-4xl ${
-                        shouldHighlight
-                          ? "text-yellow-400"
-                          : "text-gray-300"
-                      }`}
-                    >
-                      ⭐
-                    </span>
-                  </button>
-                );
-              })}
+            <div className="flex justify-center">
+              <StarRating
+                rating={calificacion}
+                interactive={true}
+                onRatingChange={setCalificacion}
+                size="lg"
+              />
             </div>
             <p className="text-center text-xs text-gray-500">
               {calificacion === 0 && "Selecciona una calificación"}

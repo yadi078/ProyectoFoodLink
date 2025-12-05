@@ -87,6 +87,7 @@ export interface Pedido {
   fechaEntrega: Date; // Fecha del pedido (siempre el día actual)
   notas?: string;
   vendedorCalificado?: boolean; // Si ya se calificó al vendedor
+  motivoCancelacion?: string; // Motivo de cancelación (solo si estado es cancelado)
   createdAt: Date;
   updatedAt: Date;
 }

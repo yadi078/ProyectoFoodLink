@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import VendedorLayout from "@/components/vendedor/VendedorLayout";
+import CancelarPedidoModal from "@/components/vendedor/CancelarPedidoModal";
 import {
   getPedidosByVendedor,
   updateEstadoPedido,
@@ -30,6 +31,8 @@ export default function OrdenesPage() {
   );
   const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState<FiltroEstado>("todos");
+  const [pedidoACancelar, setPedidoACancelar] = useState<string | null>(null);
+  const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -94,6 +97,20 @@ export default function OrdenesPage() {
     } catch (error) {
       console.error("Error al actualizar estado:", error);
       showAlert("Error al actualizar el estado", "error");
+    }
+  };
+
+  const handleCancelarPedido = async (motivo: string) => {
+    if (!pedidoACancelar) return;
+
+    try {
+      await updateEstadoPedido(pedidoACancelar, "cancelado", motivo);
+      showAlert("Pedido cancelado correctamente", "success");
+      await loadPedidos();
+    } catch (error) {
+      console.error("Error al cancelar pedido:", error);
+      showAlert("Error al cancelar el pedido", "error");
+      throw error;
     }
   };
 
@@ -309,9 +326,7 @@ export default function OrdenesPage() {
                         Marcar Listo
                       </button>
                       <button
-                        onClick={() =>
-                          handleCambiarEstado(pedido.id, "cancelado")
-                        }
+                        onClick={() => setPedidoACancelar(pedido.id)}
                         className="px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-error-500 hover:bg-error-600 text-white font-semibold rounded-lg transition-colors"
                       >
                         Cancelar
@@ -361,11 +376,99 @@ export default function OrdenesPage() {
                       </span>
                     </div>
                   )}
+                  {pedido.estado === "cancelado" &&
+                    pedido.motivoCancelacion && (
+                      <button
+                        onClick={() => setMostrarDetalles(pedido.id)}
+                        className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                      >
+                        <svg
+                          className="w-4 h-4 sm:w-5 sm:h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        Ver Motivo
+                      </button>
+                    )}
                 </div>
               </div>
             </div>
           ))}
         </div>
+      )}
+
+      {/* Modal de Cancelación */}
+      <CancelarPedidoModal
+        isOpen={!!pedidoACancelar}
+        onClose={() => setPedidoACancelar(null)}
+        onConfirm={handleCancelarPedido}
+        pedidoId={pedidoACancelar || ""}
+      />
+
+      {/* Modal de Detalles de Cancelación */}
+      {mostrarDetalles && (
+        <>
+          <div
+            className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-[10000]"
+            onClick={() => setMostrarDetalles(null)}
+          />
+          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-md bg-white rounded-2xl shadow-2xl z-[10001] overflow-hidden">
+            <div className="bg-gradient-to-r from-gray-600 to-gray-700 p-3 sm:p-4 text-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">ℹ️</span>
+                  <h2 className="text-lg sm:text-xl font-bold font-display">
+                    Motivo de Cancelación
+                  </h2>
+                </div>
+                <button
+                  onClick={() => setMostrarDetalles(null)}
+                  className="text-white/90 hover:text-white w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-all"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div className="p-4 sm:p-6">
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <p className="text-gray-800 text-sm sm:text-base leading-relaxed">
+                  {
+                    pedidos.find((p) => p.id === mostrarDetalles)
+                      ?.motivoCancelacion
+                  }
+                </p>
+              </div>
+            </div>
+            <div className="border-t border-gray-200 p-3 sm:p-4 bg-gray-50">
+              <button
+                onClick={() => setMostrarDetalles(null)}
+                className="w-full px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition-colors"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </VendedorLayout>
   );

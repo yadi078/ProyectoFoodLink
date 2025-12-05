@@ -13,6 +13,7 @@ import {
 import { getPlatillosByVendedor } from "@/services/platillos/platilloService";
 import type { Platillo } from "@/lib/firebase/types";
 import { formatDate } from "@/utils/formatters";
+import StarRating from "@/components/common/StarRating";
 
 interface CalificacionConPlatillo extends CalificacionProducto {
   platilloNombre?: string;
@@ -133,23 +134,10 @@ export default function ResenasPage() {
                   : "0.0"}
               </p>
               <div className="flex items-center mt-2">
-                {[1, 2, 3, 4, 5].map((star) => {
-                  const promedio = estadisticas.promedioGeneral;
-                  const shouldHighlight = star <= Math.round(promedio);
-                  
-                  return (
-                    <span
-                      key={star}
-                      className={`text-lg ${
-                        shouldHighlight
-                          ? "text-[#FFA552]"
-                          : "text-gray-300"
-                      }`}
-                    >
-                      ⭐
-                    </span>
-                  );
-                })}
+                <StarRating
+                  rating={Math.round(estadisticas.promedioGeneral)}
+                  size="md"
+                />
               </div>
             </div>
           </div>
@@ -336,20 +324,10 @@ export default function ResenasPage() {
                           por {calificacion.estudianteNombre || "Cliente"}
                         </p>
                       </div>
-                      <div className="flex items-center gap-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <span
-                            key={star}
-                            className={`text-base sm:text-lg ${
-                              star <= calificacion.calificacion
-                                ? "text-[#FFA552]"
-                                : "text-gray-300"
-                            }`}
-                          >
-                            ⭐
-                          </span>
-                        ))}
-                      </div>
+                      <StarRating
+                        rating={calificacion.calificacion}
+                        size="md"
+                      />
                     </div>
 
                     {calificacion.comentario && (

@@ -74,15 +74,23 @@ export const getPedidosByVendedor = async (
  */
 export const updateEstadoPedido = async (
   pedidoId: string,
-  nuevoEstado: Pedido["estado"]
+  nuevoEstado: Pedido["estado"],
+  motivoCancelacion?: string
 ): Promise<void> => {
   try {
     const pedidoRef = doc(db, "pedidos", pedidoId);
 
-    await updateDoc(pedidoRef, {
+    const updateData: any = {
       estado: nuevoEstado,
       updatedAt: serverTimestamp(),
-    });
+    };
+
+    // Si el estado es cancelado, agregar el motivo
+    if (nuevoEstado === "cancelado" && motivoCancelacion) {
+      updateData.motivoCancelacion = motivoCancelacion;
+    }
+
+    await updateDoc(pedidoRef, updateData);
   } catch (error) {
     console.error("Error al actualizar estado del pedido:", error);
     throw new Error("No se pudo actualizar el estado del pedido");

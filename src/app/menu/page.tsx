@@ -18,6 +18,7 @@ import {
 import type { Platillo, CategoriaPlatillo } from "@/lib/firebase/types";
 import type { Vendedor } from "@/lib/firebase/types";
 import { formatPrice, formatDate } from "@/utils/formatters";
+import StarRating from "@/components/common/StarRating";
 
 interface PlatilloConVendedor extends Platillo {
   vendedorNombre?: string;
@@ -499,29 +500,12 @@ function MenuContent() {
                   {/* Calificación del vendedor */}
                   {menu.vendedorCalificacion &&
                     menu.vendedorCalificacion > 0 && (
-                      <div className="flex items-center gap-1.5 mb-2">
-                        <div className="flex items-center">
-                          {[1, 2, 3, 4, 5].map((star) => {
-                            const calificacion = menu.vendedorCalificacion || 0;
-                            const shouldHighlight =
-                              star <= Math.round(calificacion);
-                            return (
-                              <span
-                                key={star}
-                                className={`text-sm ${
-                                  shouldHighlight
-                                    ? "text-yellow-400"
-                                    : "text-gray-300"
-                                }`}
-                              >
-                                ⭐
-                              </span>
-                            );
-                          })}
-                        </div>
-                        <span className="text-xs text-gray-700 font-medium">
-                          {menu.vendedorCalificacion.toFixed(1)}
-                        </span>
+                      <div className="mb-2">
+                        <StarRating
+                          rating={Math.round(menu.vendedorCalificacion)}
+                          size="sm"
+                          showValue={true}
+                        />
                       </div>
                     )}
 
@@ -696,25 +680,11 @@ function MenuContent() {
                     </span>
 
                     {/* Calificación */}
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                      <div className="flex items-center">
-                        {[1, 2, 3, 4, 5].map((star) => {
-                          const promedio = promedioCalificacion.promedio;
-                          const shouldHighlight = star <= Math.round(promedio);
-                          return (
-                            <span
-                              key={star}
-                              className={`text-sm sm:text-base ${
-                                shouldHighlight
-                                  ? "text-yellow-400"
-                                  : "text-gray-300"
-                              }`}
-                            >
-                              ⭐
-                            </span>
-                          );
-                        })}
-                      </div>
+                    <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                      <StarRating
+                        rating={Math.round(promedioCalificacion.promedio)}
+                        size="md"
+                      />
                       <span className="text-xs sm:text-sm text-[#3a3a3a] font-semibold">
                         {promedioCalificacion.promedio > 0
                           ? `${promedioCalificacion.promedio.toFixed(1)} (${
@@ -868,31 +838,17 @@ function MenuContent() {
                           <label className="block text-xs text-[#3a3a3a] mb-1.5">
                             Calificación
                           </label>
-                          <div className="flex gap-1 sm:gap-2">
-                            {[1, 2, 3, 4, 5].map((star) => {
-                              const shouldHighlight =
-                                star <= calificacionForm.calificacion;
-                              return (
-                                <button
-                                  key={star}
-                                  type="button"
-                                  onClick={() =>
-                                    setCalificacionForm({
-                                      ...calificacionForm,
-                                      calificacion: star,
-                                    })
-                                  }
-                                  className={`text-lg sm:text-xl ${
-                                    shouldHighlight
-                                      ? "text-yellow-400"
-                                      : "text-gray-300"
-                                  }`}
-                                >
-                                  ⭐
-                                </button>
-                              );
-                            })}
-                          </div>
+                          <StarRating
+                            rating={calificacionForm.calificacion}
+                            interactive={true}
+                            onRatingChange={(rating) =>
+                              setCalificacionForm({
+                                ...calificacionForm,
+                                calificacion: rating,
+                              })
+                            }
+                            size="md"
+                          />
                         </div>
                         <div className="mb-2 sm:mb-3">
                           <label className="block text-xs text-[#3a3a3a] mb-1.5">
@@ -942,24 +898,10 @@ function MenuContent() {
                                   <p className="font-semibold text-xs sm:text-sm text-gray-800">
                                     {cal.estudianteNombre || "Usuario"}
                                   </p>
-                                  <div className="flex items-center gap-1">
-                                    {[1, 2, 3, 4, 5].map((star) => {
-                                      const shouldHighlight =
-                                        star <= cal.calificacion;
-                                      return (
-                                        <span
-                                          key={star}
-                                          className={`text-xs ${
-                                            shouldHighlight
-                                              ? "text-yellow-400"
-                                              : "text-gray-300"
-                                          }`}
-                                        >
-                                          ⭐
-                                        </span>
-                                      );
-                                    })}
-                                  </div>
+                                  <StarRating
+                                    rating={cal.calificacion}
+                                    size="xs"
+                                  />
                                 </div>
                               </div>
                               {cal.comentario && (

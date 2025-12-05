@@ -11,22 +11,16 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { logout } from "@/services/auth/authService";
 import { useState } from "react";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
 
 export default function Header() {
   const router = useRouter();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleLogout = async () => {
     if (loading) return;
-
-    // Usar confirm() solo si está disponible, sino asumir confirmación
-    const isConfirmed =
-      typeof window !== "undefined" && window.confirm
-        ? window.confirm("¿Estás seguro de que deseas cerrar sesión?")
-        : true;
-
-    if (!isConfirmed) return;
 
     setLoading(true);
     try {
@@ -34,9 +28,9 @@ export default function Header() {
       router.push("/");
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
-      // No usar alert() en APK - solo console.error
     } finally {
       setLoading(false);
+      setShowConfirm(false);
     }
   };
 
@@ -68,7 +62,7 @@ export default function Header() {
           {/* Botón de Cerrar Sesión */}
           {user ? (
             <button
-              onClick={handleLogout}
+              onClick={() => setShowConfirm(true)}
               disabled={loading}
               className="flex items-center gap-1 sm:gap-1.5 md:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-error-500 hover:bg-error-600 text-white rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm font-semibold shadow-soft hover:shadow-medium flex-shrink-0"
               title="Cerrar sesión"
@@ -95,6 +89,18 @@ export default function Header() {
           )}
         </div>
       </nav>
+
+      {/* Confirmación de Cierre de Sesión */}
+      <ConfirmDialog
+        isOpen={showConfirm}
+        title="Cerrar Sesión"
+        message="¿Estás seguro de que deseas cerrar sesión?"
+        confirmText="Cerrar Sesión"
+        cancelText="Cancelar"
+        onConfirm={handleLogout}
+        onCancel={() => setShowConfirm(false)}
+        type="warning"
+      />
     </header>
   );
 }

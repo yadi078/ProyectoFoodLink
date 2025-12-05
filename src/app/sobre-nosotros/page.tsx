@@ -54,7 +54,7 @@ export default function SobreNosotrosPage() {
                   ¿Quiénes Somos?
                 </h2>
               </div>
-              <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-5 md:mb-6">
+              <div className="space-y-3 sm:space-y-4">
                 <p className="text-sm sm:text-base text-[#757575]">
                   FoodLink es una plataforma innovadora que conecta cocineros
                   talentosos con estudiantes universitarios y personas que
@@ -73,9 +73,6 @@ export default function SobreNosotrosPage() {
                   nutritiva y económica cerca de sus campus.
                 </p>
               </div>
-              <Link href="/menu" className="btn-primary mt-4 inline-block">
-                Ver Menú
-              </Link>
             </div>
           </div>
         </div>
@@ -188,12 +185,9 @@ export default function SobreNosotrosPage() {
               estudiantes, o si eres estudiante buscando comida casera, ¡únete a
               nuestra comunidad!
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex justify-center">
               <Link href="/vendedor/signup" className="btn-primary">
                 Registrarse como Vendedor
-              </Link>
-              <Link href="/menu" className="btn-secondary">
-                Ver Menú Disponible
               </Link>
             </div>
           </div>

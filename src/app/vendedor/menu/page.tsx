@@ -14,6 +14,7 @@ import type { Platillo, CategoriaPlatillo } from "@/lib/firebase/types";
 import ProductoCard from "@/components/vendedor/ProductoCard";
 import ProductoForm from "@/components/vendedor/ProductoForm";
 import { useAlert } from "@/components/context/AlertContext";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
 
 type SortOption = "nombre" | "precio" | "categoria" | "fecha";
 type FilterOption =
@@ -33,6 +34,9 @@ export default function MenuPage() {
   const [editingProducto, setEditingProducto] = useState<
     Platillo | undefined
   >();
+  const [productoAEliminar, setProductoAEliminar] = useState<string | null>(
+    null
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Filtros y búsqueda
@@ -158,23 +162,18 @@ export default function MenuPage() {
     }
   };
 
-  const handleDeleteProducto = async (productoId: string) => {
-    // Validación compatible con APK - usar confirm solo si está disponible
-    const isConfirmed = typeof window !== 'undefined' && typeof window.confirm === 'function'
-      ? window.confirm("¿Estás seguro de que deseas eliminar este producto?")
-      : true;
-    
-    if (!isConfirmed) {
-      return;
-    }
+  const handleDeleteProducto = async () => {
+    if (!productoAEliminar) return;
 
     try {
-      await deletePlatillo(productoId);
+      await deletePlatillo(productoAEliminar);
       showAlert("Producto eliminado exitosamente", "success");
       await loadPlatillos();
     } catch (err: any) {
       showAlert("Error al eliminar el producto", "error");
       console.error(err);
+    } finally {
+      setProductoAEliminar(null);
     }
   };
 
@@ -291,7 +290,7 @@ export default function MenuPage() {
                   key={producto.id}
                   producto={producto}
                   onEdit={handleEdit}
-                  onDelete={handleDeleteProducto}
+                  onDelete={(id) => setProductoAEliminar(id)}
                 />
               ))}
             </div>
@@ -356,7 +355,18 @@ export default function MenuPage() {
           />
         </div>
       )}
+
+      {/* Confirmación de Eliminar Producto */}
+      <ConfirmDialog
+        isOpen={!!productoAEliminar}
+        title="Eliminar Producto"
+        message="¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        onConfirm={handleDeleteProducto}
+        onCancel={() => setProductoAEliminar(null)}
+        type="danger"
+      />
     </VendedorLayout>
   );
 }
-
