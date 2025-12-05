@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import VendedorLayout from "@/components/vendedor/VendedorLayout";
@@ -39,17 +39,7 @@ export default function OrdenesPage() {
     }
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    if (vendedor) {
-      loadPedidos();
-    }
-  }, [vendedor]);
-
-  useEffect(() => {
-    applyFilter();
-  }, [pedidos, filtro]);
-
-  const loadPedidos = async () => {
+  const loadPedidos = useCallback(async () => {
     if (!vendedor) return;
 
     try {
@@ -75,15 +65,25 @@ export default function OrdenesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [vendedor, showAlert]);
 
-  const applyFilter = () => {
+  const applyFilter = useCallback(() => {
     if (filtro === "todos") {
       setFilteredPedidos(pedidos);
     } else {
       setFilteredPedidos(pedidos.filter((p) => p.estado === filtro));
     }
-  };
+  }, [pedidos, filtro]);
+
+  useEffect(() => {
+    if (vendedor) {
+      loadPedidos();
+    }
+  }, [vendedor, loadPedidos]);
+
+  useEffect(() => {
+    applyFilter();
+  }, [applyFilter]);
 
   const handleCambiarEstado = async (
     pedidoId: string,

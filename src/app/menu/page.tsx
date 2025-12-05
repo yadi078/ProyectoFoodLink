@@ -28,7 +28,7 @@ function MenuContent() {
   const searchParams = useSearchParams();
   const { user } = useAuth();
   const { showAlert } = useAlert();
-  const { addItem, openCart } = useCart();
+  const { addItem } = useCart();
   const [filtro, setFiltro] = useState("");
   const [categoriaFiltro, setCategoriaFiltro] = useState<string>("todos");
   const [platillos, setPlatillos] = useState<PlatilloConVendedor[]>([]);
@@ -127,16 +127,40 @@ function MenuContent() {
     return coincideNombre && coincideCategoria;
   });
 
-  const handlePedido = (platillo: Platillo, disponible: boolean) => {
+  const handlePedido = async (platillo: Platillo, disponible: boolean) => {
     if (!disponible) {
       showAlert("Este menú no está disponible en este momento", "warning");
       return;
     }
 
-    // Agregar al carrito
-    addItem(platillo, 1);
+    // Verificar si hay inventario disponible
+    if (platillo.cantidadDisponible !== undefined && platillo.cantidadDisponible <= 0) {
+      showAlert("Este producto está agotado", "warning");
+      return;
+    }
+
+    // Agregar al carrito (esto ya reduce el inventario en Firestore)
+    await addItem(platillo, 1);
     showAlert(`${platillo.nombre} agregado al carrito`, "success");
-    openCart();
+    // NO abrir el carrito automáticamente
+
+    // Actualizar la cantidad disponible en la UI local
+    setPlatillos((prevPlatillos) =>
+      prevPlatillos.map((p) =>
+        p.id === platillo.id && p.cantidadDisponible !== undefined
+          ? { ...p, cantidadDisponible: p.cantidadDisponible - 1 }
+          : p
+      )
+    );
+
+    // Si estamos en el modal, también actualizar el producto seleccionado
+    if (productoSeleccionado && productoSeleccionado.id === platillo.id) {
+      setProductoSeleccionado((prev) =>
+        prev && prev.cantidadDisponible !== undefined
+          ? { ...prev, cantidadDisponible: prev.cantidadDisponible - 1 }
+          : prev
+      );
+    }
   };
 
   const abrirModalDetalles = async (platillo: PlatilloConVendedor) => {
@@ -477,20 +501,47 @@ function MenuContent() {
                     <p className="text-lg sm:text-xl font-bold text-primary-500">
                       {formatPrice(menu.precio)}
                     </p>
+                    {/* Mostrar cantidad disponible si está definida */}
+                    {menu.cantidadDisponible !== undefined && (
+                      <span
+                        className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                          menu.cantidadDisponible === 0
+                            ? "bg-red-100 text-red-700"
+                            : menu.cantidadDisponible <= 5
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-green-100 text-green-700"
+                        }`}
+                      >
+                        {menu.cantidadDisponible === 0
+                          ? "Agotado"
+                          : `${menu.cantidadDisponible} disponibles`}
+                      </span>
+                    )}
                   </div>
 
                   <button
                     onClick={() => handlePedido(menu, menu.disponible)}
-                    disabled={!menu.disponible}
+                    disabled={
+                      !menu.disponible ||
+                      (menu.cantidadDisponible !== undefined &&
+                        menu.cantidadDisponible <= 0)
+                    }
                     className={`w-full py-2 px-3 rounded-lg font-semibold text-sm text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft ${
-                      menu.disponible
+                      menu.disponible &&
+                      (menu.cantidadDisponible === undefined ||
+                        menu.cantidadDisponible > 0)
                         ? "bg-primary-500 hover:bg-primary-600 hover:text-white hover:shadow-medium hover:-translate-y-0.5"
                         : "bg-gray-400 cursor-not-allowed"
                     }`}
                   >
                     <span>+</span>
                     <span>
-                      {menu.disponible ? "Agregar al Carrito" : "Agotado"}
+                      {!menu.disponible
+                        ? "No disponible"
+                        : menu.cantidadDisponible !== undefined &&
+                          menu.cantidadDisponible <= 0
+                        ? "Agotado"
+                        : "Agregar al Carrito"}
                     </span>
                   </button>
                 </div>
@@ -617,9 +668,27 @@ function MenuContent() {
                     {productoSeleccionado.descripcion}
                   </p>
 
-                  <p className="text-xl sm:text-2xl font-bold text-primary-500 mb-3 sm:mb-4">
-                    {formatPrice(productoSeleccionado.precio)}
-                  </p>
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <p className="text-xl sm:text-2xl font-bold text-primary-500">
+                      {formatPrice(productoSeleccionado.precio)}
+                    </p>
+                    {/* Mostrar cantidad disponible si está definida */}
+                    {productoSeleccionado.cantidadDisponible !== undefined && (
+                      <span
+                        className={`text-sm font-semibold px-3 py-1.5 rounded-full ${
+                          productoSeleccionado.cantidadDisponible === 0
+                            ? "bg-red-100 text-red-700"
+                            : productoSeleccionado.cantidadDisponible <= 5
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-green-100 text-green-700"
+                        }`}
+                      >
+                        {productoSeleccionado.cantidadDisponible === 0
+                          ? "Agotado"
+                          : `${productoSeleccionado.cantidadDisponible} disponibles`}
+                      </span>
+                    )}
+                  </div>
 
                   {/* Botones de acción */}
                   <div className="flex flex-col gap-2 sm:gap-3 mb-3 sm:mb-4">
@@ -630,9 +699,15 @@ function MenuContent() {
                           productoSeleccionado.disponible
                         )
                       }
-                      disabled={!productoSeleccionado.disponible}
+                      disabled={
+                        !productoSeleccionado.disponible ||
+                        (productoSeleccionado.cantidadDisponible !== undefined &&
+                          productoSeleccionado.cantidadDisponible <= 0)
+                      }
                       className={`w-full py-2 px-3 rounded-lg font-semibold text-sm text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft ${
-                        productoSeleccionado.disponible
+                        productoSeleccionado.disponible &&
+                        (productoSeleccionado.cantidadDisponible === undefined ||
+                          productoSeleccionado.cantidadDisponible > 0)
                           ? "bg-primary-500 hover:bg-primary-600 hover:text-white hover:shadow-medium hover:-translate-y-0.5"
                           : "bg-gray-400 cursor-not-allowed"
                       }`}
@@ -650,7 +725,12 @@ function MenuContent() {
                           d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                         />
                       </svg>
-                      Agregar al Carrito
+                      {!productoSeleccionado.disponible
+                        ? "No disponible"
+                        : productoSeleccionado.cantidadDisponible !== undefined &&
+                          productoSeleccionado.cantidadDisponible <= 0
+                        ? "Agotado"
+                        : "Agregar al Carrito"}
                     </button>
 
                     {user ? (

@@ -35,12 +35,14 @@ export default function MisPedidosPage() {
       showAlert("Debes iniciar sesión para ver tus pedidos", "info");
       router.push("/vendedor/login");
     }
-  }, [user, authLoading, router, showAlert]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, authLoading, router]);
 
   useEffect(() => {
     if (user) {
       loadPedidos();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const loadPedidos = async () => {
@@ -73,10 +75,14 @@ export default function MisPedidosPage() {
 
   const getEstadoBadge = (estado: Pedido["estado"]) => {
     const badges = {
-      pendiente: "bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border-yellow-300 shadow-sm",
-      en_camino: "bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-300 shadow-sm",
-      entregado: "bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-green-300 shadow-sm",
-      cancelado: "bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-300 shadow-sm",
+      pendiente:
+        "bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border-yellow-300 shadow-sm",
+      en_camino:
+        "bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-300 shadow-sm",
+      entregado:
+        "bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-green-300 shadow-sm",
+      cancelado:
+        "bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-300 shadow-sm",
     };
 
     const iconos = {
@@ -205,12 +211,24 @@ export default function MisPedidosPage() {
                 {pedidos.length}
               </div>
               <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  />
                 </svg>
               </div>
             </div>
-            <div className="text-xs font-semibold text-white/90 uppercase tracking-wide">Total</div>
+            <div className="text-xs font-semibold text-white/90 uppercase tracking-wide">
+              Total
+            </div>
           </div>
           <div className="bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
             <div className="flex items-center justify-between mb-2">
@@ -221,7 +239,9 @@ export default function MisPedidosPage() {
                 <span className="text-2xl">⏳</span>
               </div>
             </div>
-            <div className="text-xs font-semibold text-white/90 uppercase tracking-wide">Pendientes</div>
+            <div className="text-xs font-semibold text-white/90 uppercase tracking-wide">
+              Pendientes
+            </div>
           </div>
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
             <div className="flex items-center justify-between mb-2">
@@ -232,7 +252,9 @@ export default function MisPedidosPage() {
                 <span className="text-2xl">🚶</span>
               </div>
             </div>
-            <div className="text-xs font-semibold text-white/90 uppercase tracking-wide">En Camino</div>
+            <div className="text-xs font-semibold text-white/90 uppercase tracking-wide">
+              En Camino
+            </div>
           </div>
           <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
             <div className="flex items-center justify-between mb-2">
@@ -243,7 +265,9 @@ export default function MisPedidosPage() {
                 <span className="text-2xl">✅</span>
               </div>
             </div>
-            <div className="text-xs font-semibold text-white/90 uppercase tracking-wide">Entregados</div>
+            <div className="text-xs font-semibold text-white/90 uppercase tracking-wide">
+              Entregados
+            </div>
           </div>
         </div>
 
@@ -304,7 +328,7 @@ export default function MisPedidosPage() {
                     />
                   </svg>
                 </Link>
-                
+
                 <div className="p-5 sm:p-7">
                   {/* Header con icono y info principal */}
                   <div className="flex items-start justify-between mb-5 pr-12">
@@ -324,42 +348,72 @@ export default function MisPedidosPage() {
                           </p>
                         </div>
                       </div>
-                      
+
                       {/* Badge de estado mejorado */}
                       <div className="mb-3">
                         {getEstadoBadge(pedido.estado)}
                       </div>
-                      
+
                       {/* Info del pedido con iconos */}
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center gap-2 text-gray-600">
-                          <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          <svg
+                            className="w-4 h-4 text-gray-400 flex-shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
                           </svg>
                           <span>
-                            {new Date(pedido.createdAt).toLocaleString("es-MX", {
-                              day: "2-digit",
-                              month: "long",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false,
-                            })}
+                            {new Date(pedido.createdAt).toLocaleString(
+                              "es-MX",
+                              {
+                                day: "2-digit",
+                                month: "long",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                              }
+                            )}
                           </span>
                         </div>
                         <div className="flex items-center gap-2 text-gray-600">
-                          <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <svg
+                            className="w-4 h-4 text-gray-400 flex-shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
                           </svg>
                           <span>Puerta principal UTNA</span>
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Total mejorado */}
                     <div className="text-center bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl p-3 min-w-[100px]">
-                      <p className="text-xs text-gray-600 mb-1 font-medium">Total</p>
+                      <p className="text-xs text-gray-600 mb-1 font-medium">
+                        Total
+                      </p>
                       <p className="text-2xl font-bold text-primary-600">
                         {formatPrice(pedido.precioTotal)}
                       </p>
@@ -369,8 +423,18 @@ export default function MisPedidosPage() {
                   {/* Items del pedido - Vista compacta mejorada */}
                   <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 mb-4 border border-gray-200">
                     <div className="flex items-center gap-2 mb-3">
-                      <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                      <svg
+                        className="w-5 h-5 text-gray-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                        />
                       </svg>
                       <p className="font-bold text-gray-800 text-sm">
                         Productos ({pedido.items.length})
@@ -402,12 +466,24 @@ export default function MisPedidosPage() {
                     {pedido.notas && (
                       <div className="mt-3 pt-3 border-t border-gray-300">
                         <p className="text-xs font-semibold text-gray-700 mb-1 flex items-center gap-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+                            />
                           </svg>
                           Notas:
                         </p>
-                        <p className="text-sm text-gray-600 bg-white rounded p-2">{pedido.notas}</p>
+                        <p className="text-sm text-gray-600 bg-white rounded p-2">
+                          {pedido.notas}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -418,9 +494,24 @@ export default function MisPedidosPage() {
                       onClick={() => setPedidoSeleccionado(pedido)}
                       className="flex-1 px-5 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm flex items-center justify-center gap-2"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
                       </svg>
                       Ver Detalles
                     </button>
@@ -562,7 +653,6 @@ export default function MisPedidosPage() {
                   </span>
                 </div>
 
-                
                 {/* Botón de Chat con el Vendedor - NARANJA */}
                 <Link
                   href={`/mensajes?vendedorId=${pedidoSeleccionado.vendedorId}`}

@@ -2,6 +2,12 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  // Para generar APK, descomentar la siguiente línea:
+  // output: 'export',
+  // trailingSlash: true,
+  images: {
+    unoptimized: true, // Necesario para APK
+  },
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
   },

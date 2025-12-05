@@ -138,6 +138,17 @@ export const logoutVendedor = async (): Promise<void> => {
 };
 
 /**
+ * Cerrar sesión (general para estudiantes y vendedores)
+ */
+export const logout = async (): Promise<void> => {
+  try {
+    await signOut(auth);
+  } catch (error: any) {
+    throw mapFirebaseError(error);
+  }
+};
+
+/**
  * Obtener token de sesión del usuario actual
  * Firebase maneja automáticamente tokens JWT seguros
  */

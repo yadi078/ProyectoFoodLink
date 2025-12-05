@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import VendedorLayout from "@/components/vendedor/VendedorLayout";
@@ -40,13 +40,7 @@ export default function ResenasPage() {
     }
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    if (vendedor) {
-      cargarResenas();
-    }
-  }, [vendedor]);
-
-  const cargarResenas = async () => {
+  const cargarResenas = useCallback(async () => {
     if (!vendedor) return;
 
     try {
@@ -76,7 +70,13 @@ export default function ResenasPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [vendedor]);
+
+  useEffect(() => {
+    if (vendedor) {
+      cargarResenas();
+    }
+  }, [vendedor, cargarResenas]);
 
   const calificacionesFiltradas =
     filtroCalificacion === "todos"

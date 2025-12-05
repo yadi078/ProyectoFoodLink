@@ -19,7 +19,7 @@ interface CartContextType {
   addItem: (platillo: Platillo, cantidad?: number) => void;
   removeItem: (platilloId: string) => void;
   updateQuantity: (platilloId: string, cantidad: number) => void;
-  clearCart: () => void;
+  clearCart: (restaurarInventario?: boolean) => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
   isCartOpen: boolean;
@@ -40,38 +40,50 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      try {
-        const parsedCart = JSON.parse(savedCart);
-
-        // Validar que sea un array
-        if (!Array.isArray(parsedCart)) {
-          localStorage.removeItem("cart");
-          setIsHydrated(true);
-          return;
-        }
-
-        // Filtrar items con cantidad > 0 y validar estructura
-        const validCart = parsedCart.filter((item: CartItem) => {
-          // Validar estructura básica
-          if (!item || !item.platillo || typeof item.cantidad !== "number") {
-            return false;
-          }
-          return item.cantidad > 0;
-        });
-
-        setItems(validCart);
-
-        // Si se filtraron items, actualizar localStorage
-        if (validCart.length !== parsedCart.length) {
-          localStorage.setItem("cart", JSON.stringify(validCart));
-        }
-      } catch (error) {
-        console.error("Error al cargar el carrito:", error);
-        // Si hay error, limpiar el localStorage corrupto
-        localStorage.removeItem("cart");
+    try {
+      // Verificar que localStorage esté disponible (puede fallar en algunos APK)
+      if (!window.localStorage) {
+        console.warn("localStorage no disponible");
+        setIsHydrated(true);
+        return;
       }
+
+      const savedCart = localStorage.getItem("cart");
+      if (savedCart) {
+        try {
+          const parsedCart = JSON.parse(savedCart);
+
+          // Validar que sea un array
+          if (!Array.isArray(parsedCart)) {
+            localStorage.removeItem("cart");
+            setIsHydrated(true);
+            return;
+          }
+
+          // Filtrar items con cantidad > 0 y validar estructura
+          const validCart = parsedCart.filter((item: CartItem) => {
+            // Validar estructura básica
+            if (!item || !item.platillo || typeof item.cantidad !== "number") {
+              return false;
+            }
+            return item.cantidad > 0;
+          });
+
+          setItems(validCart);
+
+          // Si se filtraron items, actualizar localStorage
+          if (validCart.length !== parsedCart.length) {
+            localStorage.setItem("cart", JSON.stringify(validCart));
+          }
+        } catch (error) {
+          console.error("Error al cargar el carrito:", error);
+          // Si hay error, limpiar el localStorage corrupto
+          localStorage.removeItem("cart");
+        }
+      }
+    } catch (error) {
+      // Capturar error si localStorage está completamente bloqueado
+      console.warn("No se pudo acceder a localStorage:", error);
     }
 
     setIsHydrated(true);
@@ -81,43 +93,54 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof window === "undefined" || !isHydrated) return;
 
-    // Solo guardar items válidos (cantidad > 0)
-    const validItems = items.filter((item) => {
-      // Validar estructura antes de guardar
-      return (
-        item &&
-        item.platillo &&
-        typeof item.cantidad === "number" &&
-        item.cantidad > 0
-      );
-    });
+    try {
+      // Verificar que localStorage esté disponible
+      if (!window.localStorage) {
+        console.warn("localStorage no disponible para guardar");
+        return;
+      }
 
-    if (validItems.length > 0) {
-      // Limpiar fechas y otros campos que no se necesitan para el carrito
-      const itemsToSave = validItems.map((item) => ({
-        platillo: {
-          id: item.platillo.id,
-          nombre: item.platillo.nombre,
-          descripcion: item.platillo.descripcion,
-          precio: item.platillo.precio,
-          disponible: item.platillo.disponible,
-          vendedorId: item.platillo.vendedorId,
-          imagen: item.platillo.imagen,
-          categoria: item.platillo.categoria,
-          cantidadDisponible: item.platillo.cantidadDisponible,
-          // No guardar createdAt/updatedAt para evitar problemas de serialización
-        },
-        cantidad: item.cantidad,
-      }));
+      // Solo guardar items válidos (cantidad > 0)
+      const validItems = items.filter((item) => {
+        // Validar estructura antes de guardar
+        return (
+          item &&
+          item.platillo &&
+          typeof item.cantidad === "number" &&
+          item.cantidad > 0
+        );
+      });
 
-      localStorage.setItem("cart", JSON.stringify(itemsToSave));
-    } else {
-      // Si no hay items válidos, limpiar localStorage
-      localStorage.removeItem("cart");
+      if (validItems.length > 0) {
+        // Limpiar fechas y otros campos que no se necesitan para el carrito
+        const itemsToSave = validItems.map((item) => ({
+          platillo: {
+            id: item.platillo.id,
+            nombre: item.platillo.nombre,
+            descripcion: item.platillo.descripcion,
+            precio: item.platillo.precio,
+            disponible: item.platillo.disponible,
+            vendedorId: item.platillo.vendedorId,
+            imagen: item.platillo.imagen,
+            categoria: item.platillo.categoria,
+            cantidadDisponible: item.platillo.cantidadDisponible,
+            // No guardar createdAt/updatedAt para evitar problemas de serialización
+          },
+          cantidad: item.cantidad,
+        }));
+
+        localStorage.setItem("cart", JSON.stringify(itemsToSave));
+      } else {
+        // Si no hay items válidos, limpiar localStorage
+        localStorage.removeItem("cart");
+      }
+    } catch (error) {
+      // Capturar error si localStorage está bloqueado
+      console.warn("No se pudo guardar en localStorage:", error);
     }
   }, [items, isHydrated]);
 
-  const addItem = (platillo: Platillo, cantidad: number = 1) => {
+  const addItem = async (platillo: Platillo, cantidad: number = 1) => {
     if (!platillo || !platillo.id) {
       return;
     }
@@ -125,6 +148,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (cantidad <= 0) {
       return;
     }
+
+    // Verificar disponibilidad (solo lectura, no modificación)
+    if (
+      platillo.cantidadDisponible !== undefined &&
+      platillo.cantidadDisponible < cantidad
+    ) {
+      console.warn(
+        `No hay suficiente inventario disponible para ${platillo.nombre}`
+      );
+      return;
+    }
+
+    // NOTA: El inventario se reducirá cuando se CONFIRME el pedido,
+    // no cuando se agregue al carrito. Esto permite:
+    // 1. Que usuarios no autenticados puedan agregar al carrito
+    // 2. Que los usuarios modifiquen su carrito libremente
+    // 3. Evita problemas de permisos de Firebase
 
     setItems((prevItems) => {
       const existingItem = prevItems.find(
@@ -135,7 +175,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
         // Si ya existe, aumentar la cantidad
         return prevItems.map((item) =>
           item.platillo.id === platillo.id
-            ? { ...item, cantidad: item.cantidad + cantidad }
+            ? {
+                ...item,
+                cantidad: item.cantidad + cantidad,
+              }
             : item
         );
       } else {
@@ -145,18 +188,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const removeItem = (platilloId: string) => {
+  const removeItem = async (platilloId: string) => {
+    // Simplemente remover del carrito
+    // No hay inventario que restaurar porque no se redujo al agregar
     setItems((prevItems) =>
       prevItems.filter((item) => item.platillo.id !== platilloId)
     );
   };
 
-  const updateQuantity = (platilloId: string, cantidad: number) => {
+  const updateQuantity = async (platilloId: string, cantidad: number) => {
     if (cantidad <= 0) {
-      removeItem(platilloId);
+      await removeItem(platilloId);
       return;
     }
 
+    // Simplemente actualizar la cantidad en el carrito
+    // El inventario se ajustará cuando se confirme el pedido
     setItems((prevItems) =>
       prevItems.map((item) =>
         item.platillo.id === platilloId ? { ...item, cantidad } : item
@@ -164,7 +211,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const clearCart = () => {
+  const clearCart = async (restaurarInventario: boolean = true) => {
+    // Simplemente limpiar el carrito
+    // No hay inventario que restaurar porque no se redujo al agregar
     setItems([]);
   };
 

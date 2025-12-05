@@ -44,10 +44,11 @@ export async function registerServiceWorker(): Promise<ServiceWorkerStatus> {
             // Nueva versión disponible
             console.log('🆕 Nueva versión disponible. Recarga para actualizar.');
             
-            // Puedes mostrar un mensaje al usuario aquí
-            if (confirm('¡Hay una nueva versión disponible! ¿Recargar ahora?')) {
+            // Auto-recargar después de 3 segundos
+            // Esto funciona mejor en APK que confirm()
+            setTimeout(() => {
               window.location.reload();
-            }
+            }, 3000);
           }
         });
       }

@@ -14,8 +14,23 @@ export default function ServiceWorkerInit() {
   const [showUpdatePrompt, setShowUpdatePrompt] = useState(false);
 
   useEffect(() => {
-    // Registrar Service Worker
+    // Registrar Service Worker (solo en navegador, no en APK)
     const initServiceWorker = async () => {
+      // Detectar si estamos en un APK/WebView
+      const isInApp = typeof window !== 'undefined' && (
+        // @ts-ignore - Capacitor global
+        window.Capacitor !== undefined ||
+        // @ts-ignore - Cordova global
+        window.cordova !== undefined
+      );
+
+      // No inicializar Service Worker en APK (puede causar problemas)
+      if (isInApp) {
+        console.log('🔧 APK detectado - Service Worker deshabilitado');
+        setSwStatus('unsupported');
+        return;
+      }
+
       const result = await registerServiceWorker();
       
       if (result.registered) {
@@ -176,8 +191,4 @@ export default function ServiceWorkerInit() {
     </>
   );
 }
-
-
-
-
 

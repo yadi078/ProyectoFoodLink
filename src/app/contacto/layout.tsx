@@ -13,4 +13,3 @@ export default function ContactoLayout({
 }) {
   return <>{children}</>;
 }
-

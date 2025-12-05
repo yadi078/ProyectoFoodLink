@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
@@ -37,13 +37,7 @@ export default function DashboardPage() {
     }
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    if (vendedor) {
-      loadData();
-    }
-  }, [vendedor]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!vendedor) return;
 
     try {
@@ -89,7 +83,13 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [vendedor]);
+
+  useEffect(() => {
+    if (vendedor) {
+      loadData();
+    }
+  }, [vendedor, loadData]);
 
   const getEstadoBadge = (estado: Pedido["estado"]) => {
     const badges: Record<Pedido["estado"], string> = {

@@ -3,9 +3,9 @@
  * Permite al usuario gestionar sus preferencias de notificaciones
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   getNotificationPermission,
   requestNotificationPermission,
@@ -19,14 +19,17 @@ import {
   startPermissionMonitoring,
   type NotificationPermissionState,
   type NotificationSettings as INotificationSettings,
-} from '@/services/notifications/notificationService';
+} from "@/services/notifications/notificationService";
 
 interface NotificationSettingsProps {
   userId: string;
 }
 
-export default function NotificationSettings({ userId }: NotificationSettingsProps) {
-  const [permissionState, setPermissionState] = useState<NotificationPermissionState>('default');
+export default function NotificationSettings({
+  userId,
+}: NotificationSettingsProps) {
+  const [permissionState, setPermissionState] =
+    useState<NotificationPermissionState>("default");
   const [settings, setSettings] = useState<INotificationSettings | null>(null);
   const [isRequesting, setIsRequesting] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
@@ -35,31 +38,33 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
   useEffect(() => {
     const currentPermission = getNotificationPermission();
     setPermissionState(currentPermission);
-    
+
     const userSettings = getNotificationSettings(userId);
     setSettings(userSettings);
   }, [userId]);
 
   // Monitorear cambios en permisos (detecta cambios desde el SO)
   useEffect(() => {
-    console.log('🔍 Iniciando monitoreo de permisos de notificaciones');
-    
+    console.log("🔍 Iniciando monitoreo de permisos de notificaciones");
+
     const cleanup = startPermissionMonitoring(userId, (newState) => {
-      console.log('🔔 Cambio detectado en permisos:', newState);
+      console.log("🔔 Cambio detectado en permisos:", newState);
       setPermissionState(newState);
-      
+
       // Recargar settings si cambió el estado
       const userSettings = getNotificationSettings(userId);
       setSettings(userSettings);
-      
+
       // Si el usuario desactivó desde el SO, ocultar instrucciones
-      if (newState === 'denied') {
-        console.log('⚠️ Usuario desactivó notificaciones desde el sistema operativo');
+      if (newState === "denied") {
+        console.log(
+          "⚠️ Usuario desactivó notificaciones desde el sistema operativo"
+        );
       }
     });
 
     return () => {
-      console.log('🛑 Deteniendo monitoreo de permisos');
+      console.log("🛑 Deteniendo monitoreo de permisos");
       cleanup();
     };
   }, [userId]);
@@ -74,7 +79,8 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
               Notificaciones no disponibles
             </h3>
             <p className="text-sm text-yellow-700">
-              Tu navegador no soporta notificaciones push. Intenta usar Chrome, Firefox, Edge o Safari.
+              Tu navegador no soporta notificaciones push. Intenta usar Chrome,
+              Firefox, Edge o Safari.
             </p>
           </div>
         </div>
@@ -91,41 +97,41 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
   }
 
   const handleEnableNotifications = async () => {
-    console.log('👆 Usuario intenta activar notificaciones');
-    
+    console.log("👆 Usuario intenta activar notificaciones");
+
     // Si ya está bloqueado permanentemente, mostrar instrucciones inmediatamente
-    if (permissionState === 'denied') {
-      console.log('🚫 Permisos ya bloqueados - Mostrando instrucciones');
+    if (permissionState === "denied") {
+      console.log("🚫 Permisos ya bloqueados - Mostrando instrucciones");
       setShowInstructions(true);
       return;
     }
-    
+
     // Si alcanzó el límite de rechazos, mostrar instrucciones
     if (!canRequestPermission(userId)) {
-      console.log('⏰ Límite de rechazos alcanzado - Mostrando instrucciones');
+      console.log("⏰ Límite de rechazos alcanzado - Mostrando instrucciones");
       setShowInstructions(true);
       return;
     }
 
     setIsRequesting(true);
     setShowInstructions(false); // Ocultar instrucciones al intentar
-    
+
     try {
       const result = await requestNotificationPermission(userId);
-      console.log('✅ Resultado de solicitud de permisos:', result);
+      console.log("✅ Resultado de solicitud de permisos:", result);
       setPermissionState(result);
-      
-      if (result === 'granted') {
-        console.log('🎉 Permisos concedidos - Enviando notificación de prueba');
+
+      if (result === "granted") {
+        console.log("🎉 Permisos concedidos - Enviando notificación de prueba");
         // Enviar notificación de prueba
         await sendTestNotification();
-        
+
         // Actualizar settings
         const updatedSettings = getNotificationSettings(userId);
         setSettings(updatedSettings);
         setShowInstructions(false);
-      } else if (result === 'denied') {
-        console.log('❌ Permisos denegados - Mostrando instrucciones');
+      } else if (result === "denied") {
+        console.log("❌ Permisos denegados - Mostrando instrucciones");
         setShowInstructions(true);
       }
     } finally {
@@ -134,7 +140,7 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
   };
 
   const handleToggleNotifications = async () => {
-    if (!settings.enabled && permissionState !== 'granted') {
+    if (!settings.enabled && permissionState !== "granted") {
       // Necesita solicitar permisos
       await handleEnableNotifications();
     } else {
@@ -162,14 +168,14 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
   const permissionMessage = getPermissionMessage(permissionState);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Estado de Permisos */}
-      <div className="bg-white rounded-xl shadow-soft p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-primary-50 rounded-lg flex items-center justify-center">
+      <div className="bg-white rounded-xl shadow-soft p-4 sm:p-6">
+        <div className="flex items-start justify-between mb-4 gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary-50 rounded-lg flex items-center justify-center flex-shrink-0">
               <svg
-                className="w-6 h-6 text-primary-500"
+                className="w-5 h-5 sm:w-6 sm:h-6 text-primary-500"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -182,32 +188,32 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
                 />
               </svg>
             </div>
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-1">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-base sm:text-xl font-semibold text-gray-900 mb-0.5 sm:mb-1 truncate">
                 Notificaciones
               </h2>
-              <p className="text-sm text-gray-600">
+              <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
                 Mantente informado sobre tus pedidos y novedades
               </p>
             </div>
           </div>
-          
+
           {/* Toggle Principal */}
           <button
             onClick={handleToggleNotifications}
-            disabled={isRequesting || permissionState === 'denied'}
+            disabled={isRequesting || permissionState === "denied"}
             className={`
-              relative inline-flex h-6 w-11 items-center rounded-full transition-colors
+              relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0
               focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
               ${
-                settings.enabled && permissionState === 'granted'
-                  ? 'bg-primary-600'
-                  : 'bg-gray-300'
+                settings.enabled && permissionState === "granted"
+                  ? "bg-primary-600"
+                  : "bg-gray-300"
               }
               ${
-                isRequesting || permissionState === 'denied'
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'cursor-pointer'
+                isRequesting || permissionState === "denied"
+                  ? "opacity-50 cursor-not-allowed"
+                  : "cursor-pointer"
               }
             `}
           >
@@ -215,9 +221,9 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
               className={`
                 inline-block h-4 w-4 transform rounded-full bg-white transition-transform
                 ${
-                  settings.enabled && permissionState === 'granted'
-                    ? 'translate-x-6'
-                    : 'translate-x-1'
+                  settings.enabled && permissionState === "granted"
+                    ? "translate-x-6"
+                    : "translate-x-1"
                 }
               `}
             />
@@ -227,34 +233,34 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
         {/* Mensaje de Estado */}
         <div
           className={`
-            p-4 rounded-lg border
+            p-3 sm:p-4 rounded-lg border
             ${
-              permissionState === 'granted'
-                ? 'bg-green-50 border-green-200'
-                : permissionState === 'denied'
-                ? 'bg-red-50 border-red-200'
-                : 'bg-blue-50 border-blue-200'
+              permissionState === "granted"
+                ? "bg-green-50 border-green-200"
+                : permissionState === "denied"
+                ? "bg-red-50 border-red-200"
+                : "bg-blue-50 border-blue-200"
             }
           `}
         >
-          <div className="flex items-start gap-3">
-            <span className="text-xl">
-              {permissionState === 'granted'
-                ? '✅'
-                : permissionState === 'denied'
-                ? '🚫'
-                : 'ℹ️'}
+          <div className="flex items-start gap-2 sm:gap-3">
+            <span className="text-lg sm:text-xl flex-shrink-0">
+              {permissionState === "granted"
+                ? "✅"
+                : permissionState === "denied"
+                ? "🚫"
+                : "ℹ️"}
             </span>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <h3
                 className={`
-                  font-semibold mb-1
+                  font-semibold mb-0.5 sm:mb-1 text-sm sm:text-base
                   ${
-                    permissionState === 'granted'
-                      ? 'text-green-900'
-                      : permissionState === 'denied'
-                      ? 'text-red-900'
-                      : 'text-blue-900'
+                    permissionState === "granted"
+                      ? "text-green-900"
+                      : permissionState === "denied"
+                      ? "text-red-900"
+                      : "text-blue-900"
                   }
                 `}
               >
@@ -262,27 +268,27 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
               </h3>
               <p
                 className={`
-                  text-sm
+                  text-xs sm:text-sm leading-relaxed
                   ${
-                    permissionState === 'granted'
-                      ? 'text-green-700'
-                      : permissionState === 'denied'
-                      ? 'text-red-700'
-                      : 'text-blue-700'
+                    permissionState === "granted"
+                      ? "text-green-700"
+                      : permissionState === "denied"
+                      ? "text-red-700"
+                      : "text-blue-700"
                   }
                 `}
               >
                 {permissionMessage.message}
               </p>
-              
+
               {/* Botón de acción si aplica */}
-              {permissionMessage.canRetry && permissionState !== 'granted' && (
+              {permissionMessage.canRetry && permissionState !== "granted" && (
                 <button
                   onClick={handleEnableNotifications}
                   disabled={isRequesting}
-                  className="mt-3 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
+                  className="mt-2 sm:mt-3 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
                 >
-                  {isRequesting ? 'Solicitando...' : 'Activar notificaciones'}
+                  {isRequesting ? "Solicitando..." : "Activar notificaciones"}
                 </button>
               )}
             </div>
@@ -290,27 +296,30 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
         </div>
 
         {/* Instrucciones para activar desde el sistema */}
-        {showInstructions && permissionState === 'denied' && (
-          <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-            <h4 className="font-semibold text-gray-900 mb-2">
+        {showInstructions && permissionState === "denied" && (
+          <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg">
+            <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
               📱 Cómo activar las notificaciones:
             </h4>
-            <ol className="text-sm text-gray-700 space-y-2 ml-4 list-decimal">
+            <ol className="text-xs sm:text-sm text-gray-700 space-y-1.5 sm:space-y-2 ml-4 list-decimal leading-relaxed">
               <li>
-                Haz clic en el <strong>icono de candado</strong> o <strong>información</strong> en la barra de direcciones
+                Haz clic en el <strong>icono de candado</strong> o{" "}
+                <strong>información</strong> en la barra de direcciones
               </li>
               <li>
-                Busca la sección de <strong>Permisos</strong> o <strong>Configuración del sitio</strong>
+                Busca la sección de <strong>Permisos</strong> o{" "}
+                <strong>Configuración del sitio</strong>
               </li>
               <li>
-                Cambia <strong>Notificaciones</strong> de "Bloqueado" a "Permitir"
+                Cambia <strong>Notificaciones</strong> de "Bloqueado" a
+                "Permitir"
               </li>
               <li>Recarga la página</li>
             </ol>
-            
+
             <button
               onClick={() => setShowInstructions(false)}
-              className="mt-3 text-sm text-primary-600 hover:text-primary-700 font-medium"
+              className="mt-2 sm:mt-3 text-xs sm:text-sm text-primary-600 hover:text-primary-700 font-medium"
             >
               Entendido
             </button>
@@ -319,11 +328,11 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
       </div>
 
       {/* Preferencias de Notificaciones */}
-      {settings.enabled && permissionState === 'granted' && (
-        <div className="bg-white rounded-xl shadow-soft p-6">
-          <div className="flex items-center gap-2 mb-4">
+      {settings.enabled && permissionState === "granted" && (
+        <div className="bg-white rounded-xl shadow-soft p-4 sm:p-6">
+          <div className="flex items-center gap-2 mb-3 sm:mb-4">
             <svg
-              className="w-5 h-5 text-primary-500"
+              className="w-4 h-4 sm:w-5 sm:h-5 text-primary-500 flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -335,45 +344,45 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
                 d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
               />
             </svg>
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">
               Preferencias de notificaciones
             </h3>
           </div>
-          
+
           <div className="space-y-4">
             <PreferenceToggle
               label="Pedidos nuevos"
               description="Cuando un estudiante realiza un pedido"
               checked={settings.pedidosNuevos}
               onChange={(checked) =>
-                handleTogglePreference('pedidosNuevos', checked)
+                handleTogglePreference("pedidosNuevos", checked)
               }
             />
-            
+
             <PreferenceToggle
               label="Actualizaciones de pedidos"
               description="Cambios en el estado de tus pedidos"
               checked={settings.actualizacionesPedidos}
               onChange={(checked) =>
-                handleTogglePreference('actualizacionesPedidos', checked)
+                handleTogglePreference("actualizacionesPedidos", checked)
               }
             />
-            
+
             <PreferenceToggle
               label="Mensajes de vendedores"
               description="Cuando un vendedor te envía un mensaje"
               checked={settings.mensajesVendedor}
               onChange={(checked) =>
-                handleTogglePreference('mensajesVendedor', checked)
+                handleTogglePreference("mensajesVendedor", checked)
               }
             />
-            
+
             <PreferenceToggle
               label="Promociones y ofertas"
               description="Ofertas especiales y descuentos"
               checked={settings.promociones}
               onChange={(checked) =>
-                handleTogglePreference('promociones', checked)
+                handleTogglePreference("promociones", checked)
               }
             />
           </div>
@@ -397,28 +406,31 @@ function PreferenceToggle({
   onChange,
 }: PreferenceToggleProps) {
   return (
-    <div className="flex items-center justify-between py-4 border-b border-gray-100 last:border-0 hover:bg-gray-50 rounded-lg px-2 transition-colors duration-200">
-      <div className="flex-1">
-        <p className="font-medium text-gray-900 mb-1">{label}</p>
-        <p className="text-sm text-gray-600">{description}</p>
+    <div className="flex items-center justify-between gap-3 py-3 sm:py-4 border-b border-gray-100 last:border-0 hover:bg-gray-50 rounded-lg px-2 transition-colors duration-200">
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-gray-900 mb-0.5 sm:mb-1 text-sm sm:text-base">
+          {label}
+        </p>
+        <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
+          {description}
+        </p>
       </div>
-      
+
       <button
         onClick={() => onChange(!checked)}
         className={`
-          relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-200
+          relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-200 flex-shrink-0
           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
-          ${checked ? 'bg-primary-500 shadow-soft' : 'bg-gray-300'}
+          ${checked ? "bg-primary-500 shadow-soft" : "bg-gray-300"}
         `}
       >
         <span
           className={`
             inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm
-            ${checked ? 'translate-x-6' : 'translate-x-1'}
+            ${checked ? "translate-x-6" : "translate-x-1"}
           `}
         />
       </button>
     </div>
   );
 }
-

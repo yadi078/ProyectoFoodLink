@@ -62,6 +62,7 @@ export interface Platillo {
   ingredientes?: string[];
   cantidadDisponible?: number; // Cantidad disponible del platillo
   notasAdicionales?: string; // Notas adicionales del vendedor
+  nombreVendedor?: string; // Nombre del vendedor (para mostrar en el carrito)
   createdAt: Date;
   updatedAt: Date;
 }

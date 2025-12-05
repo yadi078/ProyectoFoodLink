@@ -70,7 +70,10 @@ export default function CartSidebar() {
         vendedoresUnicos.map(async (vendedorId) => {
           try {
             const vendedor = await getVendedor(vendedorId);
-            const horarioFinal = vendedor?.horario || { inicio: "10:00", fin: "15:00" };
+            const horarioFinal = vendedor?.horario || {
+              inicio: "10:00",
+              fin: "15:00",
+            };
             return {
               vendedorId,
               horario: horarioFinal,
@@ -108,6 +111,8 @@ export default function CartSidebar() {
     notas?: string;
     horaEntrega: string;
     codigoPromocional?: string;
+    descuentoCalculado?: number;
+    promocionId?: string;
   }) => {
     if (!user) {
       showAlert("Debes iniciar sesión para continuar", "error");
@@ -127,29 +132,9 @@ export default function CartSidebar() {
         return;
       }
 
-      let descuento = 0;
-      let promocionId: string | undefined;
-
-      // 2. Validar código promocional si existe
-      if (data.codigoPromocional) {
-        const resultadoPromo = await validarPromocion(
-          data.codigoPromocional,
-          user.uid,
-          getTotalPrice()
-        );
-
-        if (resultadoPromo.valido && resultadoPromo.descuento) {
-          descuento = resultadoPromo.descuento;
-          promocionId = resultadoPromo.promocion?.id;
-          const descuentoTexto =
-            resultadoPromo.promocion?.tipo === "porcentaje"
-              ? `${resultadoPromo.promocion.valor}%`
-              : `$${resultadoPromo.promocion?.valor}`;
-          showAlert(`Código aplicado — Descuento del ${descuentoTexto}.`, "success");
-        } else {
-          showAlert("Código no válido o expirado.", "warning");
-        }
-      }
+      // 2. Usar el descuento ya calculado desde el modal
+      const descuento = data.descuentoCalculado || 0;
+      const promocionId = data.promocionId;
 
       // 3. Crear el pedido (siempre con tipoEntrega "entrega" fijo)
       const pedidosCreados = await crearPedido({
@@ -173,8 +158,8 @@ export default function CartSidebar() {
 
       showAlert(mensaje, "success");
 
-      // 5. Limpiar carrito y cerrar todo
-      clearCart();
+      // 5. Limpiar carrito y cerrar todo (NO restaurar inventario porque el pedido ya está confirmado)
+      clearCart(false);
       setDescuentoAplicado(0);
       setPromocionActual(null);
       setIsModalOpen(false);
@@ -397,7 +382,7 @@ export default function CartSidebar() {
                 </p>
               </div>
             )}
-            
+
             <div className="flex justify-between items-center">
               <span className="text-sm sm:text-base font-semibold text-gray-800">
                 Total:
@@ -430,8 +415,9 @@ export default function CartSidebar() {
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirmarPedido}
         totalItems={getTotalItems()}
-        totalPrice={formatPrice(getTotalPrice() - descuentoAplicado)}
-        descuentoAplicado={descuentoAplicado}
+        totalPrice={formatPrice(getTotalPrice())}
+        totalPriceNumber={getTotalPrice()}
+        userId={user?.uid || ""}
         vendedoresInfo={vendedoresInfo}
       />
     </>

@@ -13,6 +13,10 @@ import {
 import { db } from "@/lib/firebase/config";
 import type { CartItem } from "@/components/context/CartContext";
 import { registrarUsoPromocion } from "@/services/promociones/promocionService";
+import { reducirInventario } from "@/services/inventario/inventarioService";
+
+// Horarios fijos disponibles para entrega
+const HORARIOS_FIJOS = ["10:20", "12:20", "18:15"];
 
 export interface CrearPedidoParams {
   estudianteId: string;
@@ -67,11 +71,13 @@ export const crearPedido = async (
     throw new Error("La hora de entrega es requerida");
   }
 
-  // Validar formato de hora (HH:mm - formato 24 horas)
-  // Acepta horas de 00:00 a 23:59
-  const horaRegex = /^([0-1][0-9]|2[0-3]):([0-5][0-9])$/;
-  if (!horaRegex.test(horaEntrega)) {
-    throw new Error("Formato de hora inválido. Use formato 24 horas HH:mm (ej: 14:30)");
+  // Validar que la hora sea uno de los horarios fijos permitidos
+  if (!HORARIOS_FIJOS.includes(horaEntrega)) {
+    throw new Error(
+      `La hora de entrega debe ser una de las siguientes: ${HORARIOS_FIJOS.join(
+        ", "
+      )}. Hora seleccionada: ${horaEntrega}`
+    );
   }
 
   // Validar que el usuario exista en vendedores o estudiantes
@@ -93,17 +99,6 @@ export const crearPedido = async (
     throw new Error("No se pudo validar el usuario");
   }
 
-  // Validar hora de entrega (debe ser posterior a la hora actual del servidor)
-  const ahora = new Date();
-  const horaActual = `${ahora.getHours().toString().padStart(2, "0")}:${ahora
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}`;
-
-  if (horaEntrega <= horaActual) {
-    throw new Error("Selecciona una hora posterior a la hora actual.");
-  }
-
   // La fecha del pedido siempre es el día actual
   const fechaEntrega = new Date();
   fechaEntrega.setHours(0, 0, 0, 0); // Resetear a medianoche del día actual
@@ -113,38 +108,62 @@ export const crearPedido = async (
     new Set(items.map((item) => item.platillo.vendedorId))
   );
 
+  // Almacenar información de vendedores fuera de horario para un mensaje más descriptivo
+  const vendedoresFueraDeHorario: Array<{ nombre: string; horario: string }> =
+    [];
+
   for (const vendedorId of vendedoresUnicos) {
     try {
       const vendedorDoc = await getDoc(doc(db, "vendedores", vendedorId));
       if (vendedorDoc.exists()) {
         const vendedorData = vendedorDoc.data();
-        const horario = vendedorData.horario || { inicio: "10:00", fin: "15:00" };
-        
+        const horario = vendedorData.horario || {
+          inicio: "10:00",
+          fin: "15:00",
+        };
+        const nombreVendedor =
+          vendedorData.nombreNegocio || vendedorData.nombre || "Vendedor";
+
         // Validar que la hora esté dentro del horario del vendedor
         const horaCruzaMedianoche = horario.fin < horario.inicio;
-        
+        let estaDisponible = false;
+
         if (horaCruzaMedianoche) {
           // Si el horario cruza medianoche (ej: 17:00 a 02:00)
-          if (horaEntrega < horario.inicio && horaEntrega > horario.fin) {
-            throw new Error(
-              `La hora seleccionada está fuera del horario laboral del cocinero (${horario.inicio} — ${horario.fin}).`
-            );
-          }
+          estaDisponible =
+            horaEntrega >= horario.inicio || horaEntrega <= horario.fin;
         } else {
           // Horario normal (ej: 10:00 a 15:00)
-          if (horaEntrega < horario.inicio || horaEntrega > horario.fin) {
-            throw new Error(
-              `La hora seleccionada está fuera del horario laboral del cocinero (${horario.inicio} — ${horario.fin}).`
-            );
-          }
+          estaDisponible =
+            horaEntrega >= horario.inicio && horaEntrega <= horario.fin;
+        }
+
+        if (!estaDisponible) {
+          vendedoresFueraDeHorario.push({
+            nombre: nombreVendedor,
+            horario: `${horario.inicio} - ${horario.fin}`,
+          });
         }
       }
     } catch (error) {
-      if (error instanceof Error && error.message.includes("horario laboral")) {
-        throw error; // Re-lanzar error de validación de horario
-      }
       // Si no se puede obtener el vendedor, continuar con horario por defecto
       console.warn(`No se pudo validar horario del vendedor ${vendedorId}`);
+    }
+  }
+
+  // Si hay vendedores fuera de horario, lanzar error con mensaje descriptivo
+  if (vendedoresFueraDeHorario.length > 0) {
+    if (vendedoresFueraDeHorario.length === 1) {
+      throw new Error(
+        `"${vendedoresFueraDeHorario[0].nombre}" está fuera de su horario laboral. Horario disponible: ${vendedoresFueraDeHorario[0].horario}`
+      );
+    } else {
+      const listaVendedores = vendedoresFueraDeHorario
+        .map((v) => `"${v.nombre}" (${v.horario})`)
+        .join(", ");
+      throw new Error(
+        `Los siguientes locales están fuera de su horario laboral: ${listaVendedores}`
+      );
     }
   }
 
@@ -222,6 +241,25 @@ export const crearPedido = async (
 
       // Guardar en Firestore
       const docRef = await addDoc(collection(db, "pedidos"), pedidoData);
+
+      // REDUCIR INVENTARIO de cada producto del pedido
+      for (const item of itemsVendedor) {
+        try {
+          // Solo reducir si el platillo maneja inventario
+          if (item.platillo.cantidadDisponible !== undefined) {
+            await reducirInventario(item.platillo.id, item.cantidad);
+            console.log(
+              `✅ Inventario reducido: ${item.platillo.nombre} (-${item.cantidad})`
+            );
+          }
+        } catch (error) {
+          console.error(
+            `⚠️ Error reduciendo inventario de ${item.platillo.nombre}:`,
+            error
+          );
+          // No fallar el pedido por esto, pero registrar el error
+        }
+      }
 
       // Registrar uso de promoción si aplica
       if (promocionId && descuentoVendedor > 0) {

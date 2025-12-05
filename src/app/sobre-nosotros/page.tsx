@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Sobre Nosotros - FoodLink",
@@ -32,9 +33,11 @@ export default function SobreNosotrosPage() {
             {/* Left Side - Image */}
             <div className="relative">
               <div className="relative w-full rounded-lg sm:rounded-xl md:rounded-[15px] overflow-hidden">
-                <img
+                <Image
                   src="https://images.unsplash.com/photo-1556910096-6f5e72db6803?q=80&w=2000"
                   alt="Sobre Nosotros"
+                  width={2000}
+                  height={1333}
                   className="w-full rounded-[15px]"
                   loading="lazy"
                 />

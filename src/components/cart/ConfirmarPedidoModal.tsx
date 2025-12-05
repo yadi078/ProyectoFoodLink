@@ -9,10 +9,13 @@ interface ConfirmarPedidoModalProps {
     notas?: string;
     horaEntrega: string;
     codigoPromocional?: string;
+    descuentoCalculado?: number;
+    promocionId?: string;
   }) => void;
   totalItems: number;
   totalPrice: string;
-  descuentoAplicado?: number;
+  totalPriceNumber: number; // Agregar total como número
+  userId: string; // Agregar userId para validar cupón
   vendedoresInfo?: Array<{
     vendedorId: string;
     horario?: { inicio: string; fin: string };
@@ -25,7 +28,8 @@ export default function ConfirmarPedidoModal({
   onConfirm,
   totalItems,
   totalPrice,
-  descuentoAplicado = 0,
+  totalPriceNumber,
+  userId,
   vendedoresInfo = [],
 }: ConfirmarPedidoModalProps) {
   const [notas, setNotas] = useState("");
@@ -36,93 +40,88 @@ export default function ConfirmarPedidoModal({
   const [errorHora, setErrorHora] = useState("");
   const [mensajeDescuento, setMensajeDescuento] = useState("");
   const [aplicandoCodigo, setAplicandoCodigo] = useState(false);
+  const [descuentoCalculado, setDescuentoCalculado] = useState(0);
+  const [promocionIdTemp, setPromocionIdTemp] = useState<string | undefined>();
+
+  // Horarios fijos disponibles
+  const HORARIOS_FIJOS = [
+    { valor: "10:20", etiqueta: "10:20 AM" },
+    { valor: "12:20", etiqueta: "12:20 PM" },
+    { valor: "18:15", etiqueta: "6:15 PM" },
+  ];
 
   // Obtener horarios de TODOS los vendedores
   const obtenerHorariosVendedores = () => {
     if (vendedoresInfo.length === 0) {
       return [{ inicio: "10:00", fin: "15:00" }];
     }
-    return vendedoresInfo.map(v => v.horario || { inicio: "10:00", fin: "15:00" });
+    return vendedoresInfo.map(
+      (v) => v.horario || { inicio: "10:00", fin: "15:00" }
+    );
   };
 
-  // Calcular la intersección de horarios (rango válido para TODOS los vendedores)
-  const calcularHorarioComun = () => {
-    const horarios = obtenerHorariosVendedores();
-    
-    // Si solo hay un vendedor, usar su horario
-    if (horarios.length === 1) {
-      return horarios[0];
-    }
-    
-    // Encontrar la hora de inicio más tardía (máximo de todos los inicios)
-    const inicioComun = horarios.reduce((max, h) => h.inicio > max ? h.inicio : max, horarios[0].inicio);
-    
-    // Encontrar la hora de fin más temprana (mínimo de todos los fines)
-    const finComun = horarios.reduce((min, h) => h.fin < min ? h.fin : min, horarios[0].fin);
-    
-    // Si no hay intersección (inicio >= fin), retornar null
-    if (inicioComun >= finComun) {
-      return null;
-    }
-    
-    return { inicio: inicioComun, fin: finComun };
-  };
-
-  const horarioLaboral = calcularHorarioComun();
   const todosLosHorarios = obtenerHorariosVendedores();
   const multipleVendedores = vendedoresInfo.length > 1;
 
-  // Validar hora seleccionada (formato 24 horas: HH:mm)
+  // Validar hora seleccionada (debe ser uno de los 3 horarios fijos)
   const validarHora = (hora: string): boolean => {
     if (!hora) {
-      setErrorHora("Por favor selecciona una hora de entrega");
+      setErrorHora("Por favor selecciona un horario de entrega");
       return false;
     }
 
-    // Verificar si hay horarios incompatibles
-    if (!horarioLaboral) {
-      setErrorHora(
-        "Los vendedores tienen horarios incompatibles. No hay un horario común disponible. Por favor, realiza pedidos separados."
-      );
+    // Validar que sea uno de los horarios fijos
+    const esHorarioValido = HORARIOS_FIJOS.some((h) => h.valor === hora);
+    if (!esHorarioValido) {
+      setErrorHora("Por favor selecciona un horario válido");
       return false;
     }
 
-    // Validar que sea posterior a la hora actual
-    // Usamos formato 24 horas: 00:00 - 23:59
-    const ahora = new Date();
-    const horaActual = `${ahora.getHours().toString().padStart(2, "0")}:${ahora
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}`;
+    // Validar que todos los vendedores estén disponibles en ese horario
+    const vendedoresFueraDeHorario: string[] = [];
 
-    if (hora <= horaActual) {
-      setErrorHora("Selecciona una hora posterior a la hora actual.");
-      return false;
-    }
+    vendedoresInfo.forEach((vendedorInfo, index) => {
+      const horario = vendedorInfo.horario || { inicio: "10:00", fin: "15:00" };
+      const horaCruzaMedianoche = horario.fin < horario.inicio;
 
-    // Validar que esté dentro del horario laboral común
-    const horaCruzaMedianoche = horarioLaboral.fin < horarioLaboral.inicio;
-    
-    if (horaCruzaMedianoche) {
-      // Si el horario cruza medianoche (ej: 17:00 a 02:00)
-      if (hora < horarioLaboral.inicio && hora > horarioLaboral.fin) {
-        setErrorHora(
-          multipleVendedores
-            ? `La hora debe estar entre ${horarioLaboral.inicio} y ${horarioLaboral.fin} (horario común de todos los vendedores).`
-            : `La hora seleccionada está fuera del horario laboral del cocinero (${horarioLaboral.inicio} — ${horarioLaboral.fin}).`
-        );
-        return false;
+      let estaDisponible = false;
+
+      if (horaCruzaMedianoche) {
+        // Si el horario cruza medianoche (ej: 17:00 a 02:00)
+        estaDisponible = hora >= horario.inicio || hora <= horario.fin;
+      } else {
+        // Horario normal (ej: 10:00 a 15:00)
+        estaDisponible = hora >= horario.inicio && hora <= horario.fin;
       }
-    } else {
-      // Horario normal (ej: 10:00 a 15:00)
-      if (hora < horarioLaboral.inicio || hora > horarioLaboral.fin) {
-        setErrorHora(
-          multipleVendedores
-            ? `La hora debe estar entre ${horarioLaboral.inicio} y ${horarioLaboral.fin} (horario común de todos los vendedores).`
-            : `La hora seleccionada está fuera del horario laboral del cocinero (${horarioLaboral.inicio} — ${horarioLaboral.fin}).`
+
+      if (!estaDisponible) {
+        vendedoresFueraDeHorario.push(
+          `Vendedor ${index + 1} (horario: ${horario.inicio} - ${horario.fin})`
         );
-        return false;
       }
+    });
+
+    if (vendedoresFueraDeHorario.length > 0) {
+      if (
+        vendedoresFueraDeHorario.length === 1 &&
+        vendedoresInfo.length === 1
+      ) {
+        const horario = vendedoresInfo[0].horario || {
+          inicio: "10:00",
+          fin: "15:00",
+        };
+        const nombreVendedor = vendedoresInfo[0].vendedorId; // Podríamos pasar el nombre también
+        setErrorHora(
+          `"${nombreVendedor}" está fuera de su horario laboral. Horario disponible: ${horario.inicio} - ${horario.fin}`
+        );
+      } else {
+        setErrorHora(
+          `Los siguientes vendedores están fuera de su horario laboral a las ${hora}:\n${vendedoresFueraDeHorario.join(
+            ", "
+          )}`
+        );
+      }
+      return false;
     }
 
     setErrorHora("");
@@ -132,6 +131,8 @@ export default function ConfirmarPedidoModal({
   const handleAplicarCodigo = async () => {
     if (!codigoTemporal.trim()) {
       setMensajeDescuento("");
+      setDescuentoCalculado(0);
+      setPromocionIdTemp(undefined);
       return;
     }
 
@@ -139,11 +140,38 @@ export default function ConfirmarPedidoModal({
     setMensajeDescuento("");
 
     try {
-      // El código se validará en CartSidebar cuando se confirme el pedido
-      setCodigoPromocional(codigoTemporal.trim());
-      setMensajeDescuento(
-        "Código ingresado. Se validará al confirmar el pedido."
+      // Importar dinámicamente para evitar problemas en build
+      const { validarPromocion } = await import("@/services/promociones/promocionService");
+      
+      const resultado = await validarPromocion(
+        codigoTemporal.trim(),
+        userId,
+        totalPriceNumber
       );
+
+      if (resultado.valido && resultado.descuento) {
+        setCodigoPromocional(codigoTemporal.trim());
+        setDescuentoCalculado(resultado.descuento);
+        setPromocionIdTemp(resultado.promocion?.id);
+        
+        const descuentoTexto = resultado.promocion?.tipo === "porcentaje"
+          ? `${resultado.promocion.valor}%`
+          : `$${resultado.promocion?.valor}`;
+        
+        setMensajeDescuento(
+          `¡Código válido! Descuento de ${descuentoTexto} aplicado (${formatPrice(resultado.descuento)})`
+        );
+      } else {
+        setMensajeDescuento(resultado.mensaje || "Código no válido");
+        setDescuentoCalculado(0);
+        setPromocionIdTemp(undefined);
+        setCodigoPromocional("");
+      }
+    } catch (error) {
+      console.error("Error validando código:", error);
+      setMensajeDescuento("Error al validar el código");
+      setDescuentoCalculado(0);
+      setPromocionIdTemp(undefined);
     } finally {
       setAplicandoCodigo(false);
     }
@@ -160,10 +188,17 @@ export default function ConfirmarPedidoModal({
         notas: notas.trim() || undefined,
         horaEntrega,
         codigoPromocional: codigoPromocional.trim() || undefined,
+        descuentoCalculado: descuentoCalculado > 0 ? descuentoCalculado : undefined,
+        promocionId: promocionIdTemp,
       });
     } finally {
       setLoading(false);
     }
+  };
+
+  // Importar formatPrice
+  const formatPrice = (price: number) => {
+    return `$${price.toFixed(2)}`;
   };
 
   // Limpiar formulario cuando se cierra
@@ -175,17 +210,10 @@ export default function ConfirmarPedidoModal({
       setCodigoTemporal("");
       setErrorHora("");
       setMensajeDescuento("");
+      setDescuentoCalculado(0);
+      setPromocionIdTemp(undefined);
     }
   }, [isOpen]);
-
-  // Mostrar error si no hay horario común disponible
-  useEffect(() => {
-    if (isOpen && !horarioLaboral && vendedoresInfo.length > 1) {
-      setErrorHora(
-        "Los vendedores tienen horarios incompatibles. Por favor, realiza pedidos separados."
-      );
-    }
-  }, [isOpen, horarioLaboral, vendedoresInfo.length]);
 
   if (!isOpen) return null;
 
@@ -246,20 +274,32 @@ export default function ConfirmarPedidoModal({
                 {totalItems} {totalItems === 1 ? "item" : "items"}
               </span>
             </div>
-            {descuentoAplicado > 0 && (
-              <div className="flex justify-between items-center mb-2 text-green-600">
-                <span className="text-xs sm:text-sm">Descuento:</span>
-                <span className="font-semibold text-sm">
-                  -${descuentoAplicado.toFixed(2)}
-                </span>
-              </div>
+            {descuentoCalculado > 0 && (
+              <>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs sm:text-sm text-gray-500 line-through">
+                    Subtotal:
+                  </span>
+                  <span className="text-sm text-gray-500 line-through">
+                    {totalPrice}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center mb-2 text-green-600">
+                  <span className="text-xs sm:text-sm font-semibold">Descuento:</span>
+                  <span className="font-semibold text-sm">
+                    -{formatPrice(descuentoCalculado)}
+                  </span>
+                </div>
+              </>
             )}
             <div className="flex justify-between items-center">
-              <span className="text-gray-600 text-xs sm:text-sm">
+              <span className="text-gray-600 text-xs sm:text-sm font-semibold">
                 Total a pagar:
               </span>
               <span className="font-bold text-primary-500 text-base sm:text-lg">
-                {totalPrice}
+                {descuentoCalculado > 0 
+                  ? formatPrice(totalPriceNumber - descuentoCalculado)
+                  : totalPrice}
               </span>
             </div>
           </div>
@@ -278,85 +318,67 @@ export default function ConfirmarPedidoModal({
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-sm mb-1 text-primary-900">
-                    Recoger en la puerta principal de la Universidad Tecnológica del Norte de Aguascalientes (UTNA).
+                    Recoger en la puerta principal de la Universidad Tecnológica
+                    del Norte de Aguascalientes (UTNA).
                   </h3>
                   <div className="mt-2 px-2 py-1 bg-primary-600 text-white text-xs rounded-md inline-block">
-                    Entrega únicamente en la puerta principal de la UTNA. Los pagos son solo en efectivo.
+                    Entrega únicamente en la puerta principal de la UTNA. Los
+                    pagos son solo en efectivo.
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Selección de hora */}
+          {/* Selección de hora - Select simple */}
           <div className="space-y-2">
-            <label
-              htmlFor="hora"
-              className="block text-sm font-semibold text-gray-700"
-            >
+            <label htmlFor="horaEntrega" className="block text-sm font-semibold text-gray-700">
               🕐 Hora de entrega
             </label>
-            <input
-              id="hora"
-              type="time"
+            <p className="text-xs text-gray-600 mb-2">
+              Selecciona uno de los horarios disponibles:
+            </p>
+            <select
+              id="horaEntrega"
               value={horaEntrega}
-              step="60"
               onChange={(e) => {
                 setHoraEntrega(e.target.value);
-                if (errorHora) {
-                  validarHora(e.target.value);
-                }
+                validarHora(e.target.value);
               }}
-              onBlur={(e) => validarHora(e.target.value)}
-              className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-primary-500 transition-all duration-200 ${
-                errorHora
-                  ? "border-red-500 focus:border-red-500"
-                  : "border-gray-300 focus:border-primary-500"
-              } ${!horarioLaboral ? "bg-gray-100 cursor-not-allowed" : ""}`}
-              disabled={loading || !horarioLaboral}
+              disabled={loading}
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white text-gray-900 font-medium transition-all duration-200 hover:border-primary-300 disabled:opacity-50 disabled:cursor-not-allowed"
               required
-              // Formato 24 horas (HH:mm) - Nativo en HTML5
-            />
+            >
+              <option value="" disabled>
+                Selecciona un horario
+              </option>
+              {HORARIOS_FIJOS.map((horario) => (
+                <option key={horario.valor} value={horario.valor}>
+                  {horario.etiqueta}
+                </option>
+              ))}
+            </select>
             {errorHora && (
-              <p className="text-xs text-red-600 flex items-start gap-1">
-                <span className="text-sm">⚠️</span>
-                <span>{errorHora}</span>
-              </p>
-            )}
-            {/* Información de horarios */}
-            {!horarioLaboral ? (
-              // Horarios incompatibles
-              <div className="bg-red-50 border border-red-300 rounded-lg p-3">
-                <p className="text-xs text-red-800 font-semibold mb-2">
-                  ⚠️ Horarios Incompatibles
-                </p>
-                <p className="text-xs text-red-700 mb-2">
-                  Tu carrito tiene productos de vendedores con horarios que no se superponen:
-                </p>
-                {todosLosHorarios.map((horario, idx) => (
-                  <p key={idx} className="text-xs text-red-700">
-                    • Vendedor {idx + 1}: {horario.inicio} — {horario.fin}
-                  </p>
-                ))}
-                <p className="text-xs text-red-800 font-semibold mt-2">
-                  Por favor, realiza pedidos separados o contacta a los vendedores.
+              <div className="bg-red-50 border border-red-300 rounded-lg p-3 mt-2">
+                <p className="text-xs text-red-600 flex items-start gap-1">
+                  <span className="text-sm">⚠️</span>
+                  <span>{errorHora}</span>
                 </p>
               </div>
-            ) : multipleVendedores ? (
-              // Múltiples vendedores con horario común
-              <div className="bg-amber-50 border border-amber-300 rounded-lg p-3">
+            )}
+            {/* Información de horarios de vendedores */}
+            {multipleVendedores && (
+              <div className="bg-amber-50 border border-amber-300 rounded-lg p-3 mt-2">
                 <p className="text-xs text-amber-900 font-semibold mb-1">
                   ⚠️ Pedido con múltiples vendedores
                 </p>
                 <p className="text-xs text-amber-800 mb-2">
-                  Tu pedido incluye productos de {vendedoresInfo.length} vendedores diferentes.
-                </p>
-                <p className="text-xs text-amber-900 font-semibold">
-                  Horario común disponible: {horarioLaboral.inicio} — {horarioLaboral.fin}
+                  Tu pedido incluye productos de {vendedoresInfo.length}{" "}
+                  vendedores diferentes.
                 </p>
                 <details className="mt-2">
                   <summary className="text-xs text-amber-700 cursor-pointer hover:text-amber-900">
-                    Ver horarios individuales
+                    Ver horarios de los vendedores
                   </summary>
                   <div className="mt-2 space-y-1">
                     {todosLosHorarios.map((horario, idx) => (
@@ -367,12 +389,13 @@ export default function ConfirmarPedidoModal({
                   </div>
                 </details>
               </div>
-            ) : (
-              // Un solo vendedor
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
+            )}
+            {!multipleVendedores && vendedoresInfo.length > 0 && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 mt-2">
                 <p className="text-xs text-blue-800">
-                  <strong>Horario del cocinero:</strong> {horarioLaboral.inicio}{" "}
-                  — {horarioLaboral.fin}
+                  <strong>Horario del cocinero:</strong>{" "}
+                  {todosLosHorarios[0]?.inicio || "10:00"} —{" "}
+                  {todosLosHorarios[0]?.fin || "15:00"}
                 </p>
               </div>
             )}
@@ -402,9 +425,7 @@ export default function ConfirmarPedidoModal({
               <button
                 type="button"
                 onClick={handleAplicarCodigo}
-                disabled={
-                  loading || aplicandoCodigo || !codigoTemporal.trim()
-                }
+                disabled={loading || aplicandoCodigo || !codigoTemporal.trim()}
                 className="px-4 py-2 text-sm font-semibold bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {aplicandoCodigo ? "..." : "Aplicar"}
@@ -452,7 +473,7 @@ export default function ConfirmarPedidoModal({
           </button>
           <button
             onClick={handleConfirmar}
-            disabled={loading || !horaEntrega || !horarioLaboral}
+            disabled={loading || !horaEntrega}
             className="flex-1 btn-primary text-sm text-center shadow-medium hover:shadow-large disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import VendedorLayout from "@/components/vendedor/VendedorLayout";
@@ -46,17 +46,7 @@ export default function MenuPage() {
     }
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    if (user && vendedor) {
-      loadPlatillos();
-    }
-  }, [user, vendedor]);
-
-  useEffect(() => {
-    applyFiltersAndSort();
-  }, [platillos, searchTerm, filter, sortBy]);
-
-  const loadPlatillos = async () => {
+  const loadPlatillos = useCallback(async () => {
     if (!vendedor) return;
 
     try {
@@ -69,9 +59,9 @@ export default function MenuPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [vendedor, showAlert]);
 
-  const applyFiltersAndSort = () => {
+  const applyFiltersAndSort = useCallback(() => {
     let filtered = [...platillos];
 
     // Aplicar búsqueda
@@ -109,7 +99,17 @@ export default function MenuPage() {
     });
 
     setFilteredPlatillos(filtered);
-  };
+  }, [platillos, searchTerm, filter, sortBy]);
+
+  useEffect(() => {
+    if (user && vendedor) {
+      loadPlatillos();
+    }
+  }, [user, vendedor, loadPlatillos]);
+
+  useEffect(() => {
+    applyFiltersAndSort();
+  }, [applyFiltersAndSort]);
 
   const handleCreateProducto = async (
     data: Omit<Platillo, "id" | "createdAt" | "updatedAt">,
@@ -159,7 +159,12 @@ export default function MenuPage() {
   };
 
   const handleDeleteProducto = async (productoId: string) => {
-    if (!confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+    // Validación compatible con APK - usar confirm solo si está disponible
+    const isConfirmed = typeof window !== 'undefined' && typeof window.confirm === 'function'
+      ? window.confirm("¿Estás seguro de que deseas eliminar este producto?")
+      : true;
+    
+    if (!isConfirmed) {
       return;
     }
 

@@ -291,7 +291,7 @@ export default function ChatVendedor() {
               </div>
 
               {/* Input de mensaje */}
-              <div className="border-t border-gray-200 p-2.5 bg-white flex-shrink-0 shadow-lg">
+              <div className="border-t border-gray-200 p-2.5 bg-white flex-shrink-0 shadow-lg mb-16 sm:mb-0">
                 <div className="flex gap-2">
                   <input
                     type="text"
