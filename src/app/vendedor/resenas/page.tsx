@@ -135,14 +135,13 @@ export default function ResenasPage() {
               <div className="flex items-center mt-2">
                 {[1, 2, 3, 4, 5].map((star) => {
                   const promedio = estadisticas.promedioGeneral;
-                  const isFullStar = star <= Math.floor(promedio);
-                  const isHalfStar = !isFullStar && star === Math.ceil(promedio) && promedio % 1 >= 0.5;
+                  const shouldHighlight = star <= Math.round(promedio);
                   
                   return (
                     <span
                       key={star}
                       className={`text-lg ${
-                        isFullStar || isHalfStar
+                        shouldHighlight
                           ? "text-[#FFA552]"
                           : "text-gray-300"
                       }`}

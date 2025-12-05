@@ -61,13 +61,13 @@ export default function BottomNav() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] z-[999]">
-      <div className="max-w-[600px] mx-auto px-4 py-3">
-        <div className="flex justify-around items-center">
+    <nav className="fixed bottom-0 left-0 right-0 w-full bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] z-[999] safe-area-inset-bottom">
+      <div className="max-w-[600px] mx-auto px-2 sm:px-4 py-2 sm:py-3">
+        <div className="flex justify-around items-center gap-1">
           {/* Inicio */}
           <Link
             href="/"
-            className={`flex flex-col items-center justify-center p-3 rounded-lg transition-all duration-200 ${
+            className={`flex flex-col items-center justify-center p-2 sm:p-3 rounded-lg transition-all duration-200 min-w-[48px] flex-1 max-w-[80px] ${
               isActive("/")
                 ? "text-primary-500"
                 : "text-gray-600 hover:text-primary-500"
@@ -75,7 +75,7 @@ export default function BottomNav() {
             aria-label="Inicio"
           >
             <svg
-              className="w-7 h-7"
+              className="w-6 h-6 sm:w-7 sm:h-7 flex-shrink-0"
               fill={isActive("/") ? "currentColor" : "none"}
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -92,7 +92,7 @@ export default function BottomNav() {
           {/* Menú / Productos */}
           <Link
             href="/menu"
-            className={`flex flex-col items-center justify-center p-3 rounded-lg transition-all duration-200 ${
+            className={`flex flex-col items-center justify-center p-2 sm:p-3 rounded-lg transition-all duration-200 min-w-[48px] flex-1 max-w-[80px] ${
               isActive("/menu")
                 ? "text-primary-500"
                 : "text-gray-600 hover:text-primary-500"
@@ -101,7 +101,7 @@ export default function BottomNav() {
           >
             {/* Icono de cubiertos (tenedor y cuchillo) */}
             <svg
-              className="w-7 h-7"
+              className="w-6 h-6 sm:w-7 sm:h-7 flex-shrink-0"
               fill={isActive("/menu") ? "currentColor" : "none"}
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -126,7 +126,7 @@ export default function BottomNav() {
           {user && !isVendedor && (
             <Link
               href="/mis-pedidos"
-              className={`relative flex flex-col items-center justify-center p-3 rounded-lg transition-all duration-200 ${
+              className={`relative flex flex-col items-center justify-center p-2 sm:p-3 rounded-lg transition-all duration-200 min-w-[48px] flex-1 max-w-[80px] ${
                 isActive("/mis-pedidos")
                   ? "text-primary-500"
                   : "text-gray-600 hover:text-primary-500"
@@ -134,7 +134,7 @@ export default function BottomNav() {
               aria-label="Mis Pedidos"
             >
               <svg
-                className="w-7 h-7"
+                className="w-6 h-6 sm:w-7 sm:h-7 flex-shrink-0"
                 fill={isActive("/mis-pedidos") ? "currentColor" : "none"}
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -147,7 +147,7 @@ export default function BottomNav() {
                 />
               </svg>
               {pedidosActivos > 0 && (
-                <span className="absolute top-0 right-0 bg-warning-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                <span className="absolute -top-1 -right-1 bg-warning-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
                   {pedidosActivos > 9 ? "9+" : pedidosActivos}
                 </span>
               )}
@@ -158,7 +158,7 @@ export default function BottomNav() {
           {user && !isVendedor && (
             <Link
               href="/mensajes"
-              className={`relative flex flex-col items-center justify-center p-3 rounded-lg transition-all duration-200 ${
+              className={`relative flex flex-col items-center justify-center p-2 sm:p-3 rounded-lg transition-all duration-200 min-w-[48px] flex-1 max-w-[80px] ${
                 isActive("/mensajes")
                   ? "text-primary-500"
                   : "text-gray-600 hover:text-primary-500"
@@ -166,7 +166,7 @@ export default function BottomNav() {
               aria-label="Mensajes"
             >
               <svg
-                className="w-7 h-7"
+                className="w-6 h-6 sm:w-7 sm:h-7 flex-shrink-0"
                 fill={isActive("/mensajes") ? "currentColor" : "none"}
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -179,7 +179,7 @@ export default function BottomNav() {
                 />
               </svg>
               {mensajesNoLeidos > 0 && (
-                <span className="absolute top-0 right-0 bg-primary-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
                   {mensajesNoLeidos > 9 ? "9+" : mensajesNoLeidos}
                 </span>
               )}
@@ -190,11 +190,11 @@ export default function BottomNav() {
           {(!user || !isVendedor) && (
             <button
               onClick={toggleCart}
-              className="relative flex flex-col items-center justify-center p-3 rounded-lg text-gray-600 hover:text-primary-500 transition-all duration-200"
+              className="relative flex flex-col items-center justify-center p-2 sm:p-3 rounded-lg text-gray-600 hover:text-primary-500 transition-all duration-200 min-w-[48px] flex-1 max-w-[80px]"
               aria-label="Carrito"
             >
               <svg
-                className="w-7 h-7"
+                className="w-6 h-6 sm:w-7 sm:h-7 flex-shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -207,7 +207,7 @@ export default function BottomNav() {
                 />
               </svg>
               {totalItems > 0 && (
-                <span className="absolute top-0 right-0 bg-primary-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                   {totalItems > 9 ? "9+" : totalItems}
                 </span>
               )}
@@ -223,7 +223,7 @@ export default function BottomNav() {
                   : "/configuracion"
                 : "/vendedor/login"
             }
-            className={`flex flex-col items-center justify-center p-3 rounded-lg transition-all duration-200 ${
+            className={`flex flex-col items-center justify-center p-2 sm:p-3 rounded-lg transition-all duration-200 min-w-[48px] flex-1 max-w-[80px] ${
               isActive("/configuracion") || isActive("/vendedor/dashboard")
                 ? "text-primary-500"
                 : "text-gray-600 hover:text-primary-500"
@@ -231,7 +231,7 @@ export default function BottomNav() {
             aria-label="Perfil"
           >
             <svg
-              className="w-7 h-7"
+              className="w-6 h-6 sm:w-7 sm:h-7 flex-shrink-0"
               fill={
                 isActive("/configuracion") || isActive("/vendedor/dashboard")
                   ? "currentColor"

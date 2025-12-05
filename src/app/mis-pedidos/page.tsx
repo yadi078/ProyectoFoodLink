@@ -109,16 +109,6 @@ export default function MisPedidosPage() {
     );
   };
 
-  const getEstadoIcono = (estado: Pedido["estado"]) => {
-    const iconos = {
-      pendiente: "⏳",
-      en_camino: "🚶",
-      entregado: "✅",
-      cancelado: "❌",
-    };
-    return iconos[estado];
-  };
-
   const handleCalificarVendedor = async (
     calificacion: number,
     comentario?: string
@@ -164,7 +154,7 @@ export default function MisPedidosPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -202,7 +192,7 @@ export default function MisPedidosPage() {
       </div>
 
       {/* Contenido */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24">
         {/* Estadísticas rápidas mejoradas */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           <div className="bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
@@ -330,93 +320,85 @@ export default function MisPedidosPage() {
                 </Link>
 
                 <div className="p-5 sm:p-7">
-                  {/* Header con icono y info principal */}
-                  <div className="flex items-start justify-between mb-5 pr-12">
-                    <div className="flex-1">
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center">
-                          <span className="text-3xl">
-                            {getEstadoIcono(pedido.estado)}
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-xl font-bold text-gray-800 mb-1">
-                            Pedido #{pedidos.length - index}
-                          </h3>
-                          <p className="text-sm text-gray-600 font-medium">
-                            {pedido.vendedorNegocio || "Vendedor"}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Badge de estado mejorado */}
-                      <div className="mb-3">
-                        {getEstadoBadge(pedido.estado)}
-                      </div>
-
-                      {/* Info del pedido con iconos */}
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <svg
-                            className="w-4 h-4 text-gray-400 flex-shrink-0"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                          </svg>
-                          <span>
-                            {new Date(pedido.createdAt).toLocaleString(
-                              "es-MX",
-                              {
-                                day: "2-digit",
-                                month: "long",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: false,
-                              }
-                            )}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <svg
-                            className="w-4 h-4 text-gray-400 flex-shrink-0"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                            />
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                            />
-                          </svg>
-                          <span>Puerta principal UTNA</span>
-                        </div>
+                  {/* Header con info principal */}
+                  <div className="flex flex-col gap-4 mb-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-xl font-bold text-gray-800 mb-1">
+                          Pedido #{pedidos.length - index}
+                        </h3>
+                        <p className="text-sm text-gray-600 font-medium">
+                          {pedido.vendedorNegocio || "Vendedor"}
+                        </p>
                       </div>
                     </div>
 
-                    {/* Total mejorado */}
-                    <div className="text-center bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl p-3 min-w-[100px]">
-                      <p className="text-xs text-gray-600 mb-1 font-medium">
-                        Total
-                      </p>
-                      <p className="text-2xl font-bold text-primary-600">
-                        {formatPrice(pedido.precioTotal)}
-                      </p>
+                    {/* Badge de estado y Total en la misma fila */}
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <div className="flex-shrink-0">
+                        {getEstadoBadge(pedido.estado)}
+                      </div>
+
+                      {/* Total mejorado */}
+                      <div className="text-center bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl px-4 py-2 min-w-[100px] flex-shrink-0">
+                        <p className="text-xs text-gray-600 mb-1 font-medium">
+                          Total
+                        </p>
+                        <p className="text-xl sm:text-2xl font-bold text-primary-600">
+                          {formatPrice(pedido.precioTotal)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Info del pedido con iconos */}
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <svg
+                          className="w-4 h-4 text-gray-400 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                        <span>
+                          {new Date(pedido.createdAt).toLocaleString("es-MX", {
+                            day: "2-digit",
+                            month: "long",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          })}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <svg
+                          className="w-4 h-4 text-gray-400 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                        <span>Puerta principal UTNA</span>
+                      </div>
                     </div>
                   </div>
 

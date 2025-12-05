@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-20">
       {/* Hero Section - Estilo limpio */}
       <section className="relative w-full bg-[#faf8f5]">
         {/* Welcome Section */}

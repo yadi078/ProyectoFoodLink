@@ -59,6 +59,20 @@ function MenuContent() {
     }
   }, [searchParams]);
 
+  // Efecto para manejar el scroll del body cuando se abre/cierra el modal
+  useEffect(() => {
+    if (mostrarModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    // Cleanup al desmontar
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [mostrarModal]);
+
   useEffect(() => {
     const cargarPlatillos = async () => {
       setLoading(true);
@@ -198,7 +212,7 @@ function MenuContent() {
     setProductoSeleccionado(null);
     setCalificaciones([]);
     setMostrarFormularioResena(false);
-    setCalificacionForm({ calificacion: 5, comentario: "" });
+    setCalificacionForm({ calificacion: 0, comentario: "" });
   };
 
   const handleEnviarResena = async () => {
@@ -299,8 +313,8 @@ function MenuContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf8f5]">
-      <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-4">
+    <div className="min-h-screen bg-[#faf8f5] pb-20">
+      <div className="max-w-[450px] sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-4 pb-6">
         {/* Header */}
         <div className="mb-3 sm:mb-4 text-center">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-primary-500 mb-2 font-display flex items-center justify-center gap-2">
@@ -489,7 +503,8 @@ function MenuContent() {
                         <div className="flex items-center">
                           {[1, 2, 3, 4, 5].map((star) => {
                             const calificacion = menu.vendedorCalificacion || 0;
-                            const shouldHighlight = star <= Math.round(calificacion);
+                            const shouldHighlight =
+                              star <= Math.round(calificacion);
                             return (
                               <span
                                 key={star}
@@ -609,161 +624,135 @@ function MenuContent() {
         {/* Modal de Detalles del Producto */}
         {mostrarModal && productoSeleccionado && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4"
+            className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
             onClick={cerrarModal}
           >
             <div
-              className="bg-white rounded-lg max-w-[450px] sm:max-w-2xl md:max-w-4xl w-full max-h-[95vh] overflow-y-auto shadow-large border border-gray-200"
+              className="bg-white rounded-lg max-w-[450px] sm:max-w-2xl md:max-w-4xl w-full my-auto max-h-[90vh] flex flex-col shadow-large border border-gray-200"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex flex-col md:flex-row">
-                {/* Imagen del producto */}
-                <div className="md:w-1/2 h-48 sm:h-56 md:h-64 lg:h-80 bg-gray-200 overflow-hidden">
-                  {productoSeleccionado.imagen &&
-                  productoSeleccionado.imagen.trim() &&
-                  (productoSeleccionado.imagen.startsWith("http://") ||
-                    productoSeleccionado.imagen.startsWith("https://")) ? (
-                    <Image
-                      src={productoSeleccionado.imagen}
-                      alt={productoSeleccionado.nombre}
-                      fill
-                      className="w-full h-full object-cover object-center"
-                      style={{ objectFit: "cover", objectPosition: "center" }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      <span className="text-3xl sm:text-4xl md:text-6xl">
-                        🍽️
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Información del producto */}
-                <div className="md:w-1/2 p-3 sm:p-4 md:p-6 pb-20 md:pb-6 relative">
-                  <button
-                    onClick={cerrarModal}
-                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-all duration-200"
-                  >
-                    ×
-                  </button>
-
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-3">
-                    {productoSeleccionado.nombre}
-                  </h2>
-
-                  {/* Categoría */}
-                  <span className="inline-block px-2.5 py-1 bg-primary-500 text-white text-xs font-semibold rounded-full mb-2 sm:mb-3">
-                    {productoSeleccionado.categoria}
-                  </span>
-
-                  {/* Calificación */}
-                  <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                    <div className="flex items-center">
-                      {[1, 2, 3, 4, 5].map((star) => {
-                        const promedio = promedioCalificacion.promedio;
-                        const shouldHighlight = star <= Math.round(promedio);
-                        return (
-                          <span
-                            key={star}
-                            className={`text-sm sm:text-base ${
-                              shouldHighlight
-                                ? "text-yellow-400"
-                                : "text-gray-300"
-                            }`}
-                          >
-                            ⭐
-                          </span>
-                        );
-                      })}
-                    </div>
-                    <span className="text-xs sm:text-sm text-[#3a3a3a] font-semibold">
-                      {promedioCalificacion.promedio > 0
-                        ? `${promedioCalificacion.promedio.toFixed(1)} (${
-                            promedioCalificacion.total
-                          } reseñas)`
-                        : "Sin calificaciones"}
-                    </span>
-                  </div>
-
-                  <p className="text-sm text-gray-700 mb-3 sm:mb-4 leading-relaxed">
-                    {productoSeleccionado.descripcion}
-                  </p>
-
-                  <div className="flex items-center justify-between mb-3 sm:mb-4">
-                    <p className="text-xl sm:text-2xl font-bold text-primary-500">
-                      {formatPrice(productoSeleccionado.precio)}
-                    </p>
-                    {/* Mostrar cantidad disponible si está definida */}
-                    {productoSeleccionado.cantidadDisponible !== undefined && (
-                      <span
-                        className={`text-sm font-semibold px-3 py-1.5 rounded-full ${
-                          productoSeleccionado.cantidadDisponible === 0
-                            ? "bg-red-100 text-red-700"
-                            : productoSeleccionado.cantidadDisponible <= 5
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-green-100 text-green-700"
-                        }`}
-                      >
-                        {productoSeleccionado.cantidadDisponible === 0
-                          ? "Agotado"
-                          : `${productoSeleccionado.cantidadDisponible} disponibles`}
-                      </span>
+              {/* Contenedor scrollable */}
+              <div className="overflow-y-auto flex-1">
+                <div className="flex flex-col md:flex-row min-h-0">
+                  {/* Imagen del producto */}
+                  <div className="md:w-1/2 h-48 sm:h-56 md:h-auto md:min-h-[400px] bg-gray-200 overflow-hidden md:sticky md:top-0">
+                    {productoSeleccionado.imagen &&
+                    productoSeleccionado.imagen.trim() &&
+                    (productoSeleccionado.imagen.startsWith("http://") ||
+                      productoSeleccionado.imagen.startsWith("https://")) ? (
+                      <Image
+                        src={productoSeleccionado.imagen}
+                        alt={productoSeleccionado.nombre}
+                        fill
+                        className="w-full h-full object-cover object-center"
+                        style={{ objectFit: "cover", objectPosition: "center" }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <span className="text-3xl sm:text-4xl md:text-6xl">
+                          🍽️
+                        </span>
+                      </div>
                     )}
                   </div>
 
-                  {/* Botones de acción */}
-                  <div className="flex flex-col gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  {/* Información del producto */}
+                  <div className="md:w-1/2 p-3 sm:p-4 md:p-6 relative">
                     <button
-                      onClick={() =>
-                        handlePedido(
-                          productoSeleccionado,
-                          productoSeleccionado.disponible
-                        )
-                      }
-                      disabled={
-                        !productoSeleccionado.disponible ||
-                        (productoSeleccionado.cantidadDisponible !==
-                          undefined &&
-                          productoSeleccionado.cantidadDisponible <= 0)
-                      }
-                      className={`w-full py-2 px-3 rounded-lg font-semibold text-sm text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft ${
-                        productoSeleccionado.disponible &&
-                        (productoSeleccionado.cantidadDisponible ===
-                          undefined ||
-                          productoSeleccionado.cantidadDisponible > 0)
-                          ? "bg-primary-500 hover:bg-primary-600 hover:text-white hover:shadow-medium hover:-translate-y-0.5"
-                          : "bg-gray-400 cursor-not-allowed"
-                      }`}
+                      onClick={cerrarModal}
+                      className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-all duration-200"
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                      </svg>
-                      {!productoSeleccionado.disponible
-                        ? "No disponible"
-                        : productoSeleccionado.cantidadDisponible !==
-                            undefined &&
-                          productoSeleccionado.cantidadDisponible <= 0
-                        ? "Agotado"
-                        : "Agregar al Carrito"}
+                      ×
                     </button>
 
-                    {user ? (
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-3">
+                      {productoSeleccionado.nombre}
+                    </h2>
+
+                    {/* Categoría */}
+                    <span className="inline-block px-2.5 py-1 bg-primary-500 text-white text-xs font-semibold rounded-full mb-2 sm:mb-3">
+                      {productoSeleccionado.categoria}
+                    </span>
+
+                    {/* Calificación */}
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                      <div className="flex items-center">
+                        {[1, 2, 3, 4, 5].map((star) => {
+                          const promedio = promedioCalificacion.promedio;
+                          const shouldHighlight = star <= Math.round(promedio);
+                          return (
+                            <span
+                              key={star}
+                              className={`text-sm sm:text-base ${
+                                shouldHighlight
+                                  ? "text-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                            >
+                              ⭐
+                            </span>
+                          );
+                        })}
+                      </div>
+                      <span className="text-xs sm:text-sm text-[#3a3a3a] font-semibold">
+                        {promedioCalificacion.promedio > 0
+                          ? `${promedioCalificacion.promedio.toFixed(1)} (${
+                              promedioCalificacion.total
+                            } reseñas)`
+                          : "Sin calificaciones"}
+                      </span>
+                    </div>
+
+                    <p className="text-sm text-gray-700 mb-3 sm:mb-4 leading-relaxed">
+                      {productoSeleccionado.descripcion}
+                    </p>
+
+                    <div className="flex items-center justify-between mb-3 sm:mb-4">
+                      <p className="text-xl sm:text-2xl font-bold text-primary-500">
+                        {formatPrice(productoSeleccionado.precio)}
+                      </p>
+                      {/* Mostrar cantidad disponible si está definida */}
+                      {productoSeleccionado.cantidadDisponible !==
+                        undefined && (
+                        <span
+                          className={`text-sm font-semibold px-3 py-1.5 rounded-full ${
+                            productoSeleccionado.cantidadDisponible === 0
+                              ? "bg-red-100 text-red-700"
+                              : productoSeleccionado.cantidadDisponible <= 5
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-green-100 text-green-700"
+                          }`}
+                        >
+                          {productoSeleccionado.cantidadDisponible === 0
+                            ? "Agotado"
+                            : `${productoSeleccionado.cantidadDisponible} disponibles`}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Botones de acción */}
+                    <div className="flex flex-col gap-2 sm:gap-3 mb-3 sm:mb-4">
                       <button
                         onClick={() =>
-                          setMostrarFormularioResena(!mostrarFormularioResena)
+                          handlePedido(
+                            productoSeleccionado,
+                            productoSeleccionado.disponible
+                          )
                         }
-                        className="w-full py-2 px-3 rounded-lg font-semibold text-sm bg-error-500 hover:bg-error-600 text-white hover:text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft hover:shadow-medium hover:-translate-y-0.5"
+                        disabled={
+                          !productoSeleccionado.disponible ||
+                          (productoSeleccionado.cantidadDisponible !==
+                            undefined &&
+                            productoSeleccionado.cantidadDisponible <= 0)
+                        }
+                        className={`w-full py-2 px-3 rounded-lg font-semibold text-sm text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft ${
+                          productoSeleccionado.disponible &&
+                          (productoSeleccionado.cantidadDisponible ===
+                            undefined ||
+                            productoSeleccionado.cantidadDisponible > 0)
+                            ? "bg-primary-500 hover:bg-primary-600 hover:text-white hover:shadow-medium hover:-translate-y-0.5"
+                            : "bg-gray-400 cursor-not-allowed"
+                        }`}
                       >
                         <svg
                           className="w-4 h-4"
@@ -775,140 +764,172 @@ function MenuContent() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2}
-                            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                           />
                         </svg>
-                        {mostrarFormularioResena
-                          ? "Cancelar Reseña"
-                          : "Dejar Reseña"}
+                        {!productoSeleccionado.disponible
+                          ? "No disponible"
+                          : productoSeleccionado.cantidadDisponible !==
+                              undefined &&
+                            productoSeleccionado.cantidadDisponible <= 0
+                          ? "Agotado"
+                          : "Agregar al Carrito"}
                       </button>
-                    ) : (
-                      <div className="w-full py-2 px-3 rounded-lg bg-gray-100 text-gray-600 text-center text-xs border border-gray-200">
-                        Inicia sesión para dejar una reseña
+
+                      {user ? (
+                        <button
+                          onClick={() =>
+                            setMostrarFormularioResena(!mostrarFormularioResena)
+                          }
+                          className="w-full py-2 px-3 rounded-lg font-semibold text-sm bg-error-500 hover:bg-error-600 text-white hover:text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-soft hover:shadow-medium hover:-translate-y-0.5"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                            />
+                          </svg>
+                          {mostrarFormularioResena
+                            ? "Cancelar Reseña"
+                            : "Dejar Reseña"}
+                        </button>
+                      ) : (
+                        <div className="w-full py-2 px-3 rounded-lg bg-gray-100 text-gray-600 text-center text-xs border border-gray-200">
+                          Inicia sesión para dejar una reseña
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Formulario de reseña */}
+                    {mostrarFormularioResena && user && (
+                      <div className="bg-gray-50 p-3 sm:p-4 rounded-lg mb-3 sm:mb-4 border border-gray-200">
+                        <h3 className="font-semibold text-gray-800 mb-2 sm:mb-3 text-sm sm:text-base">
+                          Calificar Producto
+                        </h3>
+                        <div className="mb-2 sm:mb-3">
+                          <label className="block text-xs text-[#3a3a3a] mb-1.5">
+                            Calificación
+                          </label>
+                          <div className="flex gap-1 sm:gap-2">
+                            {[1, 2, 3, 4, 5].map((star) => {
+                              const shouldHighlight =
+                                star <= calificacionForm.calificacion;
+                              return (
+                                <button
+                                  key={star}
+                                  type="button"
+                                  onClick={() =>
+                                    setCalificacionForm({
+                                      ...calificacionForm,
+                                      calificacion: star,
+                                    })
+                                  }
+                                  className={`text-lg sm:text-xl ${
+                                    shouldHighlight
+                                      ? "text-yellow-400"
+                                      : "text-gray-300"
+                                  }`}
+                                >
+                                  ⭐
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        <div className="mb-2 sm:mb-3">
+                          <label className="block text-xs text-[#3a3a3a] mb-1.5">
+                            Comentario (opcional)
+                          </label>
+                          <textarea
+                            value={calificacionForm.comentario}
+                            onChange={(e) =>
+                              setCalificacionForm({
+                                ...calificacionForm,
+                                comentario: e.target.value,
+                              })
+                            }
+                            className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                            rows={3}
+                            placeholder="Escribe tu opinión sobre este producto..."
+                          />
+                        </div>
+                        <button
+                          onClick={handleEnviarResena}
+                          disabled={cargandoResena}
+                          className="w-full py-2 px-3 text-sm bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 hover:text-white transition-all duration-200 disabled:opacity-50 shadow-soft hover:shadow-medium"
+                        >
+                          {cargandoResena ? "Enviando..." : "Enviar Reseña"}
+                        </button>
                       </div>
                     )}
-                  </div>
 
-                  {/* Formulario de reseña */}
-                  {mostrarFormularioResena && user && (
-                    <div className="bg-gray-50 p-3 sm:p-4 rounded-lg mb-3 sm:mb-4 border border-gray-200">
-                      <h3 className="font-semibold text-gray-800 mb-2 sm:mb-3 text-sm sm:text-base">
-                        Calificar Producto
+                    {/* Reseñas de clientes */}
+                    <div className="mt-3 sm:mt-4 mb-4">
+                      <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-3">
+                        Reseñas de Clientes
                       </h3>
-                      <div className="mb-2 sm:mb-3">
-                        <label className="block text-xs text-[#3a3a3a] mb-1.5">
-                          Calificación
-                        </label>
-                        <div className="flex gap-1 sm:gap-2">
-                          {[1, 2, 3, 4, 5].map((star) => {
-                            const shouldHighlight = star <= calificacionForm.calificacion;
-                            return (
-                              <button
-                                key={star}
-                                type="button"
-                                onClick={() =>
-                                  setCalificacionForm({
-                                    ...calificacionForm,
-                                    calificacion: star,
-                                  })
-                                }
-                                className={`text-lg sm:text-xl ${
-                                  shouldHighlight
-                                    ? "text-yellow-400"
-                                    : "text-gray-300"
-                                }`}
-                              >
-                                ⭐
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                      <div className="mb-2 sm:mb-3">
-                        <label className="block text-xs text-[#3a3a3a] mb-1.5">
-                          Comentario (opcional)
-                        </label>
-                        <textarea
-                          value={calificacionForm.comentario}
-                          onChange={(e) =>
-                            setCalificacionForm({
-                              ...calificacionForm,
-                              comentario: e.target.value,
-                            })
-                          }
-                          className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-                          rows={3}
-                          placeholder="Escribe tu opinión sobre este producto..."
-                        />
-                      </div>
-                      <button
-                        onClick={handleEnviarResena}
-                        disabled={cargandoResena}
-                        className="w-full py-2 px-3 text-sm bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 hover:text-white transition-all duration-200 disabled:opacity-50 shadow-soft hover:shadow-medium"
-                      >
-                        {cargandoResena ? "Enviando..." : "Enviar Reseña"}
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Reseñas de clientes */}
-                  <div className="mt-3 sm:mt-4">
-                    <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-3">
-                      Reseñas de Clientes
-                    </h3>
-                    {calificaciones.length > 0 ? (
-                      <div className="space-y-2 sm:space-y-3">
-                        {calificaciones.map((cal) => (
-                          <div
-                            key={cal.id}
-                            className="bg-gray-50 p-2.5 sm:p-3 rounded-lg border border-gray-200"
-                          >
-                            <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary-500 rounded-lg flex items-center justify-center text-white text-xs sm:text-sm font-semibold shadow-soft">
-                                {cal.estudianteNombre?.[0]?.toUpperCase() ||
-                                  "U"}
-                              </div>
-                              <div>
-                                <p className="font-semibold text-xs sm:text-sm text-gray-800">
-                                  {cal.estudianteNombre || "Usuario"}
-                                </p>
-                                <div className="flex items-center gap-1">
-                                  {[1, 2, 3, 4, 5].map((star) => {
-                                    const shouldHighlight = star <= cal.calificacion;
-                                    return (
-                                      <span
-                                        key={star}
-                                        className={`text-xs ${
-                                          shouldHighlight
-                                            ? "text-yellow-400"
-                                            : "text-gray-300"
-                                        }`}
-                                      >
-                                        ⭐
-                                      </span>
-                                    );
-                                  })}
+                      {calificaciones.length > 0 ? (
+                        <div className="space-y-2 sm:space-y-3">
+                          {calificaciones.map((cal) => (
+                            <div
+                              key={cal.id}
+                              className="bg-gray-50 p-2.5 sm:p-3 rounded-lg border border-gray-200"
+                            >
+                              <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary-500 rounded-lg flex items-center justify-center text-white text-xs sm:text-sm font-semibold shadow-soft">
+                                  {cal.estudianteNombre?.[0]?.toUpperCase() ||
+                                    "U"}
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-xs sm:text-sm text-gray-800">
+                                    {cal.estudianteNombre || "Usuario"}
+                                  </p>
+                                  <div className="flex items-center gap-1">
+                                    {[1, 2, 3, 4, 5].map((star) => {
+                                      const shouldHighlight =
+                                        star <= cal.calificacion;
+                                      return (
+                                        <span
+                                          key={star}
+                                          className={`text-xs ${
+                                            shouldHighlight
+                                              ? "text-yellow-400"
+                                              : "text-gray-300"
+                                          }`}
+                                        >
+                                          ⭐
+                                        </span>
+                                      );
+                                    })}
+                                  </div>
                                 </div>
                               </div>
+                              {cal.comentario && (
+                                <p className="text-gray-700 text-xs mt-2 leading-relaxed">
+                                  {cal.comentario}
+                                </p>
+                              )}
+                              {cal.createdAt && (
+                                <p className="text-xs text-gray-500 mt-1.5">
+                                  {formatDate(cal.createdAt)}
+                                </p>
+                              )}
                             </div>
-                            {cal.comentario && (
-                              <p className="text-gray-700 text-xs mt-2 leading-relaxed">
-                                {cal.comentario}
-                              </p>
-                            )}
-                            {cal.createdAt && (
-                              <p className="text-xs text-gray-500 mt-1.5">
-                                {formatDate(cal.createdAt)}
-                              </p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-gray-600 text-center py-3 sm:py-4 text-sm bg-gray-50 rounded-lg border border-gray-200">
-                        Aún no hay reseñas para este producto.
-                      </p>
-                    )}
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-gray-600 text-center py-3 sm:py-4 text-sm bg-gray-50 rounded-lg border border-gray-200">
+                          Aún no hay reseñas para este producto.
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

@@ -17,7 +17,7 @@ export default function CalificarVendedorModal({
   vendedorNombre,
   pedidoId,
 }: CalificarVendedorModalProps) {
-  const [calificacion, setCalificacion] = useState(5);
+  const [calificacion, setCalificacion] = useState(0);
   const [comentario, setComentario] = useState("");
   const [loading, setLoading] = useState(false);
   const [hoveredStar, setHoveredStar] = useState(0);
@@ -31,7 +31,7 @@ export default function CalificarVendedorModal({
     try {
       await onSubmit(calificacion, comentario.trim() || undefined);
       // Resetear form
-      setCalificacion(5);
+      setCalificacion(0);
       setComentario("");
       onClose();
     } catch (error) {
@@ -135,6 +135,7 @@ export default function CalificarVendedorModal({
               })}
             </div>
             <p className="text-center text-xs text-gray-500">
+              {calificacion === 0 && "Selecciona una calificación"}
               {calificacion === 1 && "Muy malo"}
               {calificacion === 2 && "Malo"}
               {calificacion === 3 && "Regular"}
