@@ -133,18 +133,24 @@ export default function ResenasPage() {
                   : "0.0"}
               </p>
               <div className="flex items-center mt-2">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <span
-                    key={star}
-                    className={`text-lg ${
-                      star <= Math.round(estadisticas.promedioGeneral)
-                        ? "text-[#FFA552]"
-                        : "text-gray-300"
-                    }`}
-                  >
-                    ⭐
-                  </span>
-                ))}
+                {[1, 2, 3, 4, 5].map((star) => {
+                  const promedio = estadisticas.promedioGeneral;
+                  const isFullStar = star <= Math.floor(promedio);
+                  const isHalfStar = !isFullStar && star === Math.ceil(promedio) && promedio % 1 >= 0.5;
+                  
+                  return (
+                    <span
+                      key={star}
+                      className={`text-lg ${
+                        isFullStar || isHalfStar
+                          ? "text-[#FFA552]"
+                          : "text-gray-300"
+                      }`}
+                    >
+                      ⭐
+                    </span>
+                  );
+                })}
               </div>
             </div>
           </div>

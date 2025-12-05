@@ -487,19 +487,22 @@ function MenuContent() {
                     menu.vendedorCalificacion > 0 && (
                       <div className="flex items-center gap-1.5 mb-2">
                         <div className="flex items-center">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <span
-                              key={star}
-                              className={`text-sm ${
-                                star <=
-                                Math.round(menu.vendedorCalificacion || 0)
-                                  ? "text-yellow-400"
-                                  : "text-gray-300"
-                              }`}
-                            >
-                              ⭐
-                            </span>
-                          ))}
+                          {[1, 2, 3, 4, 5].map((star) => {
+                            const calificacion = menu.vendedorCalificacion || 0;
+                            const shouldHighlight = star <= Math.round(calificacion);
+                            return (
+                              <span
+                                key={star}
+                                className={`text-sm ${
+                                  shouldHighlight
+                                    ? "text-yellow-400"
+                                    : "text-gray-300"
+                                }`}
+                              >
+                                ⭐
+                              </span>
+                            );
+                          })}
                         </div>
                         <span className="text-xs text-gray-700 font-medium">
                           {menu.vendedorCalificacion.toFixed(1)}
@@ -637,7 +640,7 @@ function MenuContent() {
                 </div>
 
                 {/* Información del producto */}
-                <div className="md:w-1/2 p-3 sm:p-4 md:p-6 relative">
+                <div className="md:w-1/2 p-3 sm:p-4 md:p-6 pb-20 md:pb-6 relative">
                   <button
                     onClick={cerrarModal}
                     className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-all duration-200"
@@ -657,18 +660,22 @@ function MenuContent() {
                   {/* Calificación */}
                   <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                     <div className="flex items-center">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span
-                          key={star}
-                          className={`text-sm sm:text-base ${
-                            star <= Math.round(promedioCalificacion.promedio)
-                              ? "text-yellow-400"
-                              : "text-gray-300"
-                          }`}
-                        >
-                          ⭐
-                        </span>
-                      ))}
+                      {[1, 2, 3, 4, 5].map((star) => {
+                        const promedio = promedioCalificacion.promedio;
+                        const shouldHighlight = star <= Math.round(promedio);
+                        return (
+                          <span
+                            key={star}
+                            className={`text-sm sm:text-base ${
+                              shouldHighlight
+                                ? "text-yellow-400"
+                                : "text-gray-300"
+                            }`}
+                          >
+                            ⭐
+                          </span>
+                        );
+                      })}
                     </div>
                     <span className="text-xs sm:text-sm text-[#3a3a3a] font-semibold">
                       {promedioCalificacion.promedio > 0
@@ -793,25 +800,28 @@ function MenuContent() {
                           Calificación
                         </label>
                         <div className="flex gap-1 sm:gap-2">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <button
-                              key={star}
-                              type="button"
-                              onClick={() =>
-                                setCalificacionForm({
-                                  ...calificacionForm,
-                                  calificacion: star,
-                                })
-                              }
-                              className={`text-lg sm:text-xl ${
-                                star <= calificacionForm.calificacion
-                                  ? "text-yellow-400"
-                                  : "text-gray-300"
-                              }`}
-                            >
-                              ⭐
-                            </button>
-                          ))}
+                          {[1, 2, 3, 4, 5].map((star) => {
+                            const shouldHighlight = star <= calificacionForm.calificacion;
+                            return (
+                              <button
+                                key={star}
+                                type="button"
+                                onClick={() =>
+                                  setCalificacionForm({
+                                    ...calificacionForm,
+                                    calificacion: star,
+                                  })
+                                }
+                                className={`text-lg sm:text-xl ${
+                                  shouldHighlight
+                                    ? "text-yellow-400"
+                                    : "text-gray-300"
+                                }`}
+                              >
+                                ⭐
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                       <div className="mb-2 sm:mb-3">
@@ -863,18 +873,21 @@ function MenuContent() {
                                   {cal.estudianteNombre || "Usuario"}
                                 </p>
                                 <div className="flex items-center gap-1">
-                                  {[1, 2, 3, 4, 5].map((star) => (
-                                    <span
-                                      key={star}
-                                      className={`text-xs ${
-                                        star <= cal.calificacion
-                                          ? "text-yellow-400"
-                                          : "text-gray-300"
-                                      }`}
-                                    >
-                                      ⭐
-                                    </span>
-                                  ))}
+                                  {[1, 2, 3, 4, 5].map((star) => {
+                                    const shouldHighlight = star <= cal.calificacion;
+                                    return (
+                                      <span
+                                        key={star}
+                                        className={`text-xs ${
+                                          shouldHighlight
+                                            ? "text-yellow-400"
+                                            : "text-gray-300"
+                                        }`}
+                                      >
+                                        ⭐
+                                      </span>
+                                    );
+                                  })}
                                 </div>
                               </div>
                             </div>

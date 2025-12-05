@@ -396,7 +396,7 @@ export default function CartSidebar() {
             </div>
             <div className="flex gap-2">
               <button
-                onClick={clearCart}
+                onClick={() => clearCart()}
                 className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-700 hover:bg-white hover:border-gray-400 transition-all duration-200 font-medium text-sm"
               >
                 Vaciar Carrito

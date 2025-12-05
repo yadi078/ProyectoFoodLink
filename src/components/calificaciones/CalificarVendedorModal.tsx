@@ -109,27 +109,30 @@ export default function CalificarVendedorModal({
               Tu calificación
             </label>
             <div className="flex justify-center gap-2 sm:gap-3">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setCalificacion(star)}
-                  onMouseEnter={() => setHoveredStar(star)}
-                  onMouseLeave={() => setHoveredStar(0)}
-                  className="transition-transform hover:scale-110 active:scale-95"
-                  disabled={loading}
-                >
-                  <span
-                    className={`text-3xl sm:text-4xl ${
-                      star <= (hoveredStar || calificacion)
-                        ? "text-yellow-400"
-                        : "text-gray-300"
-                    }`}
+              {[1, 2, 3, 4, 5].map((star) => {
+                const shouldHighlight = hoveredStar > 0 ? star <= hoveredStar : star <= calificacion;
+                return (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setCalificacion(star)}
+                    onMouseEnter={() => setHoveredStar(star)}
+                    onMouseLeave={() => setHoveredStar(0)}
+                    className="transition-transform hover:scale-110 active:scale-95"
+                    disabled={loading}
                   >
-                    ⭐
-                  </span>
-                </button>
-              ))}
+                    <span
+                      className={`text-3xl sm:text-4xl ${
+                        shouldHighlight
+                          ? "text-yellow-400"
+                          : "text-gray-300"
+                      }`}
+                    >
+                      ⭐
+                    </span>
+                  </button>
+                );
+              })}
             </div>
             <p className="text-center text-xs text-gray-500">
               {calificacion === 1 && "Muy malo"}

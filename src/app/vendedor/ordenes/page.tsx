@@ -30,8 +30,6 @@ export default function OrdenesPage() {
   );
   const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState<FiltroEstado>("todos");
-  const [pedidoSeleccionado, setPedidoSeleccionado] =
-    useState<PedidoConCliente | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -93,7 +91,6 @@ export default function OrdenesPage() {
       await updateEstadoPedido(pedidoId, nuevoEstado);
       showAlert("Estado actualizado correctamente", "success");
       await loadPedidos();
-      setPedidoSeleccionado(null);
     } catch (error) {
       console.error("Error al actualizar estado:", error);
       showAlert("Error al actualizar el estado", "error");
@@ -364,113 +361,11 @@ export default function OrdenesPage() {
                       </span>
                     </div>
                   )}
-                  {pedido.estado !== "entregado" && (
-                    <button
-                      onClick={() => setPedidoSeleccionado(pedido)}
-                      className="px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-info-500 hover:bg-info-600 text-white font-semibold rounded-lg transition-colors"
-                    >
-                      Detalles
-                    </button>
-                  )}
                 </div>
               </div>
             </div>
           ))}
         </div>
-      )}
-
-      {/* Modal de Detalles */}
-      {pedidoSeleccionado && (
-        <>
-          <div
-            className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-[10000]"
-            onClick={() => setPedidoSeleccionado(null)}
-          />
-          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] sm:w-[90vw] max-w-lg bg-white rounded-2xl shadow-2xl z-[10001] max-h-[90vh] overflow-y-auto">
-            <div className="bg-gradient-to-r from-primary-500 to-primary-600 p-3 sm:p-4 text-white sticky top-0">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg sm:text-xl font-bold">
-                  Detalles del Pedido
-                </h2>
-                <button
-                  onClick={() => setPedidoSeleccionado(null)}
-                  className="text-white/90 hover:text-white w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 flex-shrink-0"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-              <div>
-                <h3 className="font-semibold text-gray-800 mb-2 text-sm sm:text-base">
-                  Información del Cliente
-                </h3>
-                <div className="bg-gray-50 rounded-lg p-3 sm:p-4 space-y-2 text-xs sm:text-sm">
-                  <p>
-                    <span className="font-semibold">Nombre:</span>{" "}
-                    {pedidoSeleccionado.clienteNombre}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Teléfono:</span>{" "}
-                    {pedidoSeleccionado.clienteTelefono}
-                  </p>
-                </div>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-800 mb-2 text-sm sm:text-base">
-                  Productos
-                </h3>
-                <div className="space-y-2">
-                  {pedidoSeleccionado.items.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="flex justify-between items-center bg-gray-50 rounded-lg p-2.5 sm:p-3 gap-2"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-800 text-xs sm:text-sm truncate">
-                          {item.nombre}
-                        </p>
-                        <p className="text-xs sm:text-sm text-gray-600">
-                          {formatPrice(item.precioUnitario)} c/u
-                        </p>
-                      </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="font-semibold text-gray-800 text-xs sm:text-sm">
-                          x{item.cantidad}
-                        </p>
-                        <p className="text-xs sm:text-sm text-primary-600 font-semibold">
-                          {formatPrice(item.precioUnitario * item.cantidad)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="border-t pt-3 sm:pt-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-base sm:text-lg font-semibold text-gray-800">
-                    Total:
-                  </span>
-                  <span className="text-xl sm:text-2xl font-bold text-primary-600">
-                    {formatPrice(pedidoSeleccionado.precioTotal)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
       )}
     </VendedorLayout>
   );
