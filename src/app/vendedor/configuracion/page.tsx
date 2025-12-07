@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import VendedorLayout from "@/components/vendedor/VendedorLayout";
 import NotificationSettings from "@/components/notifications/NotificationSettings";
-import NotificationDebugger from "@/components/notifications/NotificationDebugger";
 import { updateVendedor } from "@/services/vendedores/vendedorService";
 import { useAlert } from "@/components/context/AlertContext";
 import type { Vendedor } from "@/lib/firebase/types";
@@ -132,8 +131,6 @@ export default function ConfiguracionPage() {
       title="Configuración"
       subtitle="Administra tu configuración de cuenta"
     >
-      {user && <NotificationDebugger userId={user.uid} />}
-
       {/* Notificaciones */}
       {user && <NotificationSettings userId={user.uid} />}
 

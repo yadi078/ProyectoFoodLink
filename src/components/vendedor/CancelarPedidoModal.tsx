@@ -9,13 +9,7 @@ interface CancelarPedidoModalProps {
   pedidoId: string;
 }
 
-const MOTIVOS_PREDEFINIDOS = [
-  "Falta de producto",
-  "Falta de tiempo",
-  "El cliente no pagó",
-  "El cliente no recogió el alimento",
-  "Otro",
-];
+const MOTIVOS_PREDEFINIDOS = ["Falta de producto", "Falta de tiempo", "Otro"];
 
 export default function CancelarPedidoModal({
   isOpen,

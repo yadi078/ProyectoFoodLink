@@ -26,15 +26,18 @@ export default function StarRating({
     lg: "text-2xl sm:text-3xl",
   };
 
-  const stars = Array.from({ length: maxRating }, (_, i) => i + 1);
+  // Para modo interactivo, mostrar todas las estrellas para selección
+  // Para modo display, solo mostrar el número de estrellas del rating
+  const starsToShow = interactive
+    ? Array.from({ length: maxRating }, (_, i) => i + 1)
+    : Array.from({ length: Math.min(rating, maxRating) }, (_, i) => i + 1);
 
   return (
     <div className={`flex items-center gap-1 ${className}`}>
       <div className="flex items-center">
-        {stars.map((star) => {
-          const isHighlighted = star <= rating;
-          
+        {starsToShow.map((star) => {
           if (interactive && onRatingChange) {
+            const isHighlighted = star <= rating;
             return (
               <button
                 key={star}
@@ -43,7 +46,9 @@ export default function StarRating({
                 className="transition-transform hover:scale-110 active:scale-95 focus:outline-none"
               >
                 <span
-                  className={`${sizeClasses[size]} transition-colors duration-150 ${
+                  className={`${
+                    sizeClasses[size]
+                  } transition-colors duration-150 ${
                     isHighlighted ? "text-yellow-400" : "text-gray-300"
                   }`}
                 >
@@ -53,13 +58,9 @@ export default function StarRating({
             );
           }
 
+          // Modo display: solo mostrar estrellas destacadas (amarillas)
           return (
-            <span
-              key={star}
-              className={`${sizeClasses[size]} ${
-                isHighlighted ? "text-yellow-400" : "text-gray-300"
-              }`}
-            >
+            <span key={star} className={`${sizeClasses[size]} text-yellow-400`}>
               ⭐
             </span>
           );
@@ -73,4 +74,3 @@ export default function StarRating({
     </div>
   );
 }
-

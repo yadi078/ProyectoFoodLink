@@ -1,0 +1,3 @@
+# Archivos de configuración que no necesitan linting
+*.config.js
+*.config.ts
